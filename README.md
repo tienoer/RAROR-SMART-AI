@@ -956,6 +956,66 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    function toggleAssistantDrawer(open) {
+      const drawer = document.getElementById("assistantDrawer");
+      const overlay = document.getElementById("assistantOverlay");
+      if (!drawer || !overlay) return;
+      if (open) {
+        drawer.classList.remove("translate-x-full");
+        overlay.classList.remove("hidden");
+        renderAssistantMessages();
+      } else {
+        drawer.classList.add("translate-x-full");
+        overlay.classList.add("hidden");
+      }
+    }
+
+    function exportProjectJson() {
+      const data = getCurrentData();
+      const payload = {
+        app: "RAPOR SMART AI",
+        exportedAt: new Date().toISOString(),
+        activeYear: APP_STATE.activeYear,
+        isDemoMode: APP_STATE.isDemoMode,
+        years: APP_STATE.years
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const safeName = (data.school.nama || "Sekolah").replace(/[^a-zA-Z0-9]+/g, "_");
+      a.download = `Cadangan_RAPOR_SMART_AI_${safeName}_${APP_STATE.activeYear}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("File cadangan proyek (.JSON) berhasil diunduh.", "success");
+    }
+
+    function importProjectJson(event) {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!parsed || !parsed.years || typeof parsed.years !== "object") {
+            showToast("Format file cadangan .JSON tidak valid.", "error");
+            return;
+          }
+          APP_STATE.years = parsed.years;
+          APP_STATE.activeYear = parsed.activeYear || Object.keys(parsed.years)[0] || "2026";
+          APP_STATE.isDemoMode = false;
+          renderAll();
+          showToast(`Data proyek berhasil dipulihkan (Tahun Aktif: ${APP_STATE.activeYear}).`, "success");
+        } catch (err) {
+          console.error(err);
+          showToast("Gagal membaca file cadangan .JSON.", "error");
+        }
+      };
+      reader.readAsText(file);
+    }
+
     // =========================================================================
     // 4. DEMO MODE & MULTI-YEAR MANAGEMENT
     // =========================================================================
@@ -2533,6 +2593,11 @@
     // =========================================================================
     // 10. MODULE 2: ANALISIS CAPAIAN RAPOR PENDIDIKAN
     // =========================================================================
+    function setAnalisisFilter(filterId) {
+      APP_STATE.analisisFilter = filterId;
+      renderAll();
+    }
+
     function renderAnalisisModule() {
       const data = getCurrentData();
       const all = data.indicators;
@@ -2580,6 +2645,208 @@
             <button onclick="generateRootCausesAndPriorities()" class="px-4 py-2.5 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-2 shadow">
               <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
               <span>Lanjut Analisis Akar Masalah &amp; Prioritas</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SUMMARY CARDS -->
+        <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+          <div class="card-elevated p-3.5 border-t-4 border-t-emerald-600">
+            <div class="text-slate-500 font-semibold">Capaian Baik</div>
+            <div class="font-mono text-xl font-extrabold text-emerald-800 mt-1">${baik.length}</div>
+          </div>
+          <div class="card-elevated p-3.5 border-t-4 border-t-amber-500">
+            <div class="text-slate-500 font-semibold">Capaian Sedang</div>
+            <div class="font-mono text-xl font-extrabold text-amber-700 mt-1">${sedang.length}</div>
+          </div>
+          <div class="card-elevated p-3.5 border-t-4 border-t-rose-600">
+            <div class="text-slate-500 font-semibold">Capaian Kurang</div>
+            <div class="font-mono text-xl font-extrabold text-rose-700 mt-1">${kurang.length}</div>
+          </div>
+          <div class="card-elevated p-3.5 border-t-4 border-t-rose-400">
+            <div class="text-slate-500 font-semibold">Menurun</div>
+            <div class="font-mono text-xl font-extrabold text-rose-700 mt-1">${turun.length}</div>
+          </div>
+          <div class="card-elevated p-3.5 border-t-4 border-t-teal-500">
+            <div class="text-slate-500 font-semibold">Meningkat</div>
+            <div class="font-mono text-xl font-extrabold text-teal-700 mt-1">${naik.length}</div>
+          </div>
+          <div class="card-elevated p-3.5 border-t-4 border-t-slate-900 bg-amber-50/40">
+            <div class="text-slate-700 font-bold">Prioritas Benahi</div>
+            <div class="font-mono text-xl font-extrabold text-slate-900 mt-1">${prioritas.length}</div>
+          </div>
+        </section>
+
+        <!-- FILTER PILLS -->
+        <div class="flex flex-wrap gap-1.5">
+          ${filters.map(f => `
+            <button onclick="setAnalisisFilter('${f.id}')"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold transition border ${APP_STATE.analisisFilter === f.id ? 'emerald-gradient text-white border-emerald-900 shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}">
+              ${f.label}
+            </button>
+          `).join("")}
+        </div>
+
+        <!-- ANALISIS TABLE -->
+        <section class="card-elevated overflow-hidden">
+          ${displayed.length === 0 ? `
+            <div class="p-10 text-center text-xs text-slate-500">
+              Tidak ada indikator pada kelompok filter ini. Silakan pilih filter lain atau masukkan data Rapor Pendidikan terlebih dahulu.
+            </div>
+          ` : `
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[10px]">
+                  <tr>
+                    <th class="py-3 px-4">Nama Indikator</th>
+                    <th class="py-3 px-3 text-center">Nilai Capaian</th>
+                    <th class="py-3 px-3 text-center">Kategori</th>
+                    <th class="py-3 px-3 text-center">Perubahan</th>
+                    <th class="py-3 px-3 text-center">Status</th>
+                    <th class="py-3 px-4 text-center">Prioritas Pembenahan</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${displayed.map(ind => {
+                    const kat = classifyCategory(ind.nilai, ind.kategori);
+                    const isPrio = kat === "Kurang" || kat === "Sedang" || (ind.perubahan !== "" && parseFloat(ind.perubahan) < 0);
+                    return `
+                      <tr class="hover:bg-slate-50">
+                        <td class="py-3 px-4">
+                          <div class="font-bold text-slate-900">${ind.kode ? `<span class="font-mono text-emerald-800 mr-1">[${escapeHtml(ind.kode)}]</span>` : ""}${escapeHtml(ind.nama)}</div>
+                          <div class="text-[11px] text-slate-500">${escapeHtml(ind.dimensi || "-")}</div>
+                        </td>
+                        <td class="py-3 px-3 text-center font-mono font-extrabold text-sm text-slate-900">${formatScore(ind.nilai)}</td>
+                        <td class="py-3 px-3 text-center">${getCategoryBadgeHtml(kat)}</td>
+                        <td class="py-3 px-3 text-center">${getDeltaBadgeHtml(ind.perubahan)}</td>
+                        <td class="py-3 px-3 text-center">
+                          ${ind.terverifikasi
+                            ? `<span class="text-emerald-800 font-bold text-[11px]">Terkonfirmasi</span>`
+                            : `<span class="text-amber-700 font-semibold text-[11px]">Perlu Verifikasi</span>`}
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                          ${isPrio
+                            ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-900 font-bold text-[11px] border border-rose-200">Prioritas Dibenahi</span>`
+                            : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-semibold text-[11px]">Pertahankan</span>`}
+                        </td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </section>
+      `;
+    }
+
+    // =========================================================================
+    // 11. MODULE 3: ANALISIS AKAR MASALAH (5-WHY)
+    // =========================================================================
+    function generateRootCausesAndPriorities() {
+      const data = getCurrentData();
+      if (data.indicators.length === 0) {
+        showToast("Belum ada data indikator Rapor Pendidikan. Silakan input data terlebih dahulu.", "warning");
+        setActiveTab("input");
+        return;
+      }
+
+      const targets = data.indicators.filter(i => {
+        const k = classifyCategory(i.nilai, i.kategori);
+        return k === "Kurang" || k === "Sedang" || (i.perubahan !== "" && parseFloat(i.perubahan) < 0);
+      });
+
+      const listToProcess = targets.length > 0 ? targets : data.indicators;
+
+      listToProcess.forEach((ind, idx) => {
+        const kat = classifyCategory(ind.nilai, ind.kategori);
+        const delta = parseFloat(ind.perubahan);
+
+        if (!data.rootCauses.some(r => r.indicatorId === ind.id)) {
+          data.rootCauses.push({
+            id: uid(),
+            indicatorId: ind.id,
+            masalahUtama: `Capaian indikator ${ind.nama} berada pada nilai ${formatScore(ind.nilai)} (${kat})${!isNaN(delta) ? ` dengan perubahan ${delta > 0 ? "+" + delta : delta} poin` : ""}.`,
+            dugaanPenyebab: [
+              {
+                id: uid(),
+                teks: `Strategi pembelajaran dan pendampingan di kelas pada aspek ${ind.nama} belum berjalan merata dan kontekstual.`,
+                terkonfirmasi: false
+              },
+              {
+                id: uid(),
+                teks: `Optimalisasi Komunitas Belajar (Kombel) sekolah untuk refleksi perangkat ajar dan asesmen diagnostik ${ind.nama} masih perlu ditingkatkan.`,
+                terkonfirmasi: false
+              }
+            ],
+            whyChain: [
+              `Why 1: Nilai capaian ${ind.nama} (${formatScore(ind.nilai)}) belum mencapai kategori optimal.`,
+              `Why 2: Praktik pembelajaran sehari-hari belum sepenuhnya menyesuaikan kebutuhan belajar peserta didik berdasarkan asesmen awal.`,
+              `Why 3: Berbagi praktik baik antar guru melalui observasi kelas dan diskusi Kombel belum terjadwal rutin.`,
+              `Why 4: Ketersediaan perangkat ajar, bahan bacaan/peraga pendukung, serta supervisi akademik perlu diperkuat.`
+            ],
+            buktiPendukung: `Nilai Rapor Pendidikan ${ind.kode || ""} ${ind.nama} = ${formatScore(ind.nilai)} (${kat}).${ind.rekomendasiRapor ? " Catatan Rapor: " + ind.rekomendasiRapor : ""}`,
+            pertanyaanRefleksi: [
+              `Apa tantangan nyata yang dihadapi guru di kelas dalam meningkatkan ${ind.nama}?`,
+              `Sumber daya atau media belajar apa yang paling dibutuhkan siswa untuk mengejar ketertinggalan pada aspek ini?`,
+              `Bagaimana Komunitas Belajar sekolah dapat memfasilitasi perbaikan praktik mengajar secara berkala?`
+            ],
+            dataTambahan: "Hasil asesmen diagnostik kelas, catatan supervisi akademik kepala sekolah, dan rekap hasil belajar siswa.",
+            dampakPesertaDidik: `Peserta didik berisiko belum menguasai kompetensi esensial pada ${ind.nama} yang berdampak pada kesiapan belajar di jenjang berikutnya.`,
+            alternatifSolusi: ind.rekomendasiRapor || `1) Lokakarya/IHT peningkatan kompetensi guru pada ${ind.nama}; 2) Penguatan Komunitas Belajar & observasi rekan sejawat; 3) Penyediaan sarana/bahan ajar pendukung.`
+          });
+        }
+
+        if (!data.priorities.some(p => p.indicatorId === ind.id)) {
+          const skorCapaian = kat === "Kurang" ? 5 : kat === "Sedang" ? 4 : 2;
+          const skorTren = !isNaN(delta) && delta < 0 ? 5 : 3;
+          const skorDampak = (ind.kode === "A.1" || ind.kode === "A.2" || ind.kode === "D.1") ? 5 : 4;
+          const skorUrgensi = kat === "Kurang" ? 5 : 4;
+          const skorKemampuan = 4;
+          const totalSkor = skorCapaian + skorTren + skorDampak + skorUrgensi + skorKemampuan;
+
+          data.priorities.push({
+            id: uid(),
+            indicatorId: ind.id,
+            skorCapaian,
+            skorTren,
+            skorDampak,
+            skorUrgensi,
+            skorKemampuan,
+            totalSkor,
+            peringkatManual: data.priorities.length + 1,
+            alasanPrioritas: `Nilai capaian ${formatScore(ind.nilai)} (${kat})${!isNaN(delta) && delta < 0 ? ` dan mengalami penurunan (${delta})` : ""} sehingga berdampak langsung pada mutu layanan belajar peserta didik.`
+          });
+        }
+      });
+
+      triggerAutoSave("Akar Masalah & Prioritas", "Analisis Otomatis", `Menyusun analisis akar masalah dan peringkat prioritas untuk ${listToProcess.length} indikator.`);
+      setActiveTab("akar");
+      showToast("Analisis akar masalah (5-Why) dan peringkat prioritas berhasil disusun!", "success");
+    }
+
+    function renderAkarMasalahModule() {
+      const data = getCurrentData();
+
+      return `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 3 • Diagnosis Mendalam (5-Why)</span>
+            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Analisis Masalah dan Akar Masalah</h2>
+            <p class="text-xs text-slate-600 mt-0.5">Bedakan secara tegas antara <strong>Dugaan AI</strong> dan <strong>Fakta Terkonfirmasi Sekolah</strong> melalui diskusi dewan guru.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="exportWordDocument('akar')" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-blue-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Unduh Word</span>
+            </button>
+            <button onclick="generateRootCausesAndPriorities()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-emerald-700"></i>
+              <span>Generate dari Indikator</span>
+            </button>
+            <button onclick="setActiveTab('prioritas')" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
+              <span>Lanjut Penentuan Prioritas</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
@@ -2951,16 +3218,12 @@
             <p class="text-xs text-slate-600 mt-0.5">Setiap rekomendasi terhubung dengan <strong>Nilai Capaian</strong> indikator dan dapat disunting serta disetujui tim sekolah.</p>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button onclick="exportWordDocument('akar')" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-blue-800 font-bold text-xs flex items-center gap-1.5">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>Unduh Word</span>
-            </button>
-            <button onclick="generateRootCausesAndPriorities()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs flex items-center gap-1.5">
+            <button onclick="generateRecommendationsFromPriorities()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs flex items-center gap-1.5">
               <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-emerald-700"></i>
-              <span>Generate dari Indikator</span>
+              <span>Generate Rekomendasi</span>
             </button>
-            <button onclick="setActiveTab('prioritas')" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
-              <span>Lanjut Penentuan Prioritas</span>
+            <button onclick="generateRkjmFromRecommendations()" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
+              <span>Susun RKJM Otomatis</span>
               <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
           </div>
@@ -3153,18 +3416,26 @@
       return `
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 4 • Pembobotan &amp; Urutan Fokus</span>
-            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Penentuan Prioritas Pembenahan</h2>
-            <p class="text-xs text-slate-600 mt-0.5">Pemeringkatan berdasarkan <strong>Nilai Capaian</strong>, tren perubahan, dampak ke siswa, urgensi, dan kapasitas sekolah (dapat diatur manual).</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 6 • Perencanaan Strategis 4 Tahunan</span>
+            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Penyusunan Rencana Kerja Jangka Menengah (RKJM)</h2>
+            <p class="text-xs text-slate-600 mt-0.5">Hubungkan program prioritas Rapor Pendidikan dengan target jangka menengah dan sumber pendanaan sekolah.</p>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button onclick="exportExcelDocument('prioritas')" class="px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-emerald-800 font-bold text-xs flex items-center gap-1.5">
+            <button onclick="exportWordDocument('rkjm')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-blue-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+              <span>Unduh Word</span>
+            </button>
+            <button onclick="exportExcelDocument('rkjm')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-emerald-800 font-bold text-xs flex items-center gap-1.5">
               <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
               <span>Unduh Excel</span>
             </button>
-            <button onclick="generateRecommendationsFromPriorities()" class="px-4 py-2.5 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-2 shadow">
-              <i data-lucide="lightbulb" class="w-4 h-4 text-amber-300"></i>
-              <span>Buat Rekomendasi Program</span>
+            <button onclick="openAddRkjmModal()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-slate-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="plus" class="w-4 h-4 text-emerald-700"></i>
+              <span>Tambah Program RKJM</span>
+            </button>
+            <button onclick="generateRktFromRkjm()" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
+              <span>Turunkan ke RKT</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
@@ -3418,20 +3689,20 @@
             <p class="text-xs text-slate-600 mt-0.5">Penjabaran program RKJM ke dalam kegiatan tahunan, sasaran, target, serta kalender pelaksanaan 12 bulan.</p>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button onclick="exportWordDocument('rkjm')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-blue-800 font-bold text-xs flex items-center gap-1.5">
+            <button onclick="exportWordDocument('rkt')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-blue-800 font-bold text-xs flex items-center gap-1.5">
               <i data-lucide="file-text" class="w-4 h-4"></i>
               <span>Unduh Word</span>
             </button>
-            <button onclick="exportExcelDocument('rkjm')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-emerald-800 font-bold text-xs flex items-center gap-1.5">
+            <button onclick="exportExcelDocument('rkt')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-emerald-800 font-bold text-xs flex items-center gap-1.5">
               <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
               <span>Unduh Excel</span>
             </button>
-            <button onclick="openAddRkjmModal()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-slate-800 font-bold text-xs flex items-center gap-1.5">
+            <button onclick="openAddRktModal()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-slate-800 font-bold text-xs flex items-center gap-1.5">
               <i data-lucide="plus" class="w-4 h-4 text-emerald-700"></i>
-              <span>Tambah Program RKJM</span>
+              <span>Tambah Kegiatan RKT</span>
             </button>
-            <button onclick="generateRktFromRkjm()" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
-              <span>Turunkan ke RKT</span>
+            <button onclick="generateArkasFromRkt()" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
+              <span>Buat Rancangan ARKAS</span>
               <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
           </div>
@@ -3756,43 +4027,19 @@
             <p class="text-xs text-slate-600 mt-0.5">Terhubung langsung dengan kegiatan RKT. Rumus otomatis: <strong>Jumlah = Volume × Harga Satuan</strong>.</p>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button onclick="exportWordDocument('rkt')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-blue-800 font-bold text-xs flex items-center gap-1.5">
-              <i data-lucide="file-text" class="w-4 h-4"></i>
-              <span>Unduh Word</span>
-            </button>
-            <button onclick="exportExcelDocument('rkt')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-emerald-800 font-bold text-xs flex items-center gap-1.5">
-              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-              <span>Unduh Excel</span>
-            </button>
-            <button onclick="openAddRktModal()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-slate-800 font-bold text-xs flex items-center gap-1.5">
-              <i data-lucide="plus" class="w-4 h-4 text-emerald-700"></i>
-              <span>Tambah Kegiatan RKT</span>
-            </button>
-            <button onclick="generateArkasFromRkt()" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
-              <span>Buat Rancangan ARKAS</span>
-              <i data-lucide="arrow-right" class="w-4 h-4"></i>
-            </button>
-          </div>
-          <div class="flex flex-wrap gap-2">
             <button onclick="exportExcelDocument('arkas')" class="px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-emerald-800 font-bold text-xs flex items-center gap-1.5">
               <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
               <span>Unduh Excel ARKAS</span>
+            </button>
+            <button onclick="generateArkasFromRkt()" class="px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="refresh-cw" class="w-4 h-4 text-emerald-700"></i>
+              <span>Susun dari RKT</span>
             </button>
             <button onclick="openAddArkasModal()" class="px-4 py-2.5 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
               <i data-lucide="plus" class="w-4 h-4 text-amber-300"></i>
               <span>Tambah Uraian Belanja</span>
             </button>
           </div>
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 10 • Pengendalian &amp; Evaluasi</span>
-            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Monitoring dan Evaluasi Program (Monev)</h2>
-            <p class="text-xs text-slate-600 mt-0.5">Pantau keterlaksanaan kegiatan RKT, serapan anggaran, hambatan lapangan, serta tindak lanjut perbaikan.</p>
-          </div>
-          <button onclick="exportPrintReport('monev')" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-rose-700 font-bold text-xs flex items-center gap-1.5 self-start sm:self-auto">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span>Unduh Laporan Monev</span>
-          </button>
         </div>
 
         <!-- REKAPITULASI CARDS -->
@@ -4136,10 +4383,16 @@
       const belum = data.monev.filter(m => m.status === "Belum Dilaksanakan").length;
 
       return `
-        <div>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 10 • Pengendalian &amp; Evaluasi</span>
-          <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Monitoring dan Evaluasi Program (Monev)</h2>
-          <p class="text-xs text-slate-600 mt-0.5">Pantau keterlaksanaan kegiatan RKT, serapan anggaran, hambatan lapangan, serta tindak lanjut perbaikan.</p>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 10 • Pengendalian &amp; Evaluasi</span>
+            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Monitoring dan Evaluasi Program (Monev)</h2>
+            <p class="text-xs text-slate-600 mt-0.5">Pantau keterlaksanaan kegiatan RKT, serapan anggaran, hambatan lapangan, serta tindak lanjut perbaikan.</p>
+          </div>
+          <button onclick="exportPrintReport('monev')" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-rose-700 font-bold text-xs flex items-center gap-1.5 self-start sm:self-auto">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Unduh Laporan Monev</span>
+          </button>
         </div>
 
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
