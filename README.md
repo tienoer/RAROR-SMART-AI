@@ -5,25 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RAPOR SMART AI — Dari Data Menjadi Aksi, Dari Rapor Menjadi Perubahan</title>
 
-  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- SheetJS (XLSX) for Direct Official Excel Rapor Pendidikan Import & Export -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+
+  <!-- PDF.js for Official PDF Rapor Pendidikan Extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
             emerald: {
               850: '#064e3b',
-              900: '#043927',
+              925: '#033629',
               950: '#022c22',
             },
             gold: {
@@ -41,490 +52,308 @@
     };
   </script>
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- Chart.js for Interactive Analytics -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-  <!-- SheetJS (XLSX) for Real Excel Import & Export -->
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-
-  <!-- PDF.js for Real PDF Document Reading -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
-  <!-- html2pdf.js for Real PDF Report Export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
   <style>
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #f8fafc;
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: #f4f7f6;
       color: #0f172a;
     }
-    /* Custom subtle scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+    h1, h2, h3, .font-heading {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
+    .emerald-gradient {
+      background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
     }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
+    .emerald-dark-gradient {
+      background: linear-gradient(160deg, #022c22 0%, #064e3b 60%, #065f46 100%);
     }
     .gold-gradient {
       background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
     }
-    .emerald-gradient {
-      background: linear-gradient(135deg, #043927 0%, #065f46 100%);
+    .card-elevated {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      box-shadow: 0 2px 10px -2px rgba(6, 78, 59, 0.05);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.45);
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.7);
     }
     @media print {
-      .no-print {
-        display: none !important;
-      }
-      body {
-        background: #ffffff !important;
-      }
+      .no-print { display: none !important; }
+      body { background: #ffffff !important; }
     }
   </style>
 </head>
 <body class="antialiased selection:bg-emerald-800 selection:text-white">
 
-  <!-- ===================================================================== -->
-  <!-- TOP DEMO MODE BANNER (SHOWN ONLY WHEN DEMO SIMULATION IS ACTIVE)      -->
-  <!-- ===================================================================== -->
-  <div id="demoBanner" class="hidden bg-amber-500 text-emerald-950 px-4 py-2 text-xs sm:text-sm font-semibold flex flex-wrap items-center justify-between gap-2 z-50 relative shadow-sm">
+  <!-- TOP DEMO BANNER (Visible only when Demo Mode is active) -->
+  <div id="demoBanner" class="hidden no-print bg-amber-500 text-slate-950 px-4 py-2 text-xs sm:text-sm font-semibold flex flex-wrap items-center justify-between gap-2 shadow-sm">
     <div class="flex items-center gap-2">
       <i data-lucide="flask-conical" class="w-4 h-4 shrink-0"></i>
-      <span><strong>MODE SIMULASI / DATA CONTOH AKTIF:</strong> Data yang tampil adalah data simulasi pelatihan, bukan data resmi sekolah Anda.</span>
+      <span><strong>MODE DEMO AKTIF:</strong> Anda sedang melihat simulasi data contoh. Jangan gunakan data demo sebagai laporan resmi sekolah.</span>
     </div>
-    <button onclick="promptResetToCleanState()" class="bg-emerald-950 text-white hover:bg-emerald-900 px-3 py-1 rounded-lg text-xs font-semibold transition">
-      Kosongkan &amp; Input Data Sekolah Asli
+    <button onclick="exitDemoMode()" class="px-3 py-1 rounded-lg bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold transition">
+      Kembali ke Data Sekolah Asli
     </button>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- MAIN APPLICATION SHELL                                                -->
-  <!-- ===================================================================== -->
+  <!-- MAIN APP SHELL -->
   <div class="min-h-screen flex flex-col lg:flex-row">
 
-    <!-- MOBILE HEADER -->
-    <header class="lg:hidden emerald-gradient text-white px-4 py-3 flex items-center justify-between sticky top-0 z-40 shadow-md">
-      <div class="flex items-center gap-3">
-        <button onclick="toggleMobileSidebar()" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition" aria-label="Buka Menu">
-          <i data-lucide="menu" class="w-5 h-5"></i>
-        </button>
-        <div class="flex items-center gap-2">
-          <!-- Custom SVG Emblem -->
-          <svg class="w-8 h-8 shrink-0" viewBox="0 0 40 40" fill="none">
-            <rect width="40" height="40" rx="10" fill="#D97706" fill-opacity="0.2" stroke="#F59E0B" stroke-width="1.5"/>
-            <path d="M11 27V15L20 10L29 15V27L20 32L11 27Z" stroke="#FBBF24" stroke-width="2"/>
-            <path d="M16 22L19 25L25 17" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <div>
-            <div class="font-extrabold tracking-tight text-sm leading-tight">RAPOR SMART AI</div>
-            <div class="text-[10px] text-amber-300 font-medium">Perencanaan Berbasis Data</div>
-          </div>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <button onclick="toggleAssistantDrawer()" class="p-2 rounded-xl bg-amber-500 text-emerald-950 font-bold text-xs flex items-center gap-1 shadow">
-          <i data-lucide="sparkles" class="w-4 h-4"></i>
-          <span>AI</span>
-        </button>
-      </div>
-    </header>
+    <!-- MOBILE SIDEBAR OVERLAY -->
+    <div id="mobileSidebarOverlay" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 hidden lg:hidden"></div>
 
-    <!-- SIDEBAR BACKDROP (MOBILE) -->
-    <div id="sidebarBackdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 hidden lg:hidden"></div>
-
-    <!-- LEFT NAVIGATION SIDEBAR -->
-    <aside id="appSidebar" class="fixed lg:sticky top-0 left-0 z-50 h-screen w-72 emerald-gradient text-white flex flex-col justify-between transition-transform duration-300 -translate-x-full lg:translate-x-0 shadow-2xl shrink-0">
-      <div class="overflow-y-auto flex-1">
-        <!-- Brand Header -->
-        <div class="p-5 border-b border-white/10">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <svg class="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none">
-                <rect width="40" height="40" rx="11" fill="#D97706" fill-opacity="0.22" stroke="#F59E0B" stroke-width="1.5"/>
-                <path d="M11 26V15L20 10L29 15V26L20 31L11 26Z" stroke="#FBBF24" stroke-width="2"/>
-                <path d="M15.5 21.5L18.8 24.8L25 16.8" stroke="#FFFFFF" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <div>
-                <h1 class="font-extrabold text-base tracking-tight text-white">RAPOR SMART AI</h1>
-                <p class="text-[11px] text-amber-300 leading-snug font-medium">Dari Data Menjadi Aksi,<br/>Dari Rapor Menjadi Perubahan.</p>
+    <!-- SIDEBAR NAVIGATION -->
+    <aside id="appSidebar" class="no-print fixed lg:sticky top-0 left-0 z-50 h-screen w-72 emerald-dark-gradient text-white flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 shrink-0 shadow-xl">
+      <!-- Brand Header -->
+      <div class="p-5 border-b border-emerald-800/70">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center text-slate-950 font-extrabold shadow-md shrink-0">
+              <i data-lucide="sparkles" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="font-heading font-extrabold text-base tracking-tight text-white flex items-center gap-1.5">
+                RAPOR SMART <span class="text-amber-400">AI</span>
               </div>
-            </div>
-            <button onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 rounded-lg bg-white/10 text-white">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
-          </div>
-
-          <!-- Active Year & School Mini Pill -->
-          <div class="mt-4 bg-black/25 rounded-xl p-3 border border-white/10">
-            <div class="flex items-center justify-between text-[11px] text-emerald-200 mb-1">
-              <span>Tahun Perencanaan</span>
-              <span id="sidebarCloudBadge" class="inline-flex items-center gap-1 text-amber-300 font-semibold">
-                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Lokal &amp; File
-              </span>
-            </div>
-            <div class="flex items-center gap-2">
-              <select id="globalYearSelect" onchange="switchPlanningYear(this.value)" class="w-full bg-emerald-950/90 border border-amber-500/40 text-white text-xs font-bold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-amber-400">
-              </select>
-              <button onclick="openNewYearModal()" title="Tambah Tahun Perencanaan" class="p-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/30 transition">
-                <i data-lucide="plus" class="w-4 h-4"></i>
-              </button>
+              <p class="text-[10px] text-emerald-200 leading-tight mt-0.5">Dari Data Menjadi Aksi, Dari Rapor Menjadi Perubahan.</p>
             </div>
           </div>
+          <button onclick="toggleMobileSidebar(false)" class="lg:hidden p-1.5 rounded-lg text-emerald-200 hover:bg-emerald-800/60">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
         </div>
-
-        <!-- Navigation Menu -->
-        <nav class="p-3 space-y-1 text-xs font-medium" id="sidebarNav">
-          <div class="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300/80">Ringkasan Eksekutif</div>
-          <button data-tab="dashboard" onclick="navigateTo('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition text-left">
-            <i data-lucide="layout-dashboard" class="w-4 h-4 shrink-0"></i>
-            <span>Dashboard Utama</span>
-          </button>
-
-          <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300/80">Alur Perencanaan PBD</div>
-          <button data-tab="input" onclick="navigateTo('input')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition text-left">
-            <span class="flex items-center gap-3"><i data-lucide="file-input" class="w-4 h-4 shrink-0"></i><span>1. Input Data Rapor</span></span>
-            <span id="badge-input" class="text-[10px] px-1.5 py-0.5 rounded-md bg-white/10">0</span>
-          </button>
-          <button data-tab="analisis" onclick="navigateTo('analisis')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition text-left">
-            <span class="flex items-center gap-3"><i data-lucide="bar-chart-3" class="w-4 h-4 shrink-0"></i><span>2. Analisis Rapor</span></span>
-            <span id="badge-analisis" class="text-[10px] px-1.5 py-0.5 rounded-md bg-white/10">0</span>
-          </button>
-          <button data-tab="akar" onclick="navigateTo('akar')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition text-left">
-            <span class="flex items-center gap-3"><i data-lucide="git-fork" class="w-4 h-4 shrink-0"></i><span>3. Akar Masalah</span></span>
-            <span id="badge-akar" class="text-[10px] px-1.5 py-0.5 rounded-md bg-white/10">0</span>
-          </button>
-          <button data-tab="prioritas" onclick="navigateTo('prioritas')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition text-left">
-            <span class="flex items-center gap-3"><i data-lucide="list-ordered" class="w-4 h-4 shrink-0"></i><span>4. Penentuan Prioritas</span></span>
-            <span id="badge-prioritas" class="text-[10px] px-1.5 py-0.5 rounded-md bg-white/10">0</span>
-          </button>
-          <button data-tab="rekomendasi" onclick="navigateTo('rekomendasi')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition text-left">
-            <span class="flex items-center gap-3"><i data-lucide="lightbulb" class="w-4 h-4 shrink-0"></i><span>5. Rekomendasi Program</span></span>
-            <span id="badge-rekomendasi" class="text-[10px] px-1.5 py-0.5 rounded-md bg-white/10">0</span>
-          </button>
-          <button data-tab="rkjm" onclick="navigateTo('rkjm')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition text-left">
-            <span class="flex items-center gap-3"><i data-lucide="calendar-range" class="w-4 h-4 shrink-0"></i><span>6. Penyusunan RKJM</span></span>
-            <span id="badge-rkjm" class="text-[10px] px-1.5 py-0.5 rounded-md bg-white/10">0</span>
-          </button>
-          <button data-tab="rkt" onclick="navigateTo('rkt')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition text-left">
-            <span class="flex items-center gap-3"><i data-lucide="calendar-check-2" class="w-4 h-4 shrink-0"></i><span>7. Penyusunan RKT</span></span>
-            <span id="badge-rkt" class="text-[10px] px-1.5 py-0.5 rounded-md bg-white/10">0</span>
-          </button>
-          <button data-tab="arkas" onclick="navigateTo('arkas')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition text-left">
-            <span class="flex items-center gap-3"><i data-lucide="wallet" class="w-4 h-4 shrink-0"></i><span>8. Rancangan ARKAS</span></span>
-            <span id="badge-arkas" class="text-[10px] px-1.5 py-0.5 rounded-md bg-white/10">0</span>
-          </button>
-
-          <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300/80">Integrasi, Monev &amp; Ekspor</div>
-          <button data-tab="keterhubungan" onclick="navigateTo('keterhubungan')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition text-left">
-            <i data-lucide="network" class="w-4 h-4 shrink-0"></i>
-            <span>9. Hubungan Antardokumen</span>
-          </button>
-          <button data-tab="monev" onclick="navigateTo('monev')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition text-left">
-            <i data-lucide="activity" class="w-4 h-4 shrink-0"></i>
-            <span>10. Monitoring &amp; Evaluasi</span>
-          </button>
-          <button data-tab="ekspor" onclick="navigateTo('ekspor')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition text-left">
-            <i data-lucide="file-down" class="w-4 h-4 shrink-0"></i>
-            <span>11. Laporan &amp; Ekspor</span>
-          </button>
-          <button data-tab="manajemen" onclick="navigateTo('manajemen')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition text-left">
-            <i data-lucide="database" class="w-4 h-4 shrink-0"></i>
-            <span>12. Manajemen Data</span>
-          </button>
-        </nav>
       </div>
+
+      <!-- Active Planning Year Selector -->
+      <div class="px-4 py-3 border-b border-emerald-800/60 bg-emerald-950/40">
+        <label class="block text-[10px] uppercase tracking-wider font-bold text-emerald-300 mb-1">Tahun Perencanaan Aktif</label>
+        <div class="flex items-center gap-1.5">
+          <select id="activeYearSelect" onchange="switchPlanningYear(this.value)" class="w-full bg-emerald-900/90 border border-emerald-700 text-white text-xs font-semibold rounded-lg px-2.5 py-2 focus:outline-none focus:border-amber-400">
+          </select>
+          <button onclick="openNewYearModal()" title="Tambah / Duplikasi Tahun Perencanaan" class="p-2 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-amber-300 border border-emerald-700 transition shrink-0">
+            <i data-lucide="folder-plus" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav id="sidebarNav" class="flex-1 overflow-y-auto custom-scrollbar px-3 py-3 space-y-1 text-xs">
+        <!-- Rendered dynamically -->
+      </nav>
 
       <!-- Sidebar Footer Actions -->
-      <div class="p-3 border-t border-white/10 bg-black/20 space-y-2">
-        <button onclick="openUserGuideModal()" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-white transition">
-          <i data-lucide="book-open-check" class="w-4 h-4 text-amber-300"></i>
-          <span>Panduan Pengguna Baru</span>
+      <div class="p-3 border-t border-emerald-800/70 bg-emerald-950/50 space-y-2">
+        <button onclick="toggleAssistantDrawer(true)" class="w-full py-2.5 px-3 rounded-xl gold-gradient text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:brightness-105 transition">
+          <i data-lucide="bot" class="w-4 h-4"></i>
+          <span>ASISTEN RAPOR SMART AI</span>
         </button>
-        <div class="flex items-center justify-between text-[10px] text-emerald-300/80 px-1">
-          <span id="autoSaveIndicator">Tersimpan otomatis di sesi</span>
-          <span>v2.5 PBD</span>
+        <div class="grid grid-cols-2 gap-1.5">
+          <button onclick="openGuideModal()" class="py-1.5 px-2 rounded-lg bg-emerald-900/80 hover:bg-emerald-800 text-emerald-100 text-[11px] font-medium flex items-center justify-center gap-1 border border-emerald-800">
+            <i data-lucide="help-circle" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Panduan</span>
+          </button>
+          <button id="demoToggleBtn" onclick="toggleDemoMode()" class="py-1.5 px-2 rounded-lg bg-emerald-900/80 hover:bg-emerald-800 text-emerald-100 text-[11px] font-medium flex items-center justify-center gap-1 border border-emerald-800">
+            <i data-lucide="play-circle" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Mode Demo</span>
+          </button>
         </div>
       </div>
     </aside>
 
     <!-- MAIN CONTENT WORKSPACE -->
-    <main class="flex-1 flex flex-col min-w-0">
+    <div class="flex-1 flex flex-col min-w-0">
 
-      <!-- DESKTOP TOP UTILITY BAR -->
-      <div class="no-print bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-30">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="w-2.5 h-8 rounded-full bg-emerald-800 shrink-0 hidden sm:block"></div>
-          <div class="min-w-0">
-            <div class="flex items-center gap-2 flex-wrap">
-              <h2 id="headerSchoolName" class="font-bold text-slate-900 text-sm sm:text-base truncate">Satuan Pendidikan Belum Diisi</h2>
-              <span id="headerNpsnBadge" class="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200">NPSN: -</span>
-              <span id="headerJenjangBadge" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">Jenjang: -</span>
+      <!-- TOP HEADER BAR -->
+      <header class="no-print sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <button onclick="toggleMobileSidebar(true)" class="lg:hidden p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100">
+              <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h1 id="headerSchoolName" class="font-heading font-bold text-sm sm:text-base text-slate-900 truncate">Satuan Pendidikan Belum Diisi</h1>
+                <span id="headerNpsnBadge" class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[11px] font-semibold">NPSN: -</span>
+                <span id="headerJenjangBadge" class="hidden sm:inline-block px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-[11px] font-semibold">Jenjang: -</span>
+              </div>
+              <p id="headerSubtitle" class="text-[11px] text-slate-500 truncate mt-0.5">Tahun Rapor: - • Tahun Anggaran/Perencanaan: -</p>
             </div>
-            <p id="headerSubtitle" class="text-xs text-slate-500 truncate">Silakan lengkapi identitas sekolah &amp; data Rapor Pendidikan untuk memulai perencanaan.</p>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <span id="autoSaveBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-semibold border border-emerald-200">
+              <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+              <span>Tersimpan Otomatis</span>
+            </span>
+            <button onclick="setActiveTab('ekspor')" title="Unduh Dokumen PDF, Word, dan Excel" class="px-3 py-2 rounded-xl gold-gradient text-slate-950 hover:brightness-105 text-xs font-bold flex items-center gap-1.5 shadow-xs">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Unduh Laporan</span>
+            </button>
+            <button onclick="exportProjectJson()" title="Ekspor Cadangan Data Proyek (.JSON)" class="p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center gap-1.5">
+              <i data-lucide="download-cloud" class="w-4 h-4 text-emerald-700"></i>
+              <span class="hidden md:inline">Cadangkan</span>
+            </button>
+            <label title="Impor Cadangan Data Proyek (.JSON)" class="cursor-pointer p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center gap-1.5">
+              <i data-lucide="upload-cloud" class="w-4 h-4 text-amber-600"></i>
+              <span class="hidden md:inline">Pulihkan</span>
+              <input type="file" accept=".json" onchange="importProjectJson(event)" class="hidden" />
+            </label>
           </div>
         </div>
-
-        <!-- Global Quick Actions -->
-        <div class="flex items-center gap-2 flex-wrap">
-          <button id="btnToggleDemo" onclick="toggleDemoSimulation()" class="px-3 py-2 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-semibold flex items-center gap-1.5 transition">
-            <i data-lucide="play-circle" class="w-4 h-4 text-amber-600"></i>
-            <span id="btnToggleDemoLabel">Muat Data Demo</span>
-          </button>
-
-          <button onclick="exportFullWorkspaceJSON()" class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition" title="Simpan cadangan file proyek (.json)">
-            <i data-lucide="save" class="w-4 h-4 text-emerald-700"></i>
-            <span class="hidden sm:inline">Simpan Proyek</span>
-          </button>
-
-          <button onclick="toggleAssistantDrawer()" class="px-3.5 py-2 rounded-xl gold-gradient hover:opacity-95 text-emerald-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm transition">
-            <i data-lucide="sparkles" class="w-4 h-4"></i>
-            <span>ASISTEN RAPOR SMART AI</span>
-          </button>
-        </div>
-      </div>
+      </header>
 
       <!-- DYNAMIC MODULE CONTAINER -->
-      <div id="moduleContainer" class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
-        <!-- Rendered dynamically by renderActiveModule() -->
-      </div>
+      <main id="mainModuleContainer" class="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
+        <!-- Rendered dynamically by activeTab -->
+      </main>
 
       <!-- FOOTER -->
-      <footer class="no-print border-t border-slate-200 bg-white px-6 py-4 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <div>
-          <span class="font-bold text-emerald-900">RAPOR SMART AI</span> — <em>"Dari Data Menjadi Aksi, Dari Rapor Menjadi Perubahan."</em>
-        </div>
-        <div class="text-center sm:text-right">
-          Alat bantu perencanaan berbasis data (PBD) untuk Kepala Sekolah, Guru, Bendahara BOS, Operator &amp; TPS. Seluruh hasil AI wajib diverifikasi tim sekolah.
+      <footer class="no-print border-t border-slate-200 bg-white px-4 sm:px-6 py-4 text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div>
+            <strong class="text-emerald-900">RAPOR SMART AI</strong> — Platform Perencanaan Berbasis Data (PBD) Terintegrasi untuk Kepala Sekolah, Guru, Bendahara BOS, &amp; Tim Pengembang Sekolah.
+          </div>
+          <div class="text-[11px] text-slate-400">
+            Catatan: Dokumen RKJM, RKT, dan Rancangan ARKAS merupakan kertas kerja perencanaan internal sekolah sebelum diinput ke sistem resmi.
+          </div>
         </div>
       </footer>
-    </main>
+    </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- SLIDE-OVER CHATBOT: ASISTEN RAPOR SMART AI                            -->
-  <!-- ===================================================================== -->
-  <div id="aiAssistantBackdrop" onclick="toggleAssistantDrawer()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden"></div>
-  <aside id="aiAssistantDrawer" class="fixed top-0 right-0 z-50 h-screen w-full sm:w-[440px] bg-white shadow-2xl border-l border-slate-200 flex flex-col translate-x-full transition-transform duration-300">
-    <!-- Assistant Header -->
-    <div class="emerald-gradient text-white p-4 flex items-center justify-between shrink-0">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center">
-          <i data-lucide="bot" class="w-5 h-5 text-amber-300"></i>
+  <!-- FLOATING AI ASSISTANT DRAWER -->
+  <div id="assistantOverlay" onclick="toggleAssistantDrawer(false)" class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-50 hidden"></div>
+  <aside id="assistantDrawer" class="no-print fixed top-0 right-0 z-50 h-screen w-full sm:w-[430px] bg-white shadow-2xl border-l border-slate-200 flex flex-col transition-transform duration-300 translate-x-full">
+    <div class="emerald-gradient text-white p-4 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl gold-gradient text-slate-950 flex items-center justify-center font-bold shadow">
+          <i data-lucide="bot" class="w-5 h-5"></i>
         </div>
         <div>
-          <h3 class="font-bold text-sm tracking-tight flex items-center gap-1.5">
-            ASISTEN RAPOR SMART AI
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-400 text-emerald-950 font-extrabold">AKTIF</span>
-          </h3>
-          <p class="text-[11px] text-emerald-200">Konsultan Perencanaan Sekolah &amp; ARKAS Berbasis Data</p>
+          <h3 class="font-heading font-bold text-sm">ASISTEN RAPOR SMART AI</h3>
+          <p class="text-[11px] text-emerald-100">Berbasis data aktual sekolah Anda • Tanpa mengarang data</p>
         </div>
       </div>
-      <button onclick="toggleAssistantDrawer()" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition">
-        <i data-lucide="x" class="w-4 h-4"></i>
+      <button onclick="toggleAssistantDrawer(false)" class="p-1.5 rounded-lg hover:bg-white/15">
+        <i data-lucide="x" class="w-5 h-5"></i>
       </button>
-    </div>
-
-    <!-- Grounding Notice -->
-    <div class="bg-amber-50 border-b border-amber-200 px-4 py-2 text-[11px] text-amber-900 flex items-start gap-2 shrink-0">
-      <i data-lucide="shield-check" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
-      <span>Jawaban didasarkan secara ketat pada data sekolah yang telah Anda input. Asisten tidak mengarang angka dan akan meminta konfirmasi jika data belum lengkap.</span>
-    </div>
-
-    <!-- Chat History Messages -->
-    <div id="aiChatMessages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
-      <!-- Initial greeting injected by JS -->
     </div>
 
     <!-- Quick Prompt Chips -->
-    <div class="px-3 py-2 bg-white border-t border-slate-100 flex gap-1.5 overflow-x-auto shrink-0">
-      <button onclick="sendQuickAiPrompt('Jelaskan kondisi Rapor Pendidikan sekolah kami saat ini berdasarkan data yang ada.')" class="shrink-0 text-[11px] px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-semibold border border-emerald-200 transition">
-        Ringkas Rapor
-      </button>
-      <button onclick="sendQuickAiPrompt('Bantu identifikasi akar masalah utama dan pertanyaan refleksi untuk diskusi guru.')" class="shrink-0 text-[11px] px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-semibold border border-emerald-200 transition">
-        Akar Masalah
-      </button>
-      <button onclick="sendQuickAiPrompt('Periksa keterhubungan antara Rapor Pendidikan, RKJM, RKT, dan Rancangan ARKAS kami.')" class="shrink-0 text-[11px] px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-semibold border border-emerald-200 transition">
-        Cek Benang Merah
-      </button>
-      <button onclick="sendQuickAiPrompt('Evaluasi serapan anggaran dan progres pelaksanaan program di Monev.')" class="shrink-0 text-[11px] px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-semibold border border-emerald-200 transition">
-        Evaluasi Monev
-      </button>
+    <div class="p-3 bg-slate-50 border-b border-slate-200 flex gap-1.5 overflow-x-auto custom-scrollbar shrink-0">
+      <button onclick="askAssistantQuick('Ringkas hasil Rapor Pendidikan & nilai capaian sekolah saya saat ini')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-white border border-emerald-200 text-emerald-900 text-[11px] font-semibold hover:bg-emerald-50">Ringkas Nilai Capaian</button>
+      <button onclick="askAssistantQuick('Apa indikator prioritas utama dan dugaan akar masalahnya?')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-white border border-emerald-200 text-emerald-900 text-[11px] font-semibold hover:bg-emerald-50">Cek Prioritas &amp; Akar Masalah</button>
+      <button onclick="askAssistantQuick('Periksa keterhubungan RKJM, RKT, dan anggaran ARKAS saya')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-white border border-emerald-200 text-emerald-900 text-[11px] font-semibold hover:bg-emerald-50">Audit Benang Merah</button>
+      <button onclick="askAssistantQuick('Hitung rekap rancangan anggaran ARKAS per komponen')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-white border border-emerald-200 text-emerald-900 text-[11px] font-semibold hover:bg-emerald-50">Rekap Anggaran ARKAS</button>
     </div>
 
-    <!-- Chat Input Box -->
-    <form onsubmit="handleAiChatSubmit(event)" class="p-3 bg-white border-t border-slate-200 flex items-end gap-2 shrink-0">
-      <textarea id="aiChatInput" rows="2" placeholder="Tanyakan analisis rapor, RKJM, RKT, atau rancangan anggaran..." class="flex-1 resize-none rounded-xl border border-slate-300 px-3 py-2 text-xs focus:outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/15" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); handleAiChatSubmit(event);}"></textarea>
-      <button type="submit" id="aiChatSendBtn" class="p-3 rounded-xl emerald-gradient text-white hover:opacity-95 transition shrink-0 shadow-sm" title="Kirim Pertanyaan">
+    <!-- Chat Messages -->
+    <div id="assistantMessages" class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3 bg-slate-50/50 text-xs">
+    </div>
+
+    <!-- Chat Input -->
+    <form onsubmit="handleAssistantSubmit(event)" class="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
+      <input id="assistantInput" type="text" placeholder="Tanyakan analisis rapor, RKJM, RKT, atau anggaran..." class="flex-1 rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:border-emerald-700 focus:outline-none" />
+      <button type="submit" class="p-2.5 rounded-xl emerald-gradient text-white hover:opacity-95 transition shrink-0">
         <i data-lucide="send" class="w-4 h-4"></i>
       </button>
     </form>
   </aside>
 
-  <!-- ===================================================================== -->
-  <!-- UNIVERSAL MODAL CONTAINER (NO BROWSER ALERT/CONFIRM USED)             -->
-  <!-- ===================================================================== -->
-  <div id="universalModalBackdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 overflow-y-auto">
-    <div id="universalModalBox" class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl overflow-hidden my-auto transform transition-all">
-      <!-- Populated dynamically -->
+  <!-- CUSTOM MODAL CONTAINER -->
+  <div id="customModalBackdrop" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div id="customModalBox" class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl overflow-hidden my-auto">
+      <!-- Modal content injected here -->
     </div>
   </div>
 
   <!-- TOAST NOTIFICATION CONTAINER -->
-  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+  <div id="toastContainer" class="no-print fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
 
-  <!-- HIDDEN PRINT/EXPORT STAGING AREA -->
-  <div id="exportStagingArea" class="hidden"></div>
-
-  <!-- ===================================================================== -->
-  <!-- APPLICATION LOGIC & FIREBASE/GEMINI INTEGRATION                       -->
-  <!-- ===================================================================== -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    // Configure PDF.js worker
+  <!-- APPLICATION SCRIPT -->
+  <script>
+    // Configure PDF.js worker if available
     if (window.pdfjsLib) {
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     }
 
-    // Optional Cloud Persistence Setup (activated ONLY if environment provides __firebase_config)
-    window.cloudSync = {
-      enabled: false,
-      db: null,
-      auth: null,
-      user: null,
-      appId: typeof __app_id !== 'undefined' ? __app_id : 'rapor-smart-ai',
-      async init() {
-        try {
-          if (typeof __firebase_config === 'undefined' || !__firebase_config) {
-            return;
-          }
-          const firebaseConfig = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-          const app = initializeApp(firebaseConfig);
-          this.auth = getAuth(app);
-          this.db = getFirestore(app);
-
-          // Rule 3: Auth before queries
-          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-            await signInWithCustomToken(this.auth, __initial_auth_token);
-          } else {
-            await signInAnonymously(this.auth);
-          }
-
-          onAuthStateChanged(this.auth, async (user) => {
-            if (user) {
-              this.user = user;
-              this.enabled = true;
-              window.updateCloudBadge('connected');
-              await this.loadFromCloud();
-            }
-          });
-        } catch (err) {
-          console.warn('Cloud sync tidak tersedia, menggunakan sesi lokal & ekspor file:', err);
-          window.updateCloudBadge('local');
-        }
-      },
-      async saveToCloud(stateObj) {
-        if (!this.enabled || !this.user || !this.db) return;
-        try {
-          window.updateCloudBadge('syncing');
-          // Rule 1: Strict private user path
-          const docRef = doc(this.db, 'artifacts', this.appId, 'users', this.user.uid, 'rapor_smart_state', 'workspace');
-          await setDoc(docRef, {
-            payload: JSON.stringify(stateObj),
-            updatedAt: new Date().toISOString()
-          });
-          window.updateCloudBadge('connected');
-        } catch (err) {
-          console.warn('Gagal menyinkronkan ke cloud:', err);
-          window.updateCloudBadge('error');
-        }
-      },
-      async loadFromCloud() {
-        if (!this.enabled || !this.user || !this.db) return;
-        try {
-          const docRef = doc(this.db, 'artifacts', this.appId, 'users', this.user.uid, 'rapor_smart_state', 'workspace');
-          const snap = await getDoc(docRef);
-          if (snap.exists() && snap.data().payload) {
-            const parsed = JSON.parse(snap.data().payload);
-            if (parsed && parsed.yearsData) {
-              window.appState = parsed;
-              window.renderAll();
-              window.showToast('Data perencanaan sekolah dipulihkan dari basis data.', 'success');
-            }
-          }
-        } catch (err) {
-          console.warn('Gagal memuat dari cloud:', err);
-        }
-      }
-    };
-
-    window.addEventListener('DOMContentLoaded', () => {
-      window.cloudSync.init();
-    });
-  </script>
-
-  <script>
     // =========================================================================
-    // 1. CONSTANTS, REFERENCE CATALOGS & INITIAL EMPTY STATE
+    // 1. MASTER REFERENCE CATALOGS (Standard PBD Indicators & ARKAS Components)
     // =========================================================================
-    const DIMENSI_RAPOR = [
-      "Dimensi A: Mutu dan Relevansi Hasil Belajar Peserta Didik",
-      "Dimensi C: Kompetensi dan Kinerja GTK",
-      "Dimensi D: Mutu dan Relevansi Pembelajaran",
-      "Dimensi E: Pengelolaan Satuan Pendidikan yang Partisipatif, Transparan, dan Akuntabel"
-    ];
-
     const KATALOG_INDIKATOR_STANDAR = [
-      { kode: "A.1", nama: "Kemampuan Literasi", dimensi: "Dimensi A: Mutu dan Relevansi Hasil Belajar Peserta Didik" },
-      { kode: "A.2", nama: "Kemampuan Numerasi", dimensi: "Dimensi A: Mutu dan Relevansi Hasil Belajar Peserta Didik" },
-      { kode: "A.3", nama: "Karakter", dimensi: "Dimensi A: Mutu dan Relevansi Hasil Belajar Peserta Didik" },
-      { kode: "C.1", nama: "Proporsi GTK Bersertifikat", dimensi: "Dimensi C: Kompetensi dan Kinerja GTK" },
-      { kode: "C.3", nama: "Pengalaman Pelatihan GTK", dimensi: "Dimensi C: Kompetensi dan Kinerja GTK" },
-      { kode: "D.1", nama: "Kualitas Pembelajaran", dimensi: "Dimensi D: Mutu dan Relevansi Pembelajaran" },
-      { kode: "D.2", nama: "Refleksi dan Perbaikan Pembelajaran oleh Guru", dimensi: "Dimensi D: Mutu dan Relevansi Pembelajaran" },
-      { kode: "D.3", nama: "Kepemimpinan Instruksional", dimensi: "Dimensi D: Mutu dan Relevansi Pembelajaran" },
-      { kode: "D.4", nama: "Iklim Keamanan Satuan Pendidikan", dimensi: "Dimensi D: Mutu dan Relevansi Pembelajaran" },
-      { kode: "D.6", nama: "Iklim Kesetaraan Gender", dimensi: "Dimensi D: Mutu dan Relevansi Pembelajaran" },
-      { kode: "D.8", nama: "Iklim Kebinekaan", dimensi: "Dimensi D: Mutu dan Relevansi Pembelajaran" },
-      { kode: "D.10", nama: "Iklim Inklusivitas", dimensi: "Dimensi D: Mutu dan Relevansi Pembelajaran" },
-      { kode: "E.1", nama: "Partisipasi Warga Satuan Pendidikan", dimensi: "Dimensi E: Pengelolaan Satuan Pendidikan yang Partisipatif, Transparan, dan Akuntabel" },
-      { kode: "E.2", nama: "Proporsi Pemanfaatan Sumber Daya Sekolah untuk Peningkatan Mutu", dimensi: "Dimensi E: Pengelolaan Satuan Pendidikan yang Partisipatif, Transparan, dan Akuntabel" },
-      { kode: "E.3", nama: "Pemanfaatan TIK untuk Pengelolaan Anggaran", dimensi: "Dimensi E: Pengelolaan Satuan Pendidikan yang Partisipatif, Transparan, dan Akuntabel" }
+      { kode: "A.1", nama: "Kemampuan Literasi", dimensi: "D.1 Mutu dan Relevansi Hasil Belajar Peserta Didik" },
+      { kode: "A.2", nama: "Kemampuan Numerasi", dimensi: "D.1 Mutu dan Relevansi Hasil Belajar Peserta Didik" },
+      { kode: "A.3", nama: "Karakter", dimensi: "D.1 Mutu dan Relevansi Hasil Belajar Peserta Didik" },
+      { kode: "D.1", nama: "Kualitas Pembelajaran", dimensi: "D.2 Mutu dan Relevansi Pembelajaran" },
+      { kode: "D.2", nama: "Refleksi dan Perbaikan Pembelajaran oleh Guru", dimensi: "D.2 Mutu dan Relevansi Pembelajaran" },
+      { kode: "D.3", nama: "Kepemimpinan Instruksional", dimensi: "D.2 Mutu dan Relevansi Pembelajaran" },
+      { kode: "D.4", nama: "Iklim Keamanan Satuan Pendidikan", dimensi: "D.3 Lingkungan Belajar yang Aman, Nyaman, dan Inklusif" },
+      { kode: "D.6", nama: "Iklim Kesetaraan Gender", dimensi: "D.3 Lingkungan Belajar yang Aman, Nyaman, dan Inklusif" },
+      { kode: "D.8", nama: "Iklim Kebinekaan", dimensi: "D.3 Lingkungan Belajar yang Aman, Nyaman, dan Inklusif" },
+      { kode: "D.10", nama: "Iklim Inklusivitas", dimensi: "D.3 Lingkungan Belajar yang Aman, Nyaman, dan Inklusif" },
+      { kode: "E.1", nama: "Partisipasi Warga Satuan Pendidikan", dimensi: "E. Pengelolaan Satuan Pendidikan yang Partisipatif, Transparan, dan Akuntabel" },
+      { kode: "E.2", nama: "Proporsi Pemanfaatan Sumber Daya Sekolah untuk Peningkatan Mutu", dimensi: "E. Pengelolaan Satuan Pendidikan yang Partisipatif, Transparan, dan Akuntabel" },
+      { kode: "E.3", nama: "Pemanfaatan TIK untuk Pengelolaan Anggaran", dimensi: "E. Pengelolaan Satuan Pendidikan yang Partisipatif, Transparan, dan Akuntabel" },
+      { kode: "C.1", nama: "Proporsi GTK Bersertifikat", dimensi: "C. Kompetensi dan Kinerja PTK" },
+      { kode: "C.2", nama: "Proporsi GTK Penggerak", dimensi: "C. Kompetensi dan Kinerja PTK" }
     ];
 
-    // Standar Komponen Penggunaan Dana BOSP sesuai Juknis Kemendikbudristek/Kemendikdasmen
     const KOMPONEN_BOSP_STANDAR = [
-      "Penerimaan Peserta Didik Baru (PPDB)",
-      "Pengembangan Perpustakaan dan/atau Layanan Pojok Baca",
-      "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
-      "Pelaksanaan Kegiatan Asesmen dan Evaluasi Pembelajaran",
-      "Pelaksanaan Administrasi Kegiatan Satuan Pendidikan",
-      "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
-      "Pembiayaan Langganan Daya dan Jasa",
-      "Pemeliharaan Sarana dan Prasarana Satuan Pendidikan",
-      "Penyediaan Alat Multimedia Pembelajaran",
-      "Pembayaran Honor",
-      "Komponen Lainnya (Perlu Verifikasi Juknis BOSP & SSH Daerah)"
+      "01. Pengembangan Perpustakaan dan/atau Layanan Pojok Baca",
+      "02. Penerimaan Peserta Didik Baru (PPDB)",
+      "03. Pelaksanaan Kegiatan Pembelajaran dan Bermain",
+      "04. Pelaksanaan Kegiatan Evaluasi/Asesmen Pembelajaran",
+      "05. Pelaksanaan Administrasi Kegiatan Satuan Pendidikan",
+      "06. Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+      "07. Pembiayaan Langganan Daya dan Jasa",
+      "08. Pemeliharaan Sarana dan Prasarana Satuan Pendidikan",
+      "09. Penyediaan Alat Multimedia Pembelajaran",
+      "10. Pembayaran Honor (Sesuai Ketentuan BOSP Berlaku — Perlu Verifikasi Juknis)"
     ];
 
-    const BULAN_LIST = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+    const SUMBER_DANA_STANDAR = [
+      "BOSP Reguler",
+      "BOSP Kinerja",
+      "BOSDA / APBD",
+      "Swadaya / Komite Sekolah",
+      "Sumber Sah Lainnya (Perlu Verifikasi)"
+    ];
 
-    function createEmptyYearData(year = "2026") {
-      const yNum = parseInt(year, 10) || 2026;
+    const NAV_ITEMS = [
+      { id: "dashboard", label: "Dashboard Utama", icon: "layout-dashboard", step: "0" },
+      { id: "input", label: "1. Input Rapor & Nilai Capaian", icon: "file-spreadsheet", step: "1" },
+      { id: "analisis", label: "2. Analisis Capaian", icon: "bar-chart-3", step: "2" },
+      { id: "akar", label: "3. Akar Masalah (5-Why)", icon: "git-branch", step: "3" },
+      { id: "prioritas", label: "4. Penentuan Prioritas", icon: "list-ordered", step: "4" },
+      { id: "rekomendasi", label: "5. Rekomendasi Program", icon: "lightbulb", step: "5" },
+      { id: "rkjm", label: "6. Penyusunan RKJM", icon: "compass", step: "6" },
+      { id: "rkt", label: "7. Penyusunan RKT", icon: "calendar-days", step: "7" },
+      { id: "arkas", label: "8. Rancangan ARKAS", icon: "wallet", step: "8" },
+      { id: "koneksi", label: "Benang Merah Dokumen", icon: "network", step: "9" },
+      { id: "monev", label: "Monitoring & Evaluasi", icon: "activity", step: "10" },
+      { id: "ekspor", label: "Laporan & Unduh", icon: "printer", step: "11" }
+    ];
+
+    // =========================================================================
+    // 2. IN-MEMORY STATE ARCHITECTURE (Multi-Year + Separate Demo State)
+    // =========================================================================
+    function createEmptyYearData(yearLabel = "2026") {
+      const yNum = parseInt(yearLabel, 10) || 2026;
       return {
+        yearLabel: String(yNum),
         school: {
           nama: "",
           npsn: "",
@@ -532,1112 +361,1332 @@
           kecamatan: "",
           kabupaten: "",
           provinsi: "",
-          jenjang: "",
-          tahunRapor: String(yNum - 1),
+          jenjang: "SD",
+          tahunRapor: String(yNum),
           tahunPerencanaan: String(yNum),
-          tahunAjaran: `${yNum}/${yNum + 1}`,
-          periodeRkjmMulai: String(yNum),
-          periodeRkjmAkhir: String(yNum + 3)
+          periodeRkjmAwal: String(yNum),
+          periodeRkjmAkhir: String(yNum + 3),
+          kepalaSekolah: "",
+          nipKepalaSekolah: "",
+          bendaharaBos: ""
         },
         indicators: [],
-        rootCauses: {},
-        priorities: {},
+        rootCauses: [],
+        priorities: [],
         recommendations: [],
         rkjm: [],
         rkt: [],
         arkas: [],
-        monev: {},
+        monev: [],
         history: [
           {
-            id: uid(),
-            timestamp: new Date().toLocaleString('id-ID'),
+            waktu: new Date().toLocaleString("id-ID"),
             modul: "Sistem",
             aksi: "Inisialisasi Tahun Perencanaan",
-            keterangan: `Ruang kerja tahun anggaran ${yNum} siap diisi data sekolah.`
+            detail: `Membuat ruang kerja perencanaan tahun ${yNum}.`
           }
         ]
       };
     }
 
-    // Main Application State (Clean by default - never presents demo data as real school data)
-    window.appState = {
+    function createDemoYearData() {
+      const demo = createEmptyYearData("2026");
+      demo.school = {
+        nama: "SD NEGERI HARAPAN BANGSA 01 (DATA DEMO)",
+        npsn: "20299901",
+        alamat: "Jl. Pendidikan Merdeka No. 45",
+        kecamatan: "Sukamaju",
+        kabupaten: "Kab. Bandung",
+        provinsi: "Jawa Barat",
+        jenjang: "SD",
+        tahunRapor: "2026",
+        tahunPerencanaan: "2026",
+        periodeRkjmAwal: "2026",
+        periodeRkjmAkhir: "2029",
+        kepalaSekolah: "Dra. Siti Aminah, M.Pd.",
+        nipKepalaSekolah: "19740512 199803 2 004",
+        bendaharaBos: "Budi Santoso, S.Pd."
+      };
+
+      const ind1 = {
+        id: "demo-ind-1",
+        kode: "A.2",
+        nama: "Kemampuan Numerasi",
+        dimensi: "D.1 Mutu dan Relevansi Hasil Belajar Peserta Didik",
+        nilai: 52.4,
+        kategori: "Kurang",
+        perubahan: -4.2,
+        peringkat: "Peringkat Bawah (Kuantil 2 Kab/Kota)",
+        rekomendasiRapor: "Peningkatan kompetensi GTK dalam pembelajaran numerasi kontekstual dan pemanfaatan platform belajar.",
+        terverifikasi: true
+      };
+      const ind2 = {
+        id: "demo-ind-2",
+        kode: "D.1",
+        nama: "Kualitas Pembelajaran",
+        dimensi: "D.2 Mutu dan Relevansi Pembelajaran",
+        nilai: 58.1,
+        kategori: "Sedang",
+        perubahan: -1.8,
+        peringkat: "Peringkat Menengah Bawah (Kuantil 3)",
+        rekomendasiRapor: "Aktivasi komunitas belajar sekolah untuk refleksi metode pembelajaran interaktif dan manajemen kelas.",
+        terverifikasi: true
+      };
+      const ind3 = {
+        id: "demo-ind-3",
+        kode: "A.1",
+        nama: "Kemampuan Literasi",
+        dimensi: "D.1 Mutu dan Relevansi Hasil Belajar Peserta Didik",
+        nilai: 66.8,
+        kategori: "Sedang",
+        perubahan: 2.5,
+        peringkat: "Peringkat Menengah Atas (Kuantil 4)",
+        rekomendasiRapor: "Penguatan pojok baca kelas dan penyediaan buku bacaan nonteks berjenjang.",
+        terverifikasi: true
+      };
+      const ind4 = {
+        id: "demo-ind-4",
+        kode: "D.4",
+        nama: "Iklim Keamanan Satuan Pendidikan",
+        dimensi: "D.3 Lingkungan Belajar yang Aman, Nyaman, dan Inklusif",
+        nilai: 78.5,
+        kategori: "Baik",
+        perubahan: 4.1,
+        peringkat: "Peringkat Atas (Kuantil 5)",
+        rekomendasiRapor: "Pertahankan program Tim Pencegahan dan Penanganan Kekerasan (TPPK) sekolah.",
+        terverifikasi: true
+      };
+
+      demo.indicators = [ind1, ind2, ind3, ind4];
+
+      demo.rootCauses = [
+        {
+          id: "demo-rc-1",
+          indicatorId: ind1.id,
+          masalahUtama: "Capaian Kemampuan Numerasi berada pada kategori Kurang (52,40) dan mengalami penurunan 4,20 poin dibanding tahun sebelumnya.",
+          dugaanPenyebab: [
+            { id: "c1", teks: "Pembelajaran matematika masih berfokus pada hafalan rumus prosedural tanpa konteks pemecahan masalah sehari-hari.", terkonfirmasi: true },
+            { id: "c2", teks: "Keterbatasan alat peraga manipulatif numerasi di kelas rendah dan kelas tinggi.", terkonfirmasi: true },
+            { id: "c3", teks: "Belum optimalnya analisis diagnostik awal kemampuan numerasi siswa di awal semester.", terkonfirmasi: false }
+          ],
+          whyChain: [
+            "Why 1: Skor kompetensi domain bilangan dan geometri pada ANBK menurun.",
+            "Why 2: Siswa kesulitan memahami soal cerita numerasi berbasis konteks kehidupan nyata.",
+            "Why 3: Guru jarang menyusun soal asesmen formatif berbasis literasi-numerasi.",
+            "Why 4: KKG internal/Komunitas Belajar belum membedah modul ajar numerasi secara rutin.",
+            "Why 5: Belum ada jadwal supervisi klinis dan pendampingan perangkat ajar numerasi yang terprogram."
+          ],
+          buktiPendukung: "Nilai Rapor Pendidikan A.2 = 52,40 (turun -4,20); hasil asesmen diagnostik awal semester ganjil menunjukkan 48% siswa kelas IV-V kesulitan menyelesaikan soal penalaran dua langkah.",
+          pertanyaanRefleksi: [
+            "Bagaimana strategi pembelajaran numerasi yang selama ini kita terapkan di kelas?",
+            "Media konkret apa yang paling dibutuhkan siswa agar konsep bilangan dan geometri mudah dipahami?",
+            "Seberapa rutin kita mendiskusikan hasil kesalahan umum siswa dalam komunitas belajar?"
+          ],
+          dataTambahan: "Rekap nilai formatif matematika per fase, daftar inventaris alat peraga matematika, dan catatan supervisi kelas.",
+          dampakPesertaDidik: "Peserta didik mengalami kesulitan berpikir logis, menganalisis informasi kuantitatif, dan berisiko tertinggal pada jenjang pendidikan berikutnya.",
+          alternatifSolusi: "1) Workshop & pendampingan Kombel penyusunan modul ajar numerasi kontekstual; 2) Pengadaan alat peraga numerasi; 3) Klinik numerasi 15 menit sebelum pelajaran."
+        },
+        {
+          id: "demo-rc-2",
+          indicatorId: ind2.id,
+          masalahUtama: "Kualitas Pembelajaran berada pada kategori Sedang (58,10) dan turun 1,80 poin terutama pada sub-indikator metode pembelajaran interaktif.",
+          dugaanPenyebab: [
+            { id: "c4", teks: "Metode ceramah masih dominan sehingga partisipasi aktif siswa dalam diskusi kelompok rendah.", terkonfirmasi: true },
+            { id: "c5", teks: "Umpan balik konstruktif guru terhadap hasil kerja siswa belum terdokumentasi rutin.", terkonfirmasi: false }
+          ],
+          whyChain: [
+            "Why 1: Skor dukungan psikologis dan aktivasi kognitif pada survei lingkungan belajar menurun.",
+            "Why 2: Guru kesulitan mengelola pembelajaran berdiferensiasi pada kelas dengan kemampuan beragam.",
+            "Why 3: Berbagi praktik baik antar guru melalui observasi rekan sejawat belum berjalan konsisten."
+          ],
+          buktiPendukung: "Nilai Rapor Pendidikan D.1 = 58,10 (-1,80); catatan observasi kelas semester lalu.",
+          pertanyaanRefleksi: [
+            "Apakah siswa sudah diberi ruang bertanya dan berdiskusi secara aktif dalam setiap pertemuan?",
+            "Bagaimana mekanisme umpan balik yang membuat siswa tahu cara memperbaiki pekerjaannya?"
+          ],
+          dataTambahan: "Instrumen observasi pembelajaran teman sejawat dan survei umpan balik murid.",
+          dampakPesertaDidik: "Motivasi belajar siswa menurun dan pemahaman konsep menjadi dangkal.",
+          alternatifSolusi: "Pelaksanaan Lesson Study / observasi rekan sejawat bulanan melalui Komunitas Belajar sekolah."
+        }
+      ];
+
+      demo.priorities = [
+        {
+          id: "demo-prio-1",
+          indicatorId: ind1.id,
+          skorCapaian: 5,
+          skorTren: 5,
+          skorDampak: 5,
+          skorUrgensi: 5,
+          skorKemampuan: 4,
+          totalSkor: 24,
+          peringkatManual: 1,
+          alasanPrioritas: "Indikator standar pelayanan minimal (SPM) pendidikan dengan nilai terendah (52,40 — Kurang) dan mengalami penurunan tajam (-4,20), berdampak langsung pada daya nalar seluruh peserta didik."
+        },
+        {
+          id: "demo-prio-2",
+          indicatorId: ind2.id,
+          skorCapaian: 4,
+          skorTren: 4,
+          skorDampak: 5,
+          skorUrgensi: 4,
+          skorKemampuan: 5,
+          totalSkor: 22,
+          peringkatManual: 2,
+          alasanPrioritas: "Menjadi pengungkit utama perbaikan hasil belajar (Literasi & Numerasi) di kelas dan dapat segera dibenahi melalui penguatan Komunitas Belajar guru."
+        }
+      ];
+
+      demo.recommendations = [
+        {
+          id: "demo-rec-1",
+          indicatorId: ind1.id,
+          permasalahan: "Rendahnya capaian Kemampuan Numerasi (52,40) akibat pembelajaran belum kontekstual dan minimnya media konkret.",
+          tujuanPerbaikan: "Meningkatkan skor Kemampuan Numerasi minimal 8 poin menjadi kategori Sedang/Baik pada Rapor Pendidikan berikutnya.",
+          sasaranProgram: "Seluruh guru kelas I–VI (12 orang) dan 180 peserta didik.",
+          bentukKegiatan: "IHT Pembelajaran Numerasi Kontekstual, Penguatan Kombel Bulanan, dan Pengadaan Kit Alat Peraga Numerasi.",
+          langkahPelaksanaan: "1. Asesmen diagnostik awal numerasi; 2. IHT penyusunan modul ajar & soal numerasi; 3. Pengadaan alat peraga; 4. Implementasi & supervisi kelas; 5. Evaluasi sumatif.",
+          penanggungJawab: "Wakil Kepala Sekolah Bidang Kurikulum & Koordinator Kombel",
+          indikatorKeberhasilan: "100% guru menerapkan modul ajar numerasi kontekstual; skor rata-rata numerasi naik >= 8 poin.",
+          targetCapaian: "Nilai Rapor A.2 meningkat dari 52,40 menjadi >= 60,50.",
+          waktuPelaksanaan: "Juli – November 2026",
+          kebutuhanSumberDaya: "Narasumber praktisi numerasi, Kit Alat Peraga Matematika, ATK pelatihan.",
+          perkiraanAnggaran: 8500000,
+          disetujui: true
+        },
+        {
+          id: "demo-rec-2",
+          indicatorId: ind2.id,
+          permasalahan: "Kualitas pembelajaran (58,10) mengalami penurunan pada aspek pembelajaran interaktif dan berdiferensiasi.",
+          tujuanPerbaikan: "Meningkatkan skor Kualitas Pembelajaran menjadi >= 65,00 melalui budaya refleksi dan observasi rekan sejawat.",
+          sasaranProgram: "Seluruh pendidik satuan pendidikan (12 guru).",
+          bentukKegiatan: "Workshop Pembelajaran Interaktif Berdiferensiasi & Siklus Observasi Rekan Sejawat.",
+          langkahPelaksanaan: "1. Penyusunan jadwal observasi kelas; 2. Lokakarya praktik baik pembelajaran aktif; 3. Pelaksanaan observasi & umpan balik; 4. Refleksi akhir semester.",
+          penanggungJawab: "Kepala Sekolah & Tim Pengembang Kurikulum",
+          indikatorKeberhasilan: "Minimal 2 kali observasi rekan sejawat per guru dalam satu semester.",
+          targetCapaian: "Nilai Rapor D.1 meningkat dari 58,10 menjadi >= 65,00.",
+          waktuPelaksanaan: "Agustus – Desember 2026",
+          kebutuhanSumberDaya: "Panduan observasi kelas, ATK, konsumsi kegiatan Kombel.",
+          perkiraanAnggaran: 3200000,
+          disetujui: true
+        }
+      ];
+
+      demo.rkjm = [
+        {
+          id: "demo-rkjm-1",
+          indicatorId: ind1.id,
+          dimensi: "D.1 Mutu dan Relevansi Hasil Belajar Peserta Didik",
+          indikatorNama: "[A.2] Kemampuan Numerasi",
+          akarMasalah: "Pembelajaran numerasi belum kontekstual dan keterbatasan alat peraga manipulatif.",
+          tujuanStrategis: "Mewujudkan pembelajaran numerasi bermakna yang meningkatkan daya nalar peserta didik secara berkelanjutan.",
+          programPengembangan: "Program Penguatan Numerasi Kontekstual & Digital Sekolah",
+          targetTahun1: "Skor 60,50",
+          targetTahun2: "Skor 66,00",
+          targetTahun3: "Skor 72,00",
+          targetTahun4: "Skor 78,00",
+          indikatorKeberhasilan: "Kenaikan skor Rapor Pendidikan A.2 dan ketuntasan asesmen diagnostik numerasi.",
+          penanggungJawab: "Koordinator Kurikulum",
+          sumberPendanaan: "BOSP Reguler"
+        },
+        {
+          id: "demo-rkjm-2",
+          indicatorId: ind2.id,
+          dimensi: "D.2 Mutu dan Relevansi Pembelajaran",
+          indikatorNama: "[D.1] Kualitas Pembelajaran",
+          akarMasalah: "Dominasi metode ceramah dan belum optimalnya refleksi rekan sejawat di Kombel.",
+          tujuanStrategis: "Membangun ekosistem pembelajaran interaktif, berdiferensiasi, dan berpusat pada peserta didik.",
+          programPengembangan: "Program Transformasi Pembelajaran Aktif & Komunitas Belajar",
+          targetTahun1: "Skor 65,00",
+          targetTahun2: "Skor 70,00",
+          targetTahun3: "Skor 75,00",
+          targetTahun4: "Skor 80,00",
+          indikatorKeberhasilan: "Terlaksananya observasi rekan sejawat berkala dan kenaikan skor D.1.",
+          penanggungJawab: "Kepala Sekolah",
+          sumberPendanaan: "BOSP Reguler"
+        }
+      ];
+
+      demo.rkt = [
+        {
+          id: "demo-rkt-1",
+          rkjmId: "demo-rkjm-1",
+          indicatorId: ind1.id,
+          namaProgram: "Program Penguatan Numerasi Kontekstual & Digital Sekolah",
+          namaKegiatan: "IHT Penyusunan Modul Ajar & Asesmen Numerasi Kontekstual",
+          latarBelakang: "Capaian numerasi berada di angka 52,40 (Kurang) dan turun 4,20 poin.",
+          tujuan: "Meningkatkan kompetensi 12 guru dalam merancang pembelajaran numerasi berbasis pemecahan masalah.",
+          sasaran: "12 Guru Kelas dan Guru Mata Pelajaran",
+          indikatorKeberhasilan: "Tersusunnya 12 modul ajar dan bank soal numerasi tervalidasi.",
+          target: "100% guru menghasilkan minimal 2 modul ajar numerasi kontekstual.",
+          bulanPelaksanaan: [7, 8],
+          jadwalTeks: "Juli – Agustus 2026",
+          penanggungJawab: "Koordinator Kurikulum",
+          kebutuhanAnggaran: 3500000,
+          sumberDana: "BOSP Reguler",
+          buktiPelaksanaan: "Daftar hadir, notulen, foto kegiatan, dan dokumen modul ajar."
+        },
+        {
+          id: "demo-rkt-2",
+          rkjmId: "demo-rkjm-1",
+          indicatorId: ind1.id,
+          namaProgram: "Program Penguatan Numerasi Kontekstual & Digital Sekolah",
+          namaKegiatan: "Pengadaan Alat Peraga Manipulatif Numerasi Kelas",
+          latarBelakang: "Minimnya media pembelajaran konkret untuk konsep bilangan, pecahan, dan geometri.",
+          tujuan: "Menyediakan kit alat peraga numerasi yang layak di setiap rombongan belajar.",
+          sasaran: "6 Rombongan Belajar (Kelas I–VI)",
+          indikatorKeberhasilan: "Tersedianya 6 paket alat peraga numerasi siap pakai.",
+          target: "6 Paket Kit Numerasi terdistribusi ke kelas.",
+          bulanPelaksanaan: [8, 9],
+          jadwalTeks: "Agustus – September 2026",
+          penanggungJawab: "Wakasek Sarpras & Bendahara BOS",
+          kebutuhanAnggaran: 5000000,
+          sumberDana: "BOSP Reguler",
+          buktiPelaksanaan: "Faktur pembelian SIPLah, BAST barang, dan kartu inventaris."
+        },
+        {
+          id: "demo-rkt-3",
+          rkjmId: "demo-rkjm-2",
+          indicatorId: ind2.id,
+          namaProgram: "Program Transformasi Pembelajaran Aktif & Komunitas Belajar",
+          namaKegiatan: "Lokakarya Pembelajaran Berdiferensiasi & Observasi Rekan Sejawat",
+          latarBelakang: "Skor Kualitas Pembelajaran 58,10 (-1,80) perlu penguatan interaksi kelas.",
+          tujuan: "Menerapkan siklus observasi rekan sejawat dan refleksi pembelajaran di Kombel.",
+          sasaran: "12 Pendidik",
+          indikatorKeberhasilan: "24 laporan observasi kelas dan rencana tindak lanjut guru.",
+          target: "2 siklus observasi per guru selama semester berjalan.",
+          bulanPelaksanaan: [9, 10, 11],
+          jadwalTeks: "September – November 2026",
+          penanggungJawab: "Ketua Komunitas Belajar",
+          kebutuhanAnggaran: 3200000,
+          sumberDana: "BOSP Reguler",
+          buktiPelaksanaan: "Lembar observasi kelas, daftar hadir Kombel, dan laporan refleksi."
+        }
+      ];
+
+      demo.arkas = [
+        {
+          id: "demo-arkas-1",
+          rktId: "demo-rkt-1",
+          rkjmId: "demo-rkjm-1",
+          indicatorId: ind1.id,
+          program: "Program Penguatan Numerasi Kontekstual & Digital Sekolah",
+          kegiatan: "IHT Penyusunan Modul Ajar & Asesmen Numerasi Kontekstual",
+          komponen: "06. Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+          uraianBelanja: "Honorarium Narasumber Praktisi Pendidikan Numerasi (2 Hari x 4 JP)",
+          volume: 8,
+          satuan: "OJ",
+          hargaSatuan: 250000,
+          sumberDana: "BOSP Reguler",
+          waktuPelaksanaan: "Juli 2026",
+          statusVerifikasi: "Sesuai Standar Biaya (Perlu Cek SBU Daerah)"
+        },
+        {
+          id: "demo-arkas-2",
+          rktId: "demo-rkt-1",
+          rkjmId: "demo-rkjm-1",
+          indicatorId: ind1.id,
+          program: "Program Penguatan Numerasi Kontekstual & Digital Sekolah",
+          kegiatan: "IHT Penyusunan Modul Ajar & Asesmen Numerasi Kontekstual",
+          komponen: "06. Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+          uraianBelanja: "Konsumsi Rapat/Pelatihan Peserta IHT (15 Orang x 2 Hari)",
+          volume: 30,
+          satuan: "Kotak",
+          hargaSatuan: 35000,
+          sumberDana: "BOSP Reguler",
+          waktuPelaksanaan: "Juli 2026",
+          statusVerifikasi: "Terverifikasi Juknis BOSP"
+        },
+        {
+          id: "demo-arkas-3",
+          rktId: "demo-rkt-1",
+          rkjmId: "demo-rkjm-1",
+          indicatorId: ind1.id,
+          program: "Program Penguatan Numerasi Kontekstual & Digital Sekolah",
+          kegiatan: "IHT Penyusunan Modul Ajar & Asesmen Numerasi Kontekstual",
+          komponen: "05. Pelaksanaan Administrasi Kegiatan Satuan Pendidikan",
+          uraianBelanja: "Penggandaan Modul & Panduan Asesmen Numerasi Peserta",
+          volume: 15,
+          satuan: "Paket",
+          hargaSatuan: 30000,
+          sumberDana: "BOSP Reguler",
+          waktuPelaksanaan: "Juli 2026",
+          statusVerifikasi: "Terverifikasi Juknis BOSP"
+        },
+        {
+          id: "demo-arkas-4",
+          rktId: "demo-rkt-2",
+          rkjmId: "demo-rkjm-1",
+          indicatorId: ind1.id,
+          program: "Program Penguatan Numerasi Kontekstual & Digital Sekolah",
+          kegiatan: "Pengadaan Alat Peraga Manipulatif Numerasi Kelas",
+          komponen: "03. Pelaksanaan Kegiatan Pembelajaran dan Bermain",
+          uraianBelanja: "Kit Alat Peraga Matematika Dasar & Geometri (Pengadaan SIPLah)",
+          volume: 6,
+          satuan: "Paket",
+          hargaSatuan: 800000,
+          sumberDana: "BOSP Reguler",
+          waktuPelaksanaan: "Agustus 2026",
+          statusVerifikasi: "Terverifikasi Juknis BOSP"
+        },
+        {
+          id: "demo-arkas-5",
+          rktId: "demo-rkt-3",
+          rkjmId: "demo-rkjm-2",
+          indicatorId: ind2.id,
+          program: "Program Transformasi Pembelajaran Aktif & Komunitas Belajar",
+          kegiatan: "Lokakarya Pembelajaran Berdiferensiasi & Observasi Rekan Sejawat",
+          komponen: "06. Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+          uraianBelanja: "Konsumsi & ATK Pertemuan Komunitas Belajar (4 Sesi x 15 Peserta)",
+          volume: 60,
+          satuan: "Paket",
+          hargaSatuan: 40000,
+          sumberDana: "BOSP Reguler",
+          waktuPelaksanaan: "September – November 2026",
+          statusVerifikasi: "Terverifikasi Juknis BOSP"
+        }
+      ];
+
+      demo.monev = [
+        {
+          id: "demo-monev-1",
+          rktId: "demo-rkt-1",
+          status: "Selesai",
+          realisasiFisik: 100,
+          realisasiAnggaran: 3500000,
+          hambatan: "Penyesuaian jadwal narasumber agar tidak mengganggu jam efektif kelas.",
+          buktiKegiatan: "Daftar hadir 100%, dokumentasi foto, 12 modul ajar numerasi terkumpul.",
+          evaluasiHasil: "Seluruh guru mampu menyusun skenario pembelajaran numerasi berbasis masalah nyata.",
+          tindakLanjut: "Pendampingan implementasi modul ajar di kelas melalui supervisi akademik."
+        },
+        {
+          id: "demo-monev-2",
+          rktId: "demo-rkt-2",
+          status: "Sedang Berjalan",
+          realisasiFisik: 75,
+          realisasiAnggaran: 4800000,
+          hambatan: "Pengiriman 1 paket alat peraga geometri menunggu konfirmasi penyedia SIPLah.",
+          buktiKegiatan: "Bukti pemesanan SIPLah dan BAST 5 paket awal.",
+          evaluasiHasil: "5 kelas sudah mulai menggunakan alat peraga dalam pembelajaran pecahan.",
+          tindakLanjut: "Koordinasi dengan penyedia untuk penyelesaian pengiriman 1 paket tersisa."
+        },
+        {
+          id: "demo-monev-3",
+          rktId: "demo-rkt-3",
+          status: "Belum Dilaksanakan",
+          realisasiFisik: 0,
+          realisasiAnggaran: 0,
+          hambatan: "Menunggu jadwal siklus observasi semester berjalan.",
+          buktiKegiatan: "-",
+          evaluasiHasil: "Belum dimulai sesuai jadwal perencanaan bulan September.",
+          tindakLanjut: "Finalisasi instrumen observasi rekan sejawat bersama Koordinator Kombel."
+        }
+      ];
+
+      return demo;
+    }
+
+    const APP_STATE = {
       activeTab: "dashboard",
       activeYear: "2026",
       isDemoMode: false,
-      analisisFilter: "semua",
-      selectedAkarIndicatorId: null,
-      selectedTraceIndicatorId: null,
-      yearsData: {
+      analisisFilter: "all",
+      rkjmEditMode: false,
+      years: {
         "2026": createEmptyYearData("2026")
       },
-      chatMessages: [
+      demoData: createDemoYearData(),
+      chatHistory: [
         {
           role: "assistant",
-          text: "Halo Bapak/Ibu Kepala Sekolah dan Tim Pengembang Sekolah! Saya **ASISTEN RAPOR SMART AI**.\n\nSaya siap membantu mengolah data Rapor Pendidikan menjadi Analisis Akar Masalah, Prioritas Pembenahan, RKJM, RKT, hingga Rancangan Anggaran ARKAS.\n\nSilakan mulai dengan mengisi **Identitas Sekolah & Data Rapor Pendidikan** pada menu **1. Input Data Rapor**, atau klik **Muat Data Demo** di pojok kanan atas jika ingin mencoba simulasi terlebih dahulu."
+          text: "Halo Bapak/Ibu Tim Pengembang Sekolah! Saya **ASISTEN RAPOR SMART AI**. Silakan unggah file Excel/PDF Rapor Pendidikan atau isi **Nilai Capaian** pada menu **1. Input Rapor & Nilai Capaian**. Saya siap membantu menganalisis data aktual sekolah Anda secara runtut hingga ke RKJM, RKT, dan rancangan ARKAS."
         }
       ]
     };
 
-    // Chart instances registry
-    let chartInstances = {};
-
     // =========================================================================
-    // 2. UTILITY FUNCTIONS & HELPERS
+    // 3. CORE HELPER FUNCTIONS
     // =========================================================================
     function uid() {
-      return 'id-' + Math.random().toString(36).substring(2, 9) + '-' + Date.now().toString(36).slice(-4);
+      return "id-" + Math.random().toString(36).substring(2, 9) + "-" + Date.now().toString(36);
+    }
+
+    function escapeHtml(val) {
+      if (val === null || val === undefined) return "";
+      return String(val)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatRupiah(num) {
+      const n = Number(num) || 0;
+      return "Rp " + n.toLocaleString("id-ID");
+    }
+
+    function formatScore(val) {
+      if (val === "" || val === null || val === undefined || isNaN(Number(val))) return "-";
+      return Number(val).toLocaleString("id-ID", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
     }
 
     function getCurrentData() {
-      if (!window.appState.yearsData[window.appState.activeYear]) {
-        window.appState.yearsData[window.appState.activeYear] = createEmptyYearData(window.appState.activeYear);
+      if (APP_STATE.isDemoMode) return APP_STATE.demoData;
+      if (!APP_STATE.years[APP_STATE.activeYear]) {
+        APP_STATE.years[APP_STATE.activeYear] = createEmptyYearData(APP_STATE.activeYear);
       }
-      return window.appState.yearsData[window.appState.activeYear];
+      return APP_STATE.years[APP_STATE.activeYear];
     }
 
-    function logHistory(modul, aksi, keterangan) {
-      const data = getCurrentData();
-      data.history.unshift({
-        id: uid(),
-        timestamp: new Date().toLocaleString('id-ID'),
-        modul,
-        aksi,
-        keterangan
-      });
-      if (data.history.length > 100) data.history.pop();
-    }
-
-    function triggerAutoSave(modul, aksi, keterangan) {
-      if (modul && aksi) {
-        logHistory(modul, aksi, keterangan || "");
+    function classifyCategory(nilai, existingCategory = "") {
+      if (nilai !== "" && nilai !== null && nilai !== undefined && !isNaN(parseFloat(nilai))) {
+        const n = parseFloat(nilai);
+        if (n >= 70) return "Baik";
+        if (n >= 55) return "Sedang";
+        return "Kurang";
       }
-      const el = document.getElementById('autoSaveIndicator');
-      if (el) {
-        el.textContent = `Tersimpan ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+      if (existingCategory) {
+        const low = existingCategory.toLowerCase();
+        if (low.includes("baik") || low.includes("di atas") || low.includes("mencapai")) return "Baik";
+        if (low.includes("sedang")) return "Sedang";
+        if (low.includes("kurang") || low.includes("rendah") || low.includes("di bawah") || low.includes("perlu")) return "Kurang";
       }
-      if (window.cloudSync && window.cloudSync.enabled) {
-        window.cloudSync.saveToCloud(window.appState);
-      }
-      updateSidebarBadges();
-      updateTopHeader();
-    }
-
-    function formatRupiah(angka) {
-      const num = Number(angka) || 0;
-      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
-    }
-
-    function escapeHtml(str) {
-      if (str === null || str === undefined) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    function classifyCategory(nilai, explicitKat) {
-      if (explicitKat && ["Baik", "Sedang", "Kurang"].includes(explicitKat)) return explicitKat;
-      const v = parseFloat(nilai);
-      if (isNaN(v)) return "Belum Terverifikasi";
-      if (v >= 70) return "Baik";
-      if (v >= 50) return "Sedang";
-      return "Kurang";
-    }
-
-    function needsImprovement(ind) {
-      const kat = classifyCategory(ind.nilai, ind.kategori);
-      const delta = parseFloat(ind.perubahan);
-      return kat === "Kurang" || kat === "Sedang" || (!isNaN(delta) && delta < 0);
+      return "Belum Terverifikasi";
     }
 
     function getCategoryBadgeHtml(kat) {
       if (kat === "Baik") {
-        return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Baik</span>`;
+        return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Baik</span>`;
       }
       if (kat === "Sedang") {
-        return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Sedang</span>`;
+        return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Sedang</span>`;
       }
       if (kat === "Kurang") {
-        return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>Kurang</span>`;
+        return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-900 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>Kurang</span>`;
       }
-      return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">Perlu Konfirmasi</span>`;
+      return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">Perlu Konfirmasi</span>`;
     }
 
-    function getDeltaBadgeHtml(deltaVal) {
-      const d = parseFloat(deltaVal);
-      if (isNaN(d)) {
-        return `<span class="text-xs text-slate-400 italic">Tidak ada data</span>`;
+    function getDeltaBadgeHtml(perubahan) {
+      if (perubahan === "" || perubahan === null || perubahan === undefined || isNaN(parseFloat(perubahan))) {
+        return `<span class="text-slate-400 font-mono text-xs">-</span>`;
       }
+      const d = parseFloat(perubahan);
       if (d > 0) {
-        return `<span class="inline-flex items-center gap-0.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md"><i data-lucide="trending-up" class="w-3.5 h-3.5"></i>+${d.toFixed(2)}</span>`;
+        return `<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 font-mono font-bold text-xs border border-emerald-200">▲ +${d.toFixed(2)}</span>`;
       }
       if (d < 0) {
-        return `<span class="inline-flex items-center gap-0.5 text-xs font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md"><i data-lucide="trending-down" class="w-3.5 h-3.5"></i>${d.toFixed(2)}</span>`;
+        return `<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-rose-50 text-rose-800 font-mono font-bold text-xs border border-rose-200">▼ ${d.toFixed(2)}</span>`;
       }
-      return `<span class="inline-flex items-center gap-0.5 text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">0.00 (Tetap)</span>`;
+      return `<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono font-semibold text-xs">0.00</span>`;
     }
 
-    // =========================================================================
-    // 3. CUSTOM TOAST & MODAL SYSTEM (STRICTLY NO ALERT / CONFIRM)
-    // =========================================================================
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      const id = uid();
+    function triggerAutoSave(modul, aksi, detail) {
+      const data = getCurrentData();
+      data.history.unshift({
+        waktu: new Date().toLocaleString("id-ID"),
+        modul,
+        aksi,
+        detail
+      });
+      if (data.history.length > 50) data.history.pop();
+
+      const badge = document.getElementById("autoSaveBadge");
+      if (badge) {
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-600"></span><span>Tersimpan (${new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })})</span>`;
+      }
+    }
+
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toastContainer");
+      if (!container) return;
       const styles = {
-        success: 'bg-emerald-900 text-white border-emerald-700',
-        warning: 'bg-amber-600 text-white border-amber-500',
-        error: 'bg-rose-800 text-white border-rose-700',
-        info: 'bg-slate-900 text-white border-slate-700'
+        success: "bg-emerald-900 text-white border-emerald-700",
+        warning: "bg-amber-500 text-slate-950 border-amber-600",
+        error: "bg-rose-700 text-white border-rose-800",
+        info: "bg-slate-900 text-white border-slate-700"
       };
-      const icons = {
-        success: 'check-circle-2',
-        warning: 'alert-triangle',
-        error: 'x-circle',
-        info: 'info'
-      };
-      const div = document.createElement('div');
-      div.id = id;
-      div.className = `pointer-events-auto flex items-start gap-2.5 px-4 py-3 rounded-xl shadow-lg border text-xs font-medium transition-all ${styles[type] || styles.info}`;
-      div.innerHTML = `
-        <i data-lucide="${icons[type] || 'info'}" class="w-4 h-4 shrink-0 mt-0.5"></i>
-        <div class="flex-1 leading-relaxed">${escapeHtml(message)}</div>
-      `;
-      container.appendChild(div);
+      const el = document.createElement("div");
+      el.className = `pointer-events-auto p-3.5 rounded-xl border shadow-xl text-xs font-semibold flex items-start gap-2.5 transition-all duration-300 ${styles[type] || styles.info}`;
+      el.innerHTML = `<i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i><div class="flex-1 leading-relaxed">${escapeHtml(message)}</div>`;
+      container.appendChild(el);
       if (window.lucide) window.lucide.createIcons();
       setTimeout(() => {
-        div.style.opacity = '0';
-        div.style.transform = 'translateY(8px)';
-        setTimeout(() => div.remove(), 300);
-      }, 3800);
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 300);
+      }, 4500);
     }
 
-    function openCustomModal(htmlContent, maxWidthClass = 'max-w-2xl') {
-      const backdrop = document.getElementById('universalModalBackdrop');
-      const box = document.getElementById('universalModalBox');
+    function openCustomModal(innerHtml, maxWidthClass = "max-w-2xl") {
+      const backdrop = document.getElementById("customModalBackdrop");
+      const box = document.getElementById("customModalBox");
+      if (!backdrop || !box) return;
       box.className = `bg-white rounded-2xl shadow-2xl border border-slate-200 w-full ${maxWidthClass} overflow-hidden my-auto`;
-      box.innerHTML = htmlContent;
-      backdrop.classList.remove('hidden');
-      backdrop.classList.add('flex');
+      box.innerHTML = innerHtml;
+      backdrop.classList.remove("hidden");
+      backdrop.classList.add("flex");
       if (window.lucide) window.lucide.createIcons();
     }
 
     function closeCustomModal() {
-      const backdrop = document.getElementById('universalModalBackdrop');
-      backdrop.classList.add('hidden');
-      backdrop.classList.remove('flex');
+      const backdrop = document.getElementById("customModalBackdrop");
+      if (!backdrop) return;
+      backdrop.classList.add("hidden");
+      backdrop.classList.remove("flex");
     }
 
-    function showConfirmDialog({ title, message, confirmText = "Ya, Lanjutkan", danger = false, onConfirm }) {
-      const btnClass = danger
-        ? "bg-rose-600 hover:bg-rose-700 text-white"
-        : "emerald-gradient hover:opacity-95 text-white";
+    function toggleMobileSidebar(open) {
+      const sb = document.getElementById("appSidebar");
+      const ov = document.getElementById("mobileSidebarOverlay");
+      if (!sb || !ov) return;
+      if (open) {
+        sb.classList.remove("-translate-x-full");
+        ov.classList.remove("hidden");
+      } else {
+        sb.classList.add("-translate-x-full");
+        ov.classList.add("hidden");
+      }
+    }
+
+    function setActiveTab(tabId) {
+      APP_STATE.activeTab = tabId;
+      toggleMobileSidebar(false);
+      renderAll();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // =========================================================================
+    // 4. DEMO MODE & MULTI-YEAR MANAGEMENT
+    // =========================================================================
+    function toggleDemoMode() {
+      APP_STATE.isDemoMode = !APP_STATE.isDemoMode;
+      renderAll();
+      showToast(
+        APP_STATE.isDemoMode
+          ? "Mode Demo diaktifkan. Menampilkan contoh data lengkap SD Negeri Harapan Bangsa 01."
+          : "Kembali ke ruang kerja data asli sekolah Anda.",
+        APP_STATE.isDemoMode ? "warning" : "success"
+      );
+    }
+
+    function exitDemoMode() {
+      APP_STATE.isDemoMode = false;
+      renderAll();
+      showToast("Anda telah kembali ke data sekolah asli.", "success");
+    }
+
+    function switchPlanningYear(yearVal) {
+      if (APP_STATE.isDemoMode) {
+        APP_STATE.isDemoMode = false;
+      }
+      APP_STATE.activeYear = yearVal;
+      renderAll();
+      showToast(`Beralih ke Tahun Perencanaan ${yearVal}.`, "info");
+    }
+
+    function openNewYearModal() {
+      const years = Object.keys(APP_STATE.years).sort();
       openCustomModal(`
-        <div class="p-6">
-          <div class="flex items-start gap-3">
-            <div class="w-10 h-10 rounded-xl ${danger ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'} flex items-center justify-center shrink-0">
-              <i data-lucide="${danger ? 'trash-2' : 'help-circle'}" class="w-5 h-5"></i>
+        <div class="p-5 sm:p-6">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h3 class="font-bold text-slate-900 text-base">Tambah / Duplikasi Tahun Perencanaan</h3>
+            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+          <form onsubmit="createNewPlanningYear(event)" class="mt-4 space-y-4 text-xs">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Tahun Perencanaan Baru</label>
+              <input type="number" name="newYear" min="2023" max="2035" value="${parseInt(APP_STATE.activeYear, 10) + 1}" required class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono font-bold" />
             </div>
             <div>
-              <h3 class="font-bold text-slate-900 text-base">${escapeHtml(title)}</h3>
-              <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">${escapeHtml(message)}</p>
+              <label class="block font-bold text-slate-700 mb-1">Sumber Data Awal</label>
+              <select name="copyFrom" class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                <option value="">Mulai Kosong (Hanya salin identitas sekolah)</option>
+                ${years.map(y => `<option value="${y}">Duplikasi Indikator &amp; Program dari Tahun ${y}</option>`).join("")}
+              </select>
             </div>
-          </div>
-          <div class="mt-6 flex items-center justify-end gap-2">
-            <button onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold">Batal</button>
-            <button id="modalConfirmActionBtn" class="px-4 py-2 rounded-xl ${btnClass} text-xs font-bold shadow-sm">${escapeHtml(confirmText)}</button>
-          </div>
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+              <button type="submit" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold">Buat Tahun Perencanaan</button>
+            </div>
+          </form>
         </div>
-      `, 'max-w-md');
-      document.getElementById('modalConfirmActionBtn').onclick = () => {
-        closeCustomModal();
-        if (typeof onConfirm === 'function') onConfirm();
-      };
+      `, "max-w-md");
     }
 
-    // =========================================================================
-    // 4. GEMINI AI ENGINE (WITH EXPONENTIAL BACKOFF & GRACEFUL FALLBACK)
-    // =========================================================================
-    async function callGeminiAPI(promptText, systemInstructionText, jsonSchema = null) {
-      const apiKey = ""; // Runtime-provided in Canvas environment
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+    function createNewPlanningYear(e) {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const newYear = String(fd.get("newYear")).trim();
+      const copyFrom = fd.get("copyFrom");
+      if (!newYear) return;
 
-      const payload = {
-        contents: [{ parts: [{ text: promptText }] }],
-        systemInstruction: {
-          parts: [{ text: systemInstructionText }]
-        }
-      };
-
-      if (jsonSchema) {
-        payload.generationConfig = {
-          responseMimeType: "application/json",
-          responseSchema: jsonSchema
-        };
+      if (APP_STATE.years[newYear]) {
+        showToast(`Tahun ${newYear} sudah tersedia.`, "warning");
+        return;
       }
 
-      const delays = [1000, 2000, 4000];
-      for (let attempt = 0; attempt <= delays.length; attempt++) {
-        try {
-          const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-
-          if (!response.ok) {
-            if (attempt < delays.length && (response.status === 429 || response.status >= 500)) {
-              await new Promise(res => setTimeout(res, delays[attempt]));
-              continue;
-            }
-            throw new Error(`HTTP ${response.status}`);
-          }
-
-          const result = await response.json();
-          const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (!text) throw new Error("Respons AI kosong");
-          return jsonSchema ? JSON.parse(text) : text;
-        } catch (err) {
-          if (attempt < delays.length) {
-            await new Promise(res => setTimeout(res, delays[attempt]));
-            continue;
-          }
-          throw err;
-        }
-      }
-    }
-
-    // =========================================================================
-    // 5. NAVIGATION, TOP HEADER & SIDEBAR STATE
-    // =========================================================================
-    function toggleMobileSidebar() {
-      const sidebar = document.getElementById('appSidebar');
-      const backdrop = document.getElementById('sidebarBackdrop');
-      const isClosed = sidebar.classList.contains('-translate-x-full');
-      if (isClosed) {
-        sidebar.classList.remove('-translate-x-full');
-        backdrop.classList.remove('hidden');
+      if (copyFrom && APP_STATE.years[copyFrom]) {
+        const cloned = JSON.parse(JSON.stringify(APP_STATE.years[copyFrom]));
+        cloned.yearLabel = newYear;
+        cloned.school.tahunPerencanaan = newYear;
+        cloned.school.tahunRapor = newYear;
+        cloned.history = [{
+          waktu: new Date().toLocaleString("id-ID"),
+          modul: "Manajemen Data",
+          aksi: "Duplikasi Tahun",
+          detail: `Menduplikasi data perencanaan dari tahun ${copyFrom} ke ${newYear}.`
+        }];
+        APP_STATE.years[newYear] = cloned;
       } else {
-        sidebar.classList.add('-translate-x-full');
-        backdrop.classList.add('hidden');
+        const fresh = createEmptyYearData(newYear);
+        const cur = getCurrentData();
+        fresh.school = { ...cur.school, tahunPerencanaan: newYear, tahunRapor: newYear };
+        APP_STATE.years[newYear] = fresh;
       }
-    }
 
-    function navigateTo(tabName) {
-      window.appState.activeTab = tabName;
-      // Close mobile sidebar if open
-      const sidebar = document.getElementById('appSidebar');
-      const backdrop = document.getElementById('sidebarBackdrop');
-      if (sidebar && !sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
-        sidebar.classList.add('-translate-x-full');
-        backdrop.classList.add('hidden');
-      }
+      APP_STATE.isDemoMode = false;
+      APP_STATE.activeYear = newYear;
+      closeCustomModal();
       renderAll();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast(`Tahun perencanaan ${newYear} berhasil dibuat.`, "success");
     }
 
-    function updateCloudBadge(status) {
-      const el = document.getElementById('sidebarCloudBadge');
-      if (!el) return;
-      if (status === 'connected') {
-        el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Cloud Tersinkron`;
-      } else if (status === 'syncing') {
-        el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span> Menyimpan...`;
-      } else if (status === 'error') {
-        el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> Offline (Lokal)`;
-      } else {
-        el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Lokal &amp; File`;
-      }
-    }
-
-    function updateYearSelector() {
-      const sel = document.getElementById('globalYearSelect');
-      if (!sel) return;
-      const years = Object.keys(window.appState.yearsData).sort();
-      sel.innerHTML = years.map(y => `<option value="${y}" ${y === window.appState.activeYear ? 'selected' : ''}>Tahun ${y}</option>`).join('');
-    }
-
-    function switchPlanningYear(year) {
-      window.appState.activeYear = year;
-      renderAll();
-      showToast(`Beralih ke Tahun Perencanaan ${year}.`, 'info');
-    }
-
-    function updateTopHeader() {
+    // =========================================================================
+    // 5. NAVIGATION & HEADER RENDERING
+    // =========================================================================
+    function renderNavigationAndHeader() {
       const data = getCurrentData();
-      const s = data.school;
-      document.getElementById('headerSchoolName').textContent = s.nama ? s.nama : "Satuan Pendidikan Belum Diisi";
-      document.getElementById('headerNpsnBadge').textContent = `NPSN: ${s.npsn || '-'}`;
-      document.getElementById('headerJenjangBadge').textContent = `Jenjang: ${s.jenjang || '-'}`;
-      document.getElementById('headerSubtitle').textContent = s.nama
-        ? `${s.kecamatan ? 'Kec. ' + s.kecamatan + ', ' : ''}${s.kabupaten || ''} • Rapor ${s.tahunRapor || '-'} → Perencanaan ${s.tahunPerencanaan || window.appState.activeYear}`
-        : "Silakan lengkapi identitas sekolah & data Rapor Pendidikan untuk memulai perencanaan.";
 
-      // Demo banner & toggle label
-      const demoBanner = document.getElementById('demoBanner');
-      const btnDemoLabel = document.getElementById('btnToggleDemoLabel');
-      if (window.appState.isDemoMode) {
-        demoBanner.classList.remove('hidden');
-        if (btnDemoLabel) btnDemoLabel.textContent = "Keluar Mode Demo";
+      // Demo Banner
+      const demoBanner = document.getElementById("demoBanner");
+      const demoToggleBtn = document.getElementById("demoToggleBtn");
+      if (APP_STATE.isDemoMode) {
+        demoBanner?.classList.remove("hidden");
+        if (demoToggleBtn) demoToggleBtn.classList.add("ring-2", "ring-amber-400", "bg-emerald-800");
       } else {
-        demoBanner.classList.add('hidden');
-        if (btnDemoLabel) btnDemoLabel.textContent = "Muat Data Demo";
+        demoBanner?.classList.add("hidden");
+        if (demoToggleBtn) demoToggleBtn.classList.remove("ring-2", "ring-amber-400", "bg-emerald-800");
       }
-    }
 
-    function updateSidebarBadges() {
-      const data = getCurrentData();
-      const problemInds = data.indicators.filter(needsImprovement);
-      const map = {
-        'badge-input': data.indicators.length,
-        'badge-analisis': data.indicators.length,
-        'badge-akar': Object.keys(data.rootCauses).length,
-        'badge-prioritas': problemInds.length,
-        'badge-rekomendasi': data.recommendations.length,
-        'badge-rkjm': data.rkjm.length,
-        'badge-rkt': data.rkt.length,
-        'badge-arkas': data.arkas.length
+      // Year Select
+      const yearSelect = document.getElementById("activeYearSelect");
+      if (yearSelect) {
+        const years = Object.keys(APP_STATE.years).sort();
+        yearSelect.innerHTML = years.map(y => `<option value="${y}" ${y === APP_STATE.activeYear ? "selected" : ""}>Tahun ${y}</option>`).join("");
+      }
+
+      // Top Header School Metadata
+      const hName = document.getElementById("headerSchoolName");
+      const hNpsn = document.getElementById("headerNpsnBadge");
+      const hJenjang = document.getElementById("headerJenjangBadge");
+      const hSub = document.getElementById("headerSubtitle");
+
+      if (hName) hName.textContent = data.school.nama || "Satuan Pendidikan Belum Diisi (Klik Input Rapor)";
+      if (hNpsn) hNpsn.textContent = `NPSN: ${data.school.npsn || "-"}`;
+      if (hJenjang) hJenjang.textContent = `Jenjang: ${data.school.jenjang || "-"}`;
+      if (hSub) {
+        const loc = [data.school.kecamatan, data.school.kabupaten, data.school.provinsi].filter(Boolean).join(", ");
+        hSub.textContent = `Tahun Rapor: ${data.school.tahunRapor || "-"} • Tahun Anggaran: ${data.school.tahunPerencanaan || "-"}${loc ? " • " + loc : ""}`;
+      }
+
+      // Sidebar Nav Items with Counts
+      const counts = {
+        input: data.indicators.length,
+        analisis: data.indicators.filter(i => classifyCategory(i.nilai, i.kategori) !== "Baik").length,
+        akar: data.rootCauses.length,
+        prioritas: data.priorities.length,
+        rekomendasi: data.recommendations.length,
+        rkjm: data.rkjm.length,
+        rkt: data.rkt.length,
+        arkas: data.arkas.length,
+        monev: data.monev.length
       };
-      Object.entries(map).forEach(([id, count]) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = count;
+
+      const navEl = document.getElementById("sidebarNav");
+      if (navEl) {
+        navEl.innerHTML = NAV_ITEMS.map(item => {
+          const active = APP_STATE.activeTab === item.id;
+          const badgeCount = counts[item.id];
+          return `
+            <button onclick="setActiveTab('${item.id}')"
+              class="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl font-medium transition text-left ${active ? 'bg-amber-400 text-slate-950 font-bold shadow-sm' : 'text-emerald-100 hover:bg-emerald-800/70'}">
+              <span class="flex items-center gap-2.5 min-w-0">
+                <i data-lucide="${item.icon}" class="w-4 h-4 shrink-0 ${active ? 'text-slate-950' : 'text-amber-300'}"></i>
+                <span class="truncate">${item.label}</span>
+              </span>
+              ${typeof badgeCount === "number" && badgeCount > 0
+                ? `<span class="px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${active ? 'bg-slate-950 text-amber-300' : 'bg-emerald-950/80 text-emerald-200'}">${badgeCount}</span>`
+                : ""}
+            </button>
+          `;
+        }).join("");
+      }
+    }
+
+    // =========================================================================
+    // 6. MODULE 0: DASHBOARD UTAMA (With Nilai Capaian Summary & Chart)
+    // =========================================================================
+    function renderDashboard() {
+      const data = getCurrentData();
+      const indicators = data.indicators;
+
+      const scoredIndicators = indicators.filter(i => i.nilai !== "" && !isNaN(parseFloat(i.nilai)));
+      const avgScore = scoredIndicators.length > 0
+        ? (scoredIndicators.reduce((acc, i) => acc + parseFloat(i.nilai), 0) / scoredIndicators.length)
+        : null;
+
+      const perluBenahi = indicators.filter(i => {
+        const k = classifyCategory(i.nilai, i.kategori);
+        return k === "Kurang" || k === "Sedang" || (i.perubahan !== "" && parseFloat(i.perubahan) < 0);
       });
 
-      // Highlight active tab
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        const isActive = btn.getAttribute('data-tab') === window.appState.activeTab;
-        if (isActive) {
-          btn.className = "nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition text-left bg-amber-400 text-emerald-950 font-bold shadow-sm";
-        } else {
-          btn.className = "nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition text-left text-emerald-100 hover:bg-white/10 hover:text-white";
-        }
-      });
-    }
+      const totalAnggaran = data.arkas.reduce((sum, item) => sum + ((Number(item.volume) || 0) * (Number(item.hargaSatuan) || 0)), 0);
 
-    function renderAll() {
-      updateYearSelector();
-      updateTopHeader();
-      updateSidebarBadges();
-      renderActiveModule();
-      if (window.lucide) window.lucide.createIcons();
-    }
-
-    // =========================================================================
-    // 6. MODULE RENDERER DISPATCHER
-    // =========================================================================
-    function renderActiveModule() {
-      // Destroy existing Chart.js instances before re-rendering DOM
-      Object.values(chartInstances).forEach(ch => { try { ch.destroy(); } catch (e) {} });
-      chartInstances = {};
-
-      const container = document.getElementById('moduleContainer');
-      const tab = window.appState.activeTab;
-
-      switch (tab) {
-        case 'dashboard': renderDashboard(container); break;
-        case 'input': renderInputModule(container); break;
-        case 'analisis': renderAnalisisModule(container); break;
-        case 'akar': renderAkarMasalahModule(container); break;
-        case 'prioritas': renderPrioritasModule(container); break;
-        case 'rekomendasi': renderRekomendasiModule(container); break;
-        case 'rkjm': renderRkjmModule(container); break;
-        case 'rkt': renderRktModule(container); break;
-        case 'arkas': renderArkasModule(container); break;
-        case 'keterhubungan': renderKeterhubunganModule(container); break;
-        case 'monev': renderMonevModule(container); break;
-        case 'ekspor': renderEksporModule(container); break;
-        case 'manajemen': renderManajemenModule(container); break;
-        default: renderDashboard(container);
-      }
-    }
-
-    // =========================================================================
-    // MODULE B: DASHBOARD UTAMA
-    // =========================================================================
-    function renderDashboard(container) {
-      const data = getCurrentData();
-      const s = data.school;
-      const totalInd = data.indicators.length;
-      const perluDibenahi = data.indicators.filter(needsImprovement).length;
-      const totalPrioritas = data.recommendations.length || perluDibenahi;
-      const totalRkt = data.rkt.length;
-      const totalAnggaran = data.arkas.reduce((sum, item) => sum + (Number(item.jumlahAnggaran) || 0), 0);
-
-      // Calculate completion status across 8 stages
-      const stages = [
-        { label: "Identitas Sekolah", done: Boolean(s.nama && s.npsn) },
-        { label: "Data Rapor Pendidikan", done: totalInd > 0 },
-        { label: "Analisis Akar Masalah", done: Object.keys(data.rootCauses).length > 0 },
-        { label: "Penentuan Prioritas", done: perluDibenahi > 0 },
-        { label: "Rekomendasi Program", done: data.recommendations.length > 0 },
-        { label: "Dokumen RKJM", done: data.rkjm.length > 0 },
-        { label: "Dokumen RKT", done: data.rkt.length > 0 },
-        { label: "Rancangan ARKAS", done: data.arkas.length > 0 }
+      // 8-Step Readiness Checklist
+      const steps = [
+        { label: "Identitas & Data Rapor", done: Boolean(data.school.nama && indicators.length > 0), tab: "input" },
+        { label: "Analisis Capaian", done: indicators.length > 0, tab: "analisis" },
+        { label: "Akar Masalah (5-Why)", done: data.rootCauses.length > 0, tab: "akar" },
+        { label: "Penentuan Prioritas", done: data.priorities.length > 0, tab: "prioritas" },
+        { label: "Rekomendasi Program", done: data.recommendations.length > 0, tab: "rekomendasi" },
+        { label: "Dokumen RKJM", done: data.rkjm.length > 0, tab: "rkjm" },
+        { label: "Dokumen RKT", done: data.rkt.length > 0, tab: "rkt" },
+        { label: "Rancangan ARKAS", done: data.arkas.length > 0, tab: "arkas" }
       ];
-      const completedStages = stages.filter(st => st.done).length;
-      const progressPct = Math.round((completedStages / stages.length) * 100);
+      const doneSteps = steps.filter(s => s.done).length;
+      const pctComplete = Math.round((doneSteps / steps.length) * 100);
 
-      container.innerHTML = `
-        <!-- Hero School Status Banner -->
-        <div class="emerald-gradient rounded-2xl p-6 sm:p-7 text-white shadow-lg relative overflow-hidden">
-          <div class="absolute right-0 top-0 w-64 h-64 bg-amber-400/10 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-          <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      return `
+        <!-- HERO BANNER -->
+        <section class="emerald-gradient text-white rounded-2xl p-5 sm:p-7 shadow-lg relative overflow-hidden">
+          <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
             <div class="space-y-2 max-w-2xl">
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-amber-400/30 text-amber-300 text-xs font-semibold">
-                <i data-lucide="award" class="w-3.5 h-3.5"></i>
-                <span>Dashboard Eksekutif Perencanaan Berbasis Data (PBD)</span>
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-amber-300 text-xs font-bold">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                <span>Perencanaan Berbasis Data (PBD) Terintegrasi</span>
               </div>
-              <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
-                ${s.nama ? escapeHtml(s.nama) : 'Selamat Datang di RAPOR SMART AI'}
+              <h2 class="font-heading text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight">
+                ${escapeHtml(data.school.nama || "Selamat Datang di RAPOR SMART AI")}
               </h2>
               <p class="text-xs sm:text-sm text-emerald-100 leading-relaxed">
-                ${s.nama
-                  ? `NPSN <strong>${escapeHtml(s.npsn || '-')}</strong> • Jenjang <strong>${escapeHtml(s.jenjang || '-')}</strong> • Tahun Ajaran <strong>${escapeHtml(s.tahunAjaran || '-')}</strong> • Tahun Anggaran <strong>${escapeHtml(s.tahunPerencanaan || window.appState.activeYear)}</strong>`
-                  : 'Belum ada data satuan pendidikan yang dimasukkan. Mulai dengan menginput data Rapor Pendidikan (PDF/Excel/Manual) atau muat simulasi demo untuk menjelajahi fitur.'}
+                ${data.school.nama
+                  ? `NPSN <strong>${escapeHtml(data.school.npsn || "-")}</strong> • Jenjang <strong>${escapeHtml(data.school.jenjang || "-")}</strong> • Tahun Ajaran/Rapor <strong>${escapeHtml(data.school.tahunRapor)}</strong> • Tahun Anggaran <strong>${escapeHtml(data.school.tahunPerencanaan)}</strong>`
+                  : "Mulai dengan mengunggah file Excel/PDF Rapor Pendidikan atau mengisi Nilai Capaian indikator sekolah Anda untuk menyusun perencanaan otomatis."}
               </p>
-              <div class="pt-2 flex flex-wrap gap-2">
-                <button onclick="navigateTo('input')" class="px-4 py-2 rounded-xl gold-gradient text-emerald-950 font-bold text-xs flex items-center gap-1.5 shadow hover:opacity-95 transition">
-                  <i data-lucide="file-plus-2" class="w-4 h-4"></i>
-                  <span>${totalInd > 0 ? 'Kelola Data Rapor' : 'Input Data Rapor Sekarang'}</span>
+              <div class="pt-2 flex flex-wrap gap-2.5">
+                <button onclick="setActiveTab('input')" class="px-4 py-2.5 rounded-xl gold-gradient text-slate-950 font-bold text-xs sm:text-sm shadow hover:brightness-105 transition flex items-center gap-2">
+                  <i data-lucide="upload" class="w-4 h-4"></i>
+                  <span>Input / Unggah Rapor Pendidikan</span>
                 </button>
-                ${totalInd > 0 ? `
-                <button onclick="navigateTo('analisis')" class="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs flex items-center gap-1.5 transition">
-                  <i data-lucide="bar-chart-3" class="w-4 h-4 text-amber-300"></i>
-                  <span>Mulai Analisis</span>
-                </button>` : ''}
+                ${indicators.length === 0 ? `
+                  <button onclick="toggleDemoMode()" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs sm:text-sm border border-white/25 transition flex items-center gap-2">
+                    <i data-lucide="play-circle" class="w-4 h-4 text-amber-300"></i>
+                    <span>Lihat Simulasi Mode Demo</span>
+                  </button>
+                ` : `
+                  <button onclick="setActiveTab('analisis')" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs sm:text-sm border border-white/25 transition flex items-center gap-2">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4 text-amber-300"></i>
+                    <span>Lihat Analisis Capaian</span>
+                  </button>
+                `}
+                <button onclick="setActiveTab('ekspor')" class="px-4 py-2.5 rounded-xl bg-emerald-950/60 hover:bg-emerald-950/80 text-amber-300 font-bold text-xs sm:text-sm border border-amber-400/40 transition flex items-center gap-2">
+                  <i data-lucide="download" class="w-4 h-4"></i>
+                  <span>Unduh Dokumen (PDF / Word / Excel)</span>
+                </button>
               </div>
             </div>
 
-            <!-- Data Completion Gauge Card -->
-            <div class="bg-black/25 border border-white/15 rounded-2xl p-4 sm:p-5 w-full lg:w-80 shrink-0">
+            <!-- Progress Card -->
+            <div class="bg-emerald-950/60 border border-emerald-700/70 rounded-2xl p-4 sm:p-5 lg:w-80 shrink-0">
               <div class="flex items-center justify-between text-xs mb-1.5">
-                <span class="text-emerald-200 font-medium">Status Kelengkapan Alur PBD</span>
-                <span class="font-extrabold text-amber-300">${progressPct}% (${completedStages}/8)</span>
+                <span class="font-bold text-emerald-200">Status Pengisian Data PBD</span>
+                <span class="font-mono font-extrabold text-amber-300 text-sm">${pctComplete}%</span>
               </div>
-              <div class="w-full h-2.5 bg-emerald-950 rounded-full overflow-hidden mb-3">
-                <div class="h-full gold-gradient rounded-full transition-all duration-500" style="width: ${progressPct}%"></div>
+              <div class="w-full h-2.5 bg-emerald-900 rounded-full overflow-hidden mb-3">
+                <div class="h-full gold-gradient rounded-full transition-all duration-500" style="width: ${pctComplete}%"></div>
               </div>
               <div class="grid grid-cols-2 gap-1.5 text-[11px]">
-                ${stages.map(st => `
-                  <div class="flex items-center gap-1.5 ${st.done ? 'text-emerald-200' : 'text-white/50'}">
-                    <i data-lucide="${st.done ? 'check-circle-2' : 'circle'}" class="w-3.5 h-3.5 ${st.done ? 'text-amber-400' : 'text-white/30'} shrink-0"></i>
+                ${steps.map(st => `
+                  <button onclick="setActiveTab('${st.tab}')" class="flex items-center gap-1.5 text-left truncate hover:text-amber-300 transition ${st.done ? 'text-emerald-100' : 'text-emerald-400/80'}">
+                    <i data-lucide="${st.done ? 'check-circle-2' : 'circle'}" class="w-3.5 h-3.5 shrink-0 ${st.done ? 'text-amber-400' : 'text-emerald-600'}"></i>
                     <span class="truncate">${st.label}</span>
-                  </div>
-                `).join('')}
+                  </button>
+                `).join("")}
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <!-- KPI Summary Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:border-emerald-300 transition">
-            <div class="flex items-center justify-between mb-3">
+        <!-- KPI STAT CARDS (Including Rata-Rata Nilai Capaian) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div class="card-elevated p-4 border-l-4 border-l-emerald-700">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500">Rata-Rata Nilai Capaian</span>
+              <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                <i data-lucide="gauge" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-2 font-mono text-2xl font-extrabold text-emerald-900">
+              ${avgScore !== null ? avgScore.toFixed(2) : "-"} <span class="text-xs font-sans font-normal text-slate-400">/ 100</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-1">Dari ${scoredIndicators.length} indikator bernilai</p>
+          </div>
+
+          <div class="card-elevated p-4 border-l-4 border-l-rose-600">
+            <div class="flex items-center justify-between">
               <span class="text-xs font-semibold text-slate-500">Indikator Perlu Dibenahi</span>
-              <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center">
-                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+              <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center">
+                <i data-lucide="alert-triangle" class="w-4 h-4"></i>
               </div>
             </div>
-            <div class="text-2xl font-extrabold text-slate-900">${perluDibenahi} <span class="text-xs font-medium text-slate-400">/ ${totalInd} indikator</span></div>
-            <div class="mt-2 text-xs text-slate-500">Capaian Sedang, Kurang, atau Menurun</div>
+            <div class="mt-2 font-mono text-2xl font-extrabold text-rose-700">${perluBenahi.length}</div>
+            <p class="text-[11px] text-slate-500 mt-1">Dari total ${indicators.length} indikator Rapor</p>
           </div>
 
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:border-emerald-300 transition">
-            <div class="flex items-center justify-between mb-3">
+          <div class="card-elevated p-4 border-l-4 border-l-amber-500">
+            <div class="flex items-center justify-between">
               <span class="text-xs font-semibold text-slate-500">Program Prioritas &amp; RKJM</span>
-              <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
-                <i data-lucide="target" class="w-5 h-5"></i>
+              <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
+                <i data-lucide="compass" class="w-4 h-4"></i>
               </div>
             </div>
-            <div class="text-2xl font-extrabold text-slate-900">${data.rkjm.length > 0 ? data.rkjm.length : totalPrioritas} <span class="text-xs font-medium text-slate-400">program</span></div>
-            <div class="mt-2 text-xs text-slate-500">${data.recommendations.length} Rekomendasi • ${data.rkjm.length} Masuk RKJM</div>
+            <div class="mt-2 font-mono text-2xl font-extrabold text-slate-900">${data.rkjm.length}</div>
+            <p class="text-[11px] text-slate-500 mt-1">${data.priorities.length} indikator diprioritaskan</p>
           </div>
 
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:border-emerald-300 transition">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-semibold text-slate-500">Kegiatan Tahunan (RKT)</span>
-              <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center">
-                <i data-lucide="calendar-check" class="w-5 h-5"></i>
+          <div class="card-elevated p-4 border-l-4 border-l-teal-600">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500">Jumlah Kegiatan RKT</span>
+              <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center">
+                <i data-lucide="calendar-check" class="w-4 h-4"></i>
               </div>
             </div>
-            <div class="text-2xl font-extrabold text-slate-900">${totalRkt} <span class="text-xs font-medium text-slate-400">kegiatan</span></div>
-            <div class="mt-2 text-xs text-slate-500">Terjadwal di Tahun ${escapeHtml(s.tahunPerencanaan || window.appState.activeYear)}</div>
+            <div class="mt-2 font-mono text-2xl font-extrabold text-slate-900">${data.rkt.length}</div>
+            <p class="text-[11px] text-slate-500 mt-1">Kegiatan tahunan terprogram</p>
           </div>
 
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:border-emerald-300 transition">
-            <div class="flex items-center justify-between mb-3">
+          <div class="card-elevated p-4 border-l-4 border-l-amber-600">
+            <div class="flex items-center justify-between">
               <span class="text-xs font-semibold text-slate-500">Total Rancangan ARKAS</span>
-              <div class="w-9 h-9 rounded-xl bg-emerald-900 text-amber-300 flex items-center justify-center">
-                <i data-lucide="banknote" class="w-5 h-5"></i>
+              <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-800 flex items-center justify-center">
+                <i data-lucide="wallet" class="w-4 h-4"></i>
               </div>
             </div>
-            <div class="text-xl font-extrabold text-emerald-900 truncate">${formatRupiah(totalAnggaran)}</div>
-            <div class="mt-2 text-xs text-slate-500">${data.arkas.length} Rincian Uraian Belanja</div>
+            <div class="mt-2 font-mono text-lg sm:text-xl font-extrabold text-emerald-950 truncate" title="${formatRupiah(totalAnggaran)}">
+              ${formatRupiah(totalAnggaran)}
+            </div>
+            <p class="text-[11px] text-slate-500 mt-1">${data.arkas.length} rincian belanja</p>
           </div>
-        </div>
+        </section>
 
-        <!-- Charts & Workflow Pipeline -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- Bar Chart Capaian Indikator -->
-          <div class="lg:col-span-2 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs flex flex-col">
-            <div class="flex items-center justify-between mb-4">
+        <!-- CHART & NILAI CAPAIAN TABLE ON DASHBOARD -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Bar Chart Nilai Capaian -->
+          <div class="lg:col-span-6 card-elevated p-5">
+            <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-100">
               <div>
-                <h3 class="font-bold text-slate-900 text-sm sm:text-base">Grafik Capaian Indikator Rapor Pendidikan</h3>
-                <p class="text-xs text-slate-500">Visualisasi skor capaian tiap indikator yang telah diinput</p>
+                <h3 class="font-bold text-slate-900 text-sm sm:text-base">Grafik Nilai Capaian Indikator Rapor</h3>
+                <p class="text-xs text-slate-500">Skala 0 – 100 (Hijau: Baik ≥70 | Emas: Sedang 55–69 | Merah: Kurang &lt;55)</p>
               </div>
-              <button onclick="navigateTo('analisis')" class="text-xs font-semibold text-emerald-800 hover:underline flex items-center gap-1">
-                <span>Detail Analisis</span>
-                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-              </button>
+              <button onclick="setActiveTab('input')" class="text-xs font-bold text-emerald-800 hover:underline shrink-0">+ Edit Nilai</button>
             </div>
-            ${totalInd > 0 ? `
-              <div class="relative flex-1 min-h-[280px]">
-                <canvas id="dashboardBarChart"></canvas>
+
+            ${indicators.length === 0 ? `
+              <div class="py-12 text-center space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-800 flex items-center justify-center mx-auto">
+                  <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
+                </div>
+                <p class="text-xs text-slate-500 max-w-xs mx-auto">Belum ada data indikator Rapor Pendidikan. Unggah file Excel/PDF atau tambahkan indikator beserta <strong>Nilai Capaian</strong>.</p>
+                <button onclick="setActiveTab('input')" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold">Mulai Input Data</button>
               </div>
             ` : `
-              <div class="flex-1 min-h-[260px] rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-6 text-center">
-                <i data-lucide="bar-chart-2" class="w-10 h-10 text-slate-300 mb-2"></i>
-                <p class="text-sm font-semibold text-slate-600">Belum Ada Grafik Capaian Indikator</p>
-                <p class="text-xs text-slate-400 max-w-sm mt-1">Masukkan data Rapor Pendidikan melalui dokumen PDF, Excel, atau formulir manual untuk menampilkan grafik otomatis.</p>
-                <button onclick="navigateTo('input')" class="mt-4 px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold">Input Data Rapor</button>
+              <div class="mt-4 space-y-3.5 max-h-[360px] overflow-y-auto custom-scrollbar pr-1">
+                ${indicators.map(ind => {
+                  const hasScore = ind.nilai !== "" && !isNaN(parseFloat(ind.nilai));
+                  const val = hasScore ? Math.min(100, Math.max(0, parseFloat(ind.nilai))) : 0;
+                  const kat = classifyCategory(ind.nilai, ind.kategori);
+                  const barColor = kat === "Baik" ? "bg-emerald-600" : kat === "Sedang" ? "bg-amber-500" : kat === "Kurang" ? "bg-rose-600" : "bg-slate-300";
+                  return `
+                    <div>
+                      <div class="flex items-center justify-between text-xs mb-1 gap-2">
+                        <span class="font-semibold text-slate-800 truncate">${ind.kode ? `<span class="font-mono text-emerald-800">[${escapeHtml(ind.kode)}]</span> ` : ""}${escapeHtml(ind.nama)}</span>
+                        <div class="flex items-center gap-2 shrink-0">
+                          <span class="font-mono font-extrabold text-slate-900">${hasScore ? val.toFixed(2) : "Kosong"}</span>
+                          ${getCategoryBadgeHtml(kat)}
+                        </div>
+                      </div>
+                      <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200/70">
+                        <div class="h-full ${barColor} rounded-full transition-all duration-500" style="width: ${hasScore ? val : 0}%"></div>
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
               </div>
             `}
           </div>
 
-          <!-- Doughnut Komposisi Kategori & Quick Flow -->
-          <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs flex flex-col justify-between">
-            <div>
-              <h3 class="font-bold text-slate-900 text-sm sm:text-base">Distribusi Kategori Capaian</h3>
-              <p class="text-xs text-slate-500 mb-4">Proporsi indikator Baik, Sedang, dan Kurang</p>
-              ${totalInd > 0 ? `
-                <div class="relative h-52">
-                  <canvas id="dashboardDoughnutChart"></canvas>
-                </div>
-              ` : `
-                <div class="h-52 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-xs text-slate-400 text-center px-4">
-                  Menunggu input indikator Rapor Pendidikan
-                </div>
-              `}
-            </div>
-
-            <div class="mt-5 pt-4 border-t border-slate-100">
-              <div class="text-xs font-bold text-slate-700 mb-2">Akses Cepat Tahapan:</div>
-              <div class="grid grid-cols-2 gap-2">
-                <button onclick="navigateTo('akar')" class="px-3 py-2 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-emerald-900 text-left flex items-center gap-1.5 transition">
-                  <i data-lucide="git-fork" class="w-3.5 h-3.5 text-emerald-700"></i> Akar Masalah
-                </button>
-                <button onclick="navigateTo('rkjm')" class="px-3 py-2 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-emerald-900 text-left flex items-center gap-1.5 transition">
-                  <i data-lucide="calendar-range" class="w-3.5 h-3.5 text-emerald-700"></i> Susun RKJM
-                </button>
-                <button onclick="navigateTo('rkt')" class="px-3 py-2 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-emerald-900 text-left flex items-center gap-1.5 transition">
-                  <i data-lucide="calendar-check-2" class="w-3.5 h-3.5 text-emerald-700"></i> Susun RKT
-                </button>
-                <button onclick="navigateTo('arkas')" class="px-3 py-2 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-emerald-900 text-left flex items-center gap-1.5 transition">
-                  <i data-lucide="wallet" class="w-3.5 h-3.5 text-amber-600"></i> Rancangan ARKAS
-                </button>
+          <!-- Ringkasan Tabel Nilai Capaian -->
+          <div class="lg:col-span-6 card-elevated p-5 flex flex-col">
+            <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-100">
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm sm:text-base">Ringkasan Nilai Capaian Indikator</h3>
+                <p class="text-xs text-slate-500">Daftar indikator beserta skor capaian dan tren perubahan</p>
               </div>
+              <button onclick="setActiveTab('analisis')" class="text-xs font-bold text-emerald-800 hover:underline shrink-0">Analisis Detail →</button>
             </div>
+
+            ${indicators.length === 0 ? `
+              <div class="py-12 text-center text-xs text-slate-400 my-auto">
+                Data nilai capaian akan tampil otomatis setelah Anda memasukkan data Rapor Pendidikan.
+              </div>
+            ` : `
+              <div class="mt-3 overflow-x-auto flex-1">
+                <table class="w-full text-left text-xs">
+                  <thead>
+                    <tr class="border-b border-slate-200 text-slate-500 uppercase text-[10px]">
+                      <th class="py-2 pr-2">Indikator</th>
+                      <th class="py-2 px-2 text-center">Nilai Capaian</th>
+                      <th class="py-2 px-2 text-center">Kategori</th>
+                      <th class="py-2 pl-2 text-right">Perubahan</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100">
+                    ${indicators.map(ind => `
+                      <tr class="hover:bg-slate-50">
+                        <td class="py-2.5 pr-2 font-semibold text-slate-800">
+                          ${ind.kode ? `<span class="font-mono text-emerald-800">[${escapeHtml(ind.kode)}]</span> ` : ""}${escapeHtml(ind.nama)}
+                        </td>
+                        <td class="py-2.5 px-2 text-center font-mono font-extrabold text-slate-900 text-sm">
+                          ${formatScore(ind.nilai)}
+                        </td>
+                        <td class="py-2.5 px-2 text-center">${getCategoryBadgeHtml(classifyCategory(ind.nilai, ind.kategori))}</td>
+                        <td class="py-2.5 pl-2 text-right">${getDeltaBadgeHtml(ind.perubahan)}</td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+            `}
           </div>
-        </div>
+        </section>
       `;
-
-      // Render Charts if indicators exist
-      if (totalInd > 0 && window.Chart) {
-        const barCtx = document.getElementById('dashboardBarChart');
-        if (barCtx) {
-          const labels = data.indicators.map(i => (i.kode ? `${i.kode} ` : '') + (i.nama.length > 22 ? i.nama.slice(0, 22) + '…' : i.nama));
-          const scores = data.indicators.map(i => parseFloat(i.nilai) || 0);
-          const bgColors = data.indicators.map(i => {
-            const kat = classifyCategory(i.nilai, i.kategori);
-            if (kat === 'Baik') return '#047857';
-            if (kat === 'Sedang') return '#f59e0b';
-            return '#e11d48';
-          });
-          chartInstances.dashBar = new Chart(barCtx, {
-            type: 'bar',
-            data: {
-              labels,
-              datasets: [{
-                label: 'Nilai Capaian',
-                data: scores,
-                backgroundColor: bgColors,
-                borderRadius: 6,
-                maxBarThickness: 36
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: { display: false }
-              },
-              scales: {
-                y: { beginAtZero: true, max: 100, grid: { color: '#f1f5f9' } },
-                x: { grid: { display: false }, ticks: { font: { size: 10 } } }
-              }
-            }
-          });
-        }
-
-        const doughCtx = document.getElementById('dashboardDoughnutChart');
-        if (doughCtx) {
-          let baik = 0, sedang = 0, kurang = 0;
-          data.indicators.forEach(i => {
-            const k = classifyCategory(i.nilai, i.kategori);
-            if (k === 'Baik') baik++;
-            else if (k === 'Sedang') sedang++;
-            else kurang++;
-          });
-          chartInstances.dashDough = new Chart(doughCtx, {
-            type: 'doughnut',
-            data: {
-              labels: ['Baik', 'Sedang', 'Kurang'],
-              datasets: [{
-                data: [baik, sedang, kurang],
-                backgroundColor: ['#047857', '#f59e0b', '#e11d48'],
-                borderWidth: 2,
-                borderColor: '#ffffff'
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              cutout: '64%',
-              plugins: {
-                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
-              }
-            }
-          });
-        }
-      }
     }
 
     // =========================================================================
-    // MODULE C: INPUT DATA RAPOR PENDIDIKAN (PDF, EXCEL, & MANUAL FORM)
+    // 7. MODULE 1: INPUT DATA RAPOR PENDIDIKAN (Excel, PDF, Manual + Nilai Capaian)
     // =========================================================================
-    function renderInputModule(container) {
+    function renderInputModule() {
       const data = getCurrentData();
       const s = data.school;
-      const unverifiedCount = data.indicators.filter(i => !i.terverifikasi).length;
 
-      container.innerHTML = `
+      return `
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">1. Input Data Identitas Sekolah &amp; Rapor Pendidikan</h2>
-            <p class="text-xs text-slate-500">Masukkan data melalui unggah PDF Rapor Pendidikan, file Excel, atau formulir manual terstruktur.</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 1 • Sumber Data Utama</span>
+            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Input Data Rapor Pendidikan &amp; Nilai Capaian</h2>
+            <p class="text-xs text-slate-600 mt-0.5">Unggah langsung file <strong>Excel Rapor Pendidikan</strong> resmi, dokumen <strong>PDF</strong>, atau isi <strong>Nilai Capaian</strong> secara manual.</p>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="navigateTo('analisis')" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold flex items-center gap-1.5 shadow-sm hover:opacity-95 transition">
+          <div class="flex flex-wrap gap-2">
+            <button onclick="downloadExcelTemplate()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-semibold text-xs flex items-center gap-1.5">
+              <i data-lucide="file-down" class="w-4 h-4 text-emerald-700"></i>
+              <span>Unduh Templat Excel</span>
+            </button>
+            <button onclick="setActiveTab('analisis')" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
               <span>Mulai Analisis</span>
               <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
 
-        <!-- Section 1: Identitas Satuan Pendidikan -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-              <i data-lucide="school" class="w-4 h-4 text-emerald-800"></i>
-              <span>A. Identitas Satuan Pendidikan</span>
-            </h3>
-            ${(!s.nama || !s.npsn) ? `<span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200">Perlu Dilengkapi</span>` : `<span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">Terisi</span>`}
+        <!-- SCHOOL IDENTITY FORM -->
+        <section class="card-elevated p-5">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                <i data-lucide="building-2" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm">Identitas Satuan Pendidikan</h3>
+                <p class="text-[11px] text-slate-500">Otomatis terisi saat mengunggah file Rapor Pendidikan atau dapat disunting langsung.</p>
+              </div>
+            </div>
+            <button type="button" onclick="saveSchoolIdentityForm()" class="px-3.5 py-1.5 rounded-xl bg-emerald-900 text-white text-xs font-bold hover:bg-emerald-800 flex items-center gap-1.5">
+              <i data-lucide="save" class="w-3.5 h-3.5"></i>
+              <span>Simpan Identitas</span>
+            </button>
           </div>
 
-          <form id="schoolIdentityForm" onsubmit="saveSchoolIdentity(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-            <div>
-              <label class="block font-semibold text-slate-700 mb-1">Nama Sekolah <span class="text-rose-600">*</span></label>
-              <input type="text" name="nama" value="${escapeHtml(s.nama)}" placeholder="Contoh: SMP Negeri 1 Nusantara" required class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
+          <form id="schoolIdentityForm" onsubmit="event.preventDefault(); saveSchoolIdentityForm();" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div class="sm:col-span-2">
+              <label class="block font-bold text-slate-700 mb-1">Nama Sekolah *</label>
+              <input type="text" name="nama" value="${escapeHtml(s.nama)}" placeholder="Contoh: SD Negeri 01 Merdeka" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">NPSN <span class="text-rose-600">*</span></label>
-              <input type="text" name="npsn" value="${escapeHtml(s.npsn)}" placeholder="8 digit NPSN" required class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono focus:border-emerald-700 focus:outline-none" />
+              <label class="block font-bold text-slate-700 mb-1">NPSN *</label>
+              <input type="text" name="npsn" value="${escapeHtml(s.npsn)}" placeholder="8 digit NPSN" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono focus:border-emerald-700 focus:outline-none" />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Jenjang Pendidikan <span class="text-rose-600">*</span></label>
-              <select name="jenjang" required class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none">
-                <option value="">-- Pilih Jenjang --</option>
-                ${["PAUD / TK", "SD / MI", "SMP / MTs", "SMA / MA", "SMK", "SLB", "PKBM / Kesetaraan"].map(j => `<option value="${j}" ${s.jenjang === j ? 'selected' : ''}>${j}</option>`).join('')}
+              <label class="block font-bold text-slate-700 mb-1">Jenjang Pendidikan</label>
+              <select name="jenjang" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none">
+                ${["PAUD / TK", "SD", "SMP", "SMA", "SMK", "SLB", "PKBM"].map(j => `<option value="${j}" ${s.jenjang === j ? "selected" : ""}>${j}</option>`).join("")}
               </select>
             </div>
-            <div class="sm:col-span-2 lg:col-span-3">
-              <label class="block font-semibold text-slate-700 mb-1">Alamat Lengkap Sekolah</label>
-              <input type="text" name="alamat" value="${escapeHtml(s.alamat)}" placeholder="Jalan, Desa/Kelurahan, Kode Pos" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
+            <div class="sm:col-span-2">
+              <label class="block font-bold text-slate-700 mb-1">Alamat Sekolah</label>
+              <input type="text" name="alamat" value="${escapeHtml(s.alamat)}" placeholder="Jalan, Desa/Kelurahan" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Kecamatan</label>
+              <label class="block font-bold text-slate-700 mb-1">Kecamatan</label>
               <input type="text" name="kecamatan" value="${escapeHtml(s.kecamatan)}" placeholder="Nama Kecamatan" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Kabupaten / Kota</label>
-              <input type="text" name="kabupaten" value="${escapeHtml(s.kabupaten)}" placeholder="Nama Kabupaten/Kota" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
+              <label class="block font-bold text-slate-700 mb-1">Kabupaten / Kota</label>
+              <input type="text" name="kabupaten" value="${escapeHtml(s.kabupaten)}" placeholder="Kabupaten / Kota" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Provinsi</label>
+              <label class="block font-bold text-slate-700 mb-1">Provinsi</label>
               <input type="text" name="provinsi" value="${escapeHtml(s.provinsi)}" placeholder="Nama Provinsi" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Tahun Rapor Pendidikan</label>
-              <input type="text" name="tahunRapor" value="${escapeHtml(s.tahunRapor)}" placeholder="Contoh: 2025" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
+              <label class="block font-bold text-slate-700 mb-1">Tahun Rapor Pendidikan</label>
+              <input type="text" name="tahunRapor" value="${escapeHtml(s.tahunRapor)}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono focus:border-emerald-700 focus:outline-none" />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Tahun Perencanaan / Anggaran</label>
-              <input type="text" name="tahunPerencanaan" value="${escapeHtml(s.tahunPerencanaan || window.appState.activeYear)}" placeholder="Contoh: 2026" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
+              <label class="block font-bold text-slate-700 mb-1">Tahun Perencanaan / Anggaran</label>
+              <input type="text" name="tahunPerencanaan" value="${escapeHtml(s.tahunPerencanaan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono focus:border-emerald-700 focus:outline-none" />
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Tahun Ajaran</label>
-              <input type="text" name="tahunAjaran" value="${escapeHtml(s.tahunAjaran)}" placeholder="Contoh: 2026/2027" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
-            </div>
-
-            <div class="sm:col-span-2 lg:col-span-3 flex justify-end pt-2">
-              <button type="submit" class="px-5 py-2.5 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow-sm hover:opacity-95 transition">
-                <i data-lucide="check" class="w-4 h-4"></i>
-                <span>Simpan Identitas Sekolah</span>
-              </button>
+              <label class="block font-bold text-slate-700 mb-1">Kepala Sekolah</label>
+              <input type="text" name="kepalaSekolah" value="${escapeHtml(s.kepalaSekolah)}" placeholder="Nama & Gelar Kepala Sekolah" class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:border-emerald-700 focus:outline-none" />
             </div>
           </form>
-        </div>
+        </section>
 
-        <!-- Section 2: Tiga Metode Input Data Rapor Pendidikan -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <!-- Method 1: Upload PDF -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between">
+        <!-- 3 WAYS TO INPUT RAPOR PENDIDIKAN DATA -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Method 1: Direct Excel Rapor Pendidikan Upload -->
+          <div class="card-elevated p-5 border-2 border-emerald-700/30 bg-emerald-50/30 flex flex-col justify-between">
             <div>
-              <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center mb-3">
-                <i data-lucide="file-text" class="w-5 h-5"></i>
+              <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl emerald-gradient text-white flex items-center justify-center shadow-sm">
+                  <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[10px] font-extrabold">DIREKOMENDASIKAN</span>
               </div>
-              <h4 class="font-bold text-slate-900 text-sm">1. Unggah Dokumen PDF Rapor</h4>
-              <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                Sistem akan membaca teks PDF Rapor Pendidikan secara otomatis. Bagian yang tidak terbaca akan ditandai untuk Anda konfirmasi (tanpa mengarang data).
+              <h3 class="font-bold text-slate-900 text-sm">1. Unggah Langsung Excel Rapor</h3>
+              <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                Mendukung langsung file unduhan resmi <strong>Rapor Pendidikan (.xlsx / .xls / .csv)</strong>. Otomatis melewati sheet <em>Panduan</em>, membaca <strong>Nilai Capaian</strong>, kategori, dan perubahan skor.
               </p>
             </div>
-            <div class="mt-4 space-y-2">
-              <label class="block w-full cursor-pointer rounded-xl border-2 border-dashed border-slate-300 hover:border-emerald-700 bg-slate-50 hover:bg-emerald-50/40 p-3 text-center transition">
-                <span class="text-xs font-semibold text-emerald-900 flex items-center justify-center gap-1.5">
-                  <i data-lucide="upload" class="w-4 h-4"></i> Pilih File PDF (.pdf)
-                </span>
+            <div class="mt-4">
+              <label class="w-full cursor-pointer py-2.5 px-4 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center justify-center gap-2 shadow hover:opacity-95 transition">
+                <i data-lucide="upload" class="w-4 h-4"></i>
+                <span>Pilih File Excel Rapor (.xlsx)</span>
+                <input type="file" accept=".xlsx,.xls,.csv" onchange="handleExcelUpload(event)" class="hidden" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Method 2: PDF Rapor Pendidikan Upload -->
+          <div class="card-elevated p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
+                  <i data-lucide="file-text" class="w-5 h-5"></i>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 text-[10px] font-bold border border-amber-200">PDF EKSTRAKSI</span>
+              </div>
+              <h3 class="font-bold text-slate-900 text-sm">2. Unggah Dokumen PDF Rapor</h3>
+              <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                Mengekstrak teks indikator dari file PDF Rapor Pendidikan dan menampilkan jendela konfirmasi untuk memverifikasi <strong>Nilai Capaian</strong> yang terbaca.
+              </p>
+            </div>
+            <div class="mt-4">
+              <label class="w-full cursor-pointer py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition">
+                <i data-lucide="file-up" class="w-4 h-4"></i>
+                <span>Pilih File PDF Rapor (.pdf)</span>
                 <input type="file" accept=".pdf" onchange="handlePdfUpload(event)" class="hidden" />
               </label>
             </div>
           </div>
 
-          <!-- Method 2: Upload Excel -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between">
+          <!-- Method 3: Manual Input & Standard PBD Catalog -->
+          <div class="card-elevated p-5 flex flex-col justify-between">
             <div>
-              <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center mb-3">
-                <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+              <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center">
+                  <i data-lucide="edit-3" class="w-5 h-5"></i>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">MANUAL &amp; KATALOG</span>
               </div>
-              <h4 class="font-bold text-slate-900 text-sm">2. Unggah Langsung Excel Rapor Pendidikan</h4>
-              <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                Bisa langsung mengunggah file unduhan resmi Rapor Pendidikan (.xlsx / .xls / .csv) tanpa ubah format, maupun menggunakan template kami.
+              <h3 class="font-bold text-slate-900 text-sm">3. Input Manual &amp; Katalog PBD</h3>
+              <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                Pilih indikator dari daftar standar Kemendikdasmen dan langsung ketik <strong>Nilai Capaian (0–100)</strong> sesuai Rapor Pendidikan sekolah Anda.
               </p>
             </div>
-            <div class="mt-4 space-y-2">
-              <label class="block w-full cursor-pointer rounded-xl border-2 border-dashed border-emerald-400 hover:border-emerald-700 bg-emerald-50/40 hover:bg-emerald-50 p-3 text-center transition">
-                <span class="text-xs font-bold text-emerald-900 flex items-center justify-center gap-1.5">
-                  <i data-lucide="upload" class="w-4 h-4"></i> Unggah File Excel Rapor (.xlsx/.xls)
-                </span>
-                <input type="file" accept=".xlsx,.xls,.csv" onchange="handleExcelUpload(event)" class="hidden" />
-              </label>
-              <button onclick="downloadRaporExcelTemplate()" class="w-full py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold flex items-center justify-center gap-1 transition">
-                <i data-lucide="download" class="w-3.5 h-3.5"></i> Unduh Template Alternatif
+            <div class="mt-4 grid grid-cols-2 gap-2">
+              <button onclick="openBulkCatalogPickerModal()" class="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5">
+                <i data-lucide="list-checks" class="w-4 h-4 text-amber-400"></i>
+                <span>Katalog PBD</span>
+              </button>
+              <button onclick="openAddIndicatorModal()" class="py-2.5 px-3 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5">
+                <i data-lucide="plus" class="w-4 h-4 text-emerald-700"></i>
+                <span>Tambah Baru</span>
               </button>
             </div>
           </div>
+        </section>
 
-          <!-- Method 3: Input Manual & Katalog Indikator -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between">
+        <!-- INDICATORS VERIFICATION & INLINE NILAI CAPAIAN TABLE -->
+        <section class="card-elevated overflow-hidden">
+          <div class="p-4 sm:p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3">
-                <i data-lucide="clipboard-edit" class="w-5 h-5"></i>
+              <h3 class="font-bold text-slate-900 text-sm sm:text-base">Daftar Indikator &amp; Nilai Capaian Rapor Pendidikan (${data.indicators.length})</h3>
+              <p class="text-xs text-slate-500">Anda dapat langsung mengetik atau mengubah angka pada kolom <strong>Nilai Capaian (0–100)</strong> di bawah ini.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="openBulkCatalogPickerModal()" class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100 text-xs font-bold flex items-center gap-1.5">
+                <i data-lucide="list-plus" class="w-3.5 h-3.5"></i>
+                <span>Pilih Indikator &amp; Isi Nilai</span>
+              </button>
+              ${data.indicators.length > 0 ? `
+                <button onclick="confirmClearAllIndicators()" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 text-xs font-semibold">
+                  Kosongkan Tabel
+                </button>
+              ` : ""}
+            </div>
+          </div>
+
+          ${data.indicators.length === 0 ? `
+            <div class="p-10 text-center space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center mx-auto">
+                <i data-lucide="clipboard-list" class="w-6 h-6"></i>
               </div>
-              <h4 class="font-bold text-slate-900 text-sm">3. Input Manual &amp; Katalog PBD</h4>
-              <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                Pilih indikator standar Rapor Pendidikan atau tambahkan indikator secara manual sesuai lembar hasil Rapor Pendidikan sekolah Anda.
-              </p>
+              <h4 class="font-bold text-slate-800 text-sm">Belum Ada Data Indikator Rapor Pendidikan</h4>
+              <p class="text-xs text-slate-500 max-w-md mx-auto">Silakan unggah file Excel Rapor Pendidikan Anda atau klik tombol <strong>Pilih Indikator &amp; Isi Nilai</strong> untuk memasukkan data capaian sekolah.</p>
             </div>
-            <div class="mt-4 space-y-2">
-              <button onclick="openBulkCatalogPickerModal()" class="w-full py-2.5 px-3 rounded-xl emerald-gradient hover:opacity-95 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs transition">
-                <i data-lucide="list-checks" class="w-4 h-4 text-amber-300"></i> Pilih dari Katalog Indikator
-              </button>
-              <button onclick="openEditIndicatorModal()" class="w-full py-2 px-3 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Tambah Indikator Manual
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 3: Tabel Indikator Rapor Pendidikan yang Diinput -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-          <div class="p-4 sm:p-5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <h3 class="font-bold text-slate-900 text-sm sm:text-base">B. Daftar Indikator Rapor Pendidikan (${data.indicators.length})</h3>
-              <p class="text-xs text-slate-500">Pastikan nilai capaian dan kategori setiap indikator telah sesuai dengan dokumen resmi sekolah.</p>
-            </div>
-            ${unverifiedCount > 0 ? `
-              <span class="text-xs font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
-                ${unverifiedCount} Indikator Perlu Konfirmasi
-              </span>
-            ` : ''}
-          </div>
-
-          ${data.indicators.length > 0 ? `
+          ` : `
             <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[10px]">
+                  <tr>
                     <th class="py-3 px-4">Indikator &amp; Dimensi</th>
-                    <th class="py-3 px-3 text-center">Nilai</th>
+                    <th class="py-3 px-3 text-center">Nilai Capaian (0–100)</th>
                     <th class="py-3 px-3 text-center">Kategori</th>
                     <th class="py-3 px-3 text-center">Perubahan</th>
                     <th class="py-3 px-3">Peringkat / Rekomendasi Rapor</th>
-                    <th class="py-3 px-3 text-center">Verifikasi</th>
+                    <th class="py-3 px-3 text-center">Status Data</th>
                     <th class="py-3 px-4 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 align-top">
+                <tbody class="divide-y divide-slate-100">
                   ${data.indicators.map(ind => {
                     const kat = classifyCategory(ind.nilai, ind.kategori);
+                    const hasScore = ind.nilai !== "" && !isNaN(parseFloat(ind.nilai));
                     return `
-                      <tr class="hover:bg-slate-50 ${!ind.terverifikasi ? 'bg-amber-50/40' : ''}">
-                        <td class="py-3 px-4 min-w-[200px]">
-                          <div class="font-bold text-slate-900">${ind.kode ? `<span class="font-mono text-emerald-800 mr-1">[${escapeHtml(ind.kode)}]</span>` : ''}${escapeHtml(ind.nama)}</div>
-                          <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(ind.dimensi || '')}</div>
+                      <tr class="hover:bg-slate-50/80 align-middle">
+                        <td class="py-3 px-4 min-w-[220px]">
+                          <div class="font-bold text-slate-900">
+                            ${ind.kode ? `<span class="font-mono text-emerald-800 mr-1">[${escapeHtml(ind.kode)}]</span>` : ""}${escapeHtml(ind.nama)}
+                          </div>
+                          <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(ind.dimensi || "-")}</div>
                         </td>
-                        <td class="py-3 px-3 text-center font-mono font-bold text-sm">
-                          ${ind.nilai !== '' ? escapeHtml(ind.nilai) : '<span class="text-rose-600 text-xs font-sans">Kosong</span>'}
+                        <td class="py-3 px-3 text-center">
+                          <input type="number" step="0.01" min="0" max="100"
+                            value="${hasScore ? escapeHtml(ind.nilai) : ""}"
+                            placeholder="Isi nilai"
+                            aria-label="Nilai Capaian ${escapeHtml(ind.nama)}"
+                            onchange="updateIndicatorScoreInline('${ind.id}', this.value)"
+                            class="w-24 text-center font-mono font-bold text-xs rounded-lg border ${hasScore ? "border-slate-300 bg-white text-slate-900" : "border-rose-300 bg-rose-50 text-rose-800 placeholder:text-rose-400"} px-2 py-1.5 focus:border-emerald-700 focus:outline-none" />
                         </td>
                         <td class="py-3 px-3 text-center">${getCategoryBadgeHtml(kat)}</td>
                         <td class="py-3 px-3 text-center">${getDeltaBadgeHtml(ind.perubahan)}</td>
-                        <td class="py-3 px-3 min-w-[180px] text-slate-600">
-                          ${ind.peringkat ? `<div class="font-semibold text-slate-800 text-[11px]">${escapeHtml(ind.peringkat)}</div>` : ''}
-                          <div class="text-[11px] line-clamp-2">${escapeHtml(ind.rekomendasiRapor || '-')}</div>
+                        <td class="py-3 px-3 min-w-[180px] text-[11px] text-slate-600">
+                          ${ind.peringkat ? `<div class="font-semibold text-slate-800">${escapeHtml(ind.peringkat)}</div>` : ""}
+                          <div class="line-clamp-2">${escapeHtml(ind.rekomendasiRapor || "-")}</div>
                         </td>
-                        <td class="py-3 px-3 text-center whitespace-nowrap">
-                          ${ind.terverifikasi
-                            ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Terkonfirmasi</span>`
-                            : `<button onclick="verifyIndicatorRow('${ind.id}')" class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-emerald-950 font-bold text-[11px] transition">Konfirmasi ✓</button>`}
+                        <td class="py-3 px-3 text-center">
+                          ${ind.terverifikasi && hasScore
+                            ? `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Terverifikasi</span>`
+                            : `<button onclick="verifyIndicatorRow('${ind.id}')" class="px-2 py-1 rounded-lg bg-amber-100 text-amber-900 font-bold text-[10px] hover:bg-amber-200">Perlu Konfirmasi</button>`}
                         </td>
                         <td class="py-3 px-4 text-right whitespace-nowrap">
-                          <button onclick="openEditIndicatorModal('${ind.id}')" class="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-800" title="Edit Indikator"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
-                          <button onclick="deleteIndicatorRow('${ind.id}')" class="p-1.5 rounded-lg hover:bg-rose-50 text-rose-700" title="Hapus"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                          <button onclick="openEditIndicatorModal('${ind.id}')" class="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-800" title="Edit Lengkap Indikator">
+                            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                          </button>
+                          <button onclick="deleteIndicator('${ind.id}')" class="p-1.5 rounded-lg hover:bg-rose-50 text-rose-700" title="Hapus Indikator">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                          </button>
                         </td>
                       </tr>
                     `;
-                  }).join('')}
+                  }).join("")}
                 </tbody>
               </table>
             </div>
-          ` : `
-            <div class="p-10 text-center">
-              <i data-lucide="file-spreadsheet" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-              <h4 class="font-bold text-slate-900 text-sm">Belum Ada Indikator Rapor Pendidikan yang Diinput</h4>
-              <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Silakan unggah file Excel/PDF Rapor Pendidikan Anda atau pilih indikator dari Katalog PBD di atas.</p>
-            </div>
           `}
-        </div>
+        </section>
       `;
     }
 
-    function saveSchoolIdentity(event) {
-      event.preventDefault();
-      const fd = new FormData(event.target);
+    function saveSchoolIdentityForm() {
+      const form = document.getElementById("schoolIdentityForm");
+      if (!form) return;
+      const fd = new FormData(form);
       const data = getCurrentData();
-      data.school = {
-        ...data.school,
-        nama: String(fd.get('nama') || '').trim(),
-        npsn: String(fd.get('npsn') || '').trim(),
-        jenjang: String(fd.get('jenjang') || '').trim(),
-        alamat: String(fd.get('alamat') || '').trim(),
-        kecamatan: String(fd.get('kecamatan') || '').trim(),
-        kabupaten: String(fd.get('kabupaten') || '').trim(),
-        provinsi: String(fd.get('provinsi') || '').trim(),
-        tahunRapor: String(fd.get('tahunRapor') || '').trim(),
-        tahunPerencanaan: String(fd.get('tahunPerencanaan') || window.appState.activeYear).trim(),
-        tahunAjaran: String(fd.get('tahunAjaran') || '').trim()
-      };
-      triggerAutoSave("Input Data", "Simpan Identitas Sekolah", `Menyimpan identitas ${data.school.nama} (NPSN: ${data.school.npsn}).`);
+      data.school.nama = String(fd.get("nama") || "").trim();
+      data.school.npsn = String(fd.get("npsn") || "").trim();
+      data.school.jenjang = String(fd.get("jenjang") || "SD").trim();
+      data.school.alamat = String(fd.get("alamat") || "").trim();
+      data.school.kecamatan = String(fd.get("kecamatan") || "").trim();
+      data.school.kabupaten = String(fd.get("kabupaten") || "").trim();
+      data.school.provinsi = String(fd.get("provinsi") || "").trim();
+      data.school.tahunRapor = String(fd.get("tahunRapor") || "").trim();
+      data.school.tahunPerencanaan = String(fd.get("tahunPerencanaan") || "").trim();
+      data.school.kepalaSekolah = String(fd.get("kepalaSekolah") || "").trim();
+
+      triggerAutoSave("Input Data", "Simpan Identitas Sekolah", `Memperbarui profil ${data.school.nama || "Satuan Pendidikan"}.`);
       renderAll();
       showToast("Identitas satuan pendidikan berhasil disimpan.", "success");
     }
 
-    function openBulkCatalogPickerModal() {
+    function updateIndicatorScoreInline(indicatorId, rawVal) {
       const data = getCurrentData();
-      const existingCodes = new Set(data.indicators.map(i => i.kode));
+      const ind = data.indicators.find(i => i.id === indicatorId);
+      if (!ind) return;
 
-      openCustomModal(`
-        <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <div>
-              <h3 class="font-bold text-slate-900 text-base">Pilih Indikator Standar Rapor Pendidikan</h3>
-              <p class="text-xs text-slate-500">Centang indikator yang ingin ditambahkan ke tabel input, lalu isi nilai capaiannya.</p>
-            </div>
-            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
-          </div>
-          <form onsubmit="saveBulkCatalogSelection(event)" class="mt-4 space-y-2 text-xs">
-            <div class="max-h-72 overflow-y-auto divide-y divide-slate-100 border border-slate-200 rounded-xl">
-              ${KATALOG_INDIKATOR_STANDAR.map(std => {
-                const already = existingCodes.has(std.kode);
-                return `
-                  <label class="flex items-start gap-3 p-3 hover:bg-slate-50 cursor-pointer ${already ? 'opacity-60 bg-slate-50' : ''}">
-                    <input type="checkbox" name="selectedCodes" value="${std.kode}" ${already ? 'disabled checked' : ''} class="mt-0.5 rounded text-emerald-700" />
-                    <div class="flex-1">
-                      <div class="font-bold text-slate-900">[${std.kode}] ${escapeHtml(std.nama)} ${already ? '<span class="text-[10px] text-emerald-700 font-semibold">(Sudah ada)</span>' : ''}</div>
-                      <div class="text-[11px] text-slate-500">${escapeHtml(std.dimensi)}</div>
-                    </div>
-                  </label>
-                `;
-              }).join('')}
-            </div>
-            <div class="pt-3 flex justify-end gap-2">
-              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Tambahkan Indikator Terpilih</button>
-            </div>
-          </form>
-        </div>
-      `, 'max-w-2xl');
-    }
-
-    function saveBulkCatalogSelection(e) {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const selected = fd.getAll('selectedCodes');
-      const data = getCurrentData();
-      let added = 0;
-
-      selected.forEach(kode => {
-        const std = KATALOG_INDIKATOR_STANDAR.find(s => s.kode === kode);
-        if (std && !data.indicators.some(i => i.kode === kode)) {
-          data.indicators.push({
-            id: uid(),
-            kode: std.kode,
-            nama: std.nama,
-            dimensi: std.dimensi,
-            nilai: "",
-            kategori: "Belum Terverifikasi",
-            perubahan: "",
-            peringkat: "",
-            rekomendasiRapor: "",
-            terverifikasi: false
-          });
-          added++;
-        }
-      });
-
-      closeCustomModal();
-      if (added > 0) {
-        triggerAutoSave("Input Data", "Tambah dari Katalog", `Menambahkan ${added} indikator standar PBD.`);
-        renderAll();
-        showToast(`${added} indikator ditambahkan. Silakan klik ikon pensil untuk mengisi nilai capaiannya.`, "success");
-      }
-    }
-
-    function openEditIndicatorModal(indicatorId = null) {
-      const data = getCurrentData();
-      const existing = indicatorId ? data.indicators.find(i => i.id === indicatorId) : null;
-
-      openCustomModal(`
-        <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <h3 class="font-bold text-slate-900 text-base">${existing ? 'Edit Indikator Rapor Pendidikan' : 'Tambah Indikator Rapor Pendidikan'}</h3>
-            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
-          </div>
-          <form onsubmit="saveIndicatorModal(event, '${indicatorId || ''}')" class="mt-4 space-y-3 text-xs">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Kode Indikator</label>
-                <input type="text" name="kode" value="${escapeHtml(existing?.kode || '')}" placeholder="Contoh: A.1" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
-              </div>
-              <div class="sm:col-span-2">
-                <label class="block font-bold text-slate-700 mb-1">Nama Indikator <span class="text-rose-600">*</span></label>
-                <input type="text" name="nama" value="${escapeHtml(existing?.nama || '')}" required placeholder="Contoh: Kemampuan Literasi" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Dimensi Rapor Pendidikan</label>
-              <select name="dimensi" class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                ${DIMENSI_RAPOR.map(d => `<option value="${d}" ${existing?.dimensi === d ? 'selected' : ''}>${d}</option>`).join('')}
-              </select>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Nilai Capaian (0–100) <span class="text-rose-600">*</span></label>
-                <input type="number" step="0.01" min="0" max="100" name="nilai" value="${existing?.nilai !== undefined ? existing.nilai : ''}" required placeholder="Contoh: 64.50" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Kategori Capaian</label>
-                <select name="kategori" class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                  <option value="">Otomatis dari Nilai</option>
-                  <option value="Baik" ${existing?.kategori === 'Baik' ? 'selected' : ''}>Baik</option>
-                  <option value="Sedang" ${existing?.kategori === 'Sedang' ? 'selected' : ''}>Sedang</option>
-                  <option value="Kurang" ${existing?.kategori === 'Kurang' ? 'selected' : ''}>Kurang</option>
-                </select>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Perubahan Tahun Lalu</label>
-                <input type="number" step="0.01" name="perubahan" value="${existing?.perubahan !== undefined ? existing.perubahan : ''}" placeholder="Contoh: -3.20 atau +4.10" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
-              </div>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Peringkat / Posisi (Opsional)</label>
-              <input type="text" name="peringkat" value="${escapeHtml(existing?.peringkat || '')}" placeholder="Contoh: Peringkat Menengah (41-60%) Kab/Kota" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Rekomendasi dari Rapor Pendidikan</label>
-              <textarea name="rekomendasiRapor" rows="2" placeholder="Salin catatan benahi/rekomendasi dari Rapor Pendidikan jika ada..." class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(existing?.rekomendasiRapor || '')}</textarea>
-            </div>
-            <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
-              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan &amp; Konfirmasi</button>
-            </div>
-          </form>
-        </div>
-      `, 'max-w-2xl');
-    }
-
-    function saveIndicatorModal(e, indicatorId) {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const data = getCurrentData();
-      const nilaiRaw = fd.get('nilai');
-      const nilaiNum = nilaiRaw !== '' ? parseFloat(nilaiRaw) : '';
-      const katRaw = fd.get('kategori');
-      const perubRaw = fd.get('perubahan');
-      const perubNum = perubRaw !== '' ? parseFloat(perubRaw) : '';
-
-      const obj = {
-        id: indicatorId || uid(),
-        kode: String(fd.get('kode') || '').trim().toUpperCase(),
-        nama: String(fd.get('nama') || '').trim(),
-        dimensi: String(fd.get('dimensi') || DIMENSI_RAPOR[0]),
-        nilai: nilaiNum,
-        kategori: katRaw || classifyCategory(nilaiNum),
-        perubahan: perubNum,
-        peringkat: String(fd.get('peringkat') || '').trim(),
-        rekomendasiRapor: String(fd.get('rekomendasiRapor') || '').trim(),
-        terverifikasi: nilaiNum !== ''
-      };
-
-      if (indicatorId) {
-        const idx = data.indicators.findIndex(i => i.id === indicatorId);
-        if (idx !== -1) data.indicators[idx] = obj;
+      const trimmed = String(rawVal || "").trim();
+      if (trimmed === "") {
+        ind.nilai = "";
+        ind.kategori = "Belum Terverifikasi";
+        ind.terverifikasi = false;
       } else {
-        data.indicators.push(obj);
+        const parsed = parseFloat(trimmed);
+        if (isNaN(parsed) || parsed < 0 || parsed > 100) {
+          showToast("Nilai capaian harus berupa angka antara 0 sampai 100.", "warning");
+          renderAll();
+          return;
+        }
+        ind.nilai = parsed;
+        ind.kategori = classifyCategory(parsed);
+        ind.terverifikasi = true;
       }
 
-      closeCustomModal();
-      triggerAutoSave("Input Data", "Simpan Indikator", `Menyimpan indikator "${obj.nama}" (Nilai: ${obj.nilai}).`);
+      triggerAutoSave("Input Data", "Update Nilai Capaian", `Memperbarui nilai capaian "${ind.nama}" menjadi ${ind.nilai !== "" ? ind.nilai : "kosong"}.`);
       renderAll();
-      showToast("Data indikator berhasil disimpan & dikonfirmasi.", "success");
+      if (ind.nilai !== "") {
+        showToast(`Nilai capaian "${ind.nama}" (${ind.nilai} — ${ind.kategori}) disimpan.`, "success");
+      }
     }
 
     function verifyIndicatorRow(indicatorId) {
       const data = getCurrentData();
       const ind = data.indicators.find(i => i.id === indicatorId);
       if (!ind) return;
-      if (ind.nilai === '' || isNaN(parseFloat(ind.nilai))) {
+      if (ind.nilai === "" || isNaN(parseFloat(ind.nilai))) {
         openEditIndicatorModal(indicatorId);
-        showToast("Nilai capaian masih kosong. Silakan isi nilai terlebih dahulu sebelum konfirmasi.", "warning");
+        showToast("Nilai capaian masih kosong. Silakan isi nilai capaian terlebih dahulu.", "warning");
         return;
       }
       ind.terverifikasi = true;
@@ -1647,1434 +1696,1178 @@
       showToast(`Indikator "${ind.nama}" telah dikonfirmasi.`, "success");
     }
 
-    function deleteIndicatorRow(indicatorId) {
-      showConfirmDialog({
-        title: "Hapus Indikator Rapor?",
-        message: "Indikator ini akan dihapus dari daftar Rapor Pendidikan tahun aktif.",
-        confirmText: "Ya, Hapus",
-        danger: true,
-        onConfirm: () => {
-          const data = getCurrentData();
-          data.indicators = data.indicators.filter(i => i.id !== indicatorId);
-          delete data.rootCauses[indicatorId];
-          delete data.priorities[indicatorId];
-          triggerAutoSave("Input Data", "Hapus Indikator", "Menghapus indikator dari tabel Rapor Pendidikan.");
-          renderAll();
-          showToast("Indikator dihapus.", "info");
-        }
-      });
+    function openBulkCatalogPickerModal() {
+      const data = getCurrentData();
+      const existingMap = new Map(data.indicators.map(i => [i.kode, i]));
+
+      openCustomModal(`
+        <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Pilih Indikator &amp; Isi Nilai Capaian Rapor Pendidikan</h3>
+              <p class="text-xs text-slate-500">Centang indikator dan langsung masukkan <strong>Nilai Capaian (0–100)</strong> sesuai Rapor Pendidikan sekolah Anda.</p>
+            </div>
+            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+          <form onsubmit="saveBulkCatalogSelection(event)" class="mt-4 space-y-2 text-xs">
+            <div class="max-h-80 overflow-y-auto divide-y divide-slate-100 border border-slate-200 rounded-xl">
+              ${KATALOG_INDIKATOR_STANDAR.map(std => {
+                const existing = existingMap.get(std.kode);
+                const already = Boolean(existing);
+                return `
+                  <div class="flex items-center justify-between gap-3 p-3 hover:bg-slate-50 ${already ? "bg-slate-50/80" : ""}">
+                    <label class="flex items-start gap-3 flex-1 cursor-pointer min-w-0">
+                      <input type="checkbox" id="chk_${std.kode}" name="selectedCodes" value="${std.kode}" ${already ? "disabled checked" : ""} class="mt-0.5 rounded text-emerald-700 shrink-0" />
+                      <div class="min-w-0">
+                        <div class="font-bold text-slate-900 truncate">[${std.kode}] ${escapeHtml(std.nama)} ${already ? '<span class="text-[10px] text-emerald-700 font-semibold">(Sudah ada)</span>' : ""}</div>
+                        <div class="text-[11px] text-slate-500 truncate">${escapeHtml(std.dimensi)}</div>
+                      </div>
+                    </label>
+                    <div class="shrink-0 flex items-center gap-1.5">
+                      <span class="text-[10px] font-semibold text-slate-500 hidden sm:inline">Nilai Capaian:</span>
+                      <input type="number" step="0.01" min="0" max="100"
+                        name="score_${std.kode}"
+                        value="${already && existing.nilai !== "" ? escapeHtml(existing.nilai) : ""}"
+                        ${already ? "disabled" : ""}
+                        oninput="if(this.value !== ''){ const cb = document.getElementById('chk_${std.kode}'); if(cb && !cb.disabled) cb.checked = true; }"
+                        placeholder="0 - 100"
+                        class="w-24 text-center font-mono font-bold text-xs rounded-lg border border-slate-300 px-2 py-1.5 focus:border-emerald-700 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500" />
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+            <div class="pt-3 flex justify-end gap-2">
+              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Indikator &amp; Nilai Capaian</button>
+            </div>
+          </form>
+        </div>
+      `, "max-w-2xl");
     }
 
-    // Real Excel Upload Handler (Supports Official Kemendikdasmen Rapor Pendidikan Multi-Sheet Excel & Custom Templates)
+    function saveBulkCatalogSelection(e) {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const selected = fd.getAll("selectedCodes");
+      const data = getCurrentData();
+      let added = 0;
+
+      selected.forEach(kode => {
+        const std = KATALOG_INDIKATOR_STANDAR.find(s => s.kode === kode);
+        if (std && !data.indicators.some(i => i.kode === kode)) {
+          const rawScore = String(fd.get(`score_${kode}`) || "").trim();
+          const parsedScore = rawScore !== "" ? parseFloat(rawScore) : NaN;
+          const hasValidScore = !isNaN(parsedScore) && parsedScore >= 0 && parsedScore <= 100;
+
+          data.indicators.push({
+            id: uid(),
+            kode: std.kode,
+            nama: std.nama,
+            dimensi: std.dimensi,
+            nilai: hasValidScore ? parsedScore : "",
+            kategori: hasValidScore ? classifyCategory(parsedScore) : "Belum Terverifikasi",
+            perubahan: "",
+            peringkat: "",
+            rekomendasiRapor: "",
+            terverifikasi: hasValidScore
+          });
+          added++;
+        }
+      });
+
+      closeCustomModal();
+      if (added > 0) {
+        triggerAutoSave("Input Data", "Tambah dari Katalog", `Menambahkan ${added} indikator standar PBD.`);
+        renderAll();
+        showToast(`${added} indikator berhasil ditambahkan beserta nilai capaiannya.`, "success");
+      }
+    }
+
+    function openAddIndicatorModal() {
+      openCustomModal(`
+        <div class="p-5 sm:p-6">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h3 class="font-bold text-slate-900 text-base">Tambah Indikator Rapor Pendidikan Manual</h3>
+            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+          <form onsubmit="saveIndicatorModalForm(event, null)" class="mt-4 space-y-3 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Kode Indikator</label>
+                <input type="text" name="kode" placeholder="Misal: A.1" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block font-bold text-slate-700 mb-1">Nama Indikator *</label>
+                <input type="text" name="nama" required placeholder="Contoh: Kemampuan Literasi" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
+              </div>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Dimensi Rapor Pendidikan</label>
+              <input type="text" name="dimensi" placeholder="Contoh: D.1 Mutu dan Relevansi Hasil Belajar Peserta Didik" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold text-emerald-900 mb-1">Nilai Capaian (0–100) *</label>
+                <input type="number" step="0.01" min="0" max="100" name="nilai" required placeholder="Contoh: 64.50" class="w-full rounded-xl border-2 border-emerald-600 px-3 py-2 font-mono font-bold" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Kategori Capaian</label>
+                <select name="kategori" class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                  <option value="">Otomatis dari Nilai</option>
+                  <option value="Baik">Baik</option>
+                  <option value="Sedang">Sedang</option>
+                  <option value="Kurang">Kurang</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Perubahan Skor</label>
+                <input type="number" step="0.01" name="perubahan" placeholder="Misal: -2.40 atau 3.15" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
+              </div>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Peringkat / Kuantil (Jika tersedia)</label>
+              <input type="text" name="peringkat" placeholder="Contoh: Peringkat Menengah Atas (Kuantil 4 Kab/Kota)" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Rekomendasi dari Rapor Pendidikan</label>
+              <textarea name="rekomendasiRapor" rows="2" placeholder="Salin inspirasi benahi dari Rapor Pendidikan..." class="w-full rounded-xl border border-slate-300 px-3 py-2"></textarea>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Indikator</button>
+            </div>
+          </form>
+        </div>
+      `);
+    }
+
+    function openEditIndicatorModal(indicatorId) {
+      const data = getCurrentData();
+      const ind = data.indicators.find(i => i.id === indicatorId);
+      if (!ind) return;
+
+      openCustomModal(`
+        <div class="p-5 sm:p-6">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h3 class="font-bold text-slate-900 text-base">Edit Data &amp; Nilai Capaian Indikator</h3>
+            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+          <form onsubmit="saveIndicatorModalForm(event, '${ind.id}')" class="mt-4 space-y-3 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Kode Indikator</label>
+                <input type="text" name="kode" value="${escapeHtml(ind.kode)}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block font-bold text-slate-700 mb-1">Nama Indikator *</label>
+                <input type="text" name="nama" required value="${escapeHtml(ind.nama)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
+              </div>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Dimensi Rapor Pendidikan</label>
+              <input type="text" name="dimensi" value="${escapeHtml(ind.dimensi)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold text-emerald-900 mb-1">Nilai Capaian (0–100) *</label>
+                <input type="number" step="0.01" min="0" max="100" name="nilai" required value="${escapeHtml(ind.nilai)}" class="w-full rounded-xl border-2 border-emerald-600 px-3 py-2 font-mono font-bold" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Kategori Capaian</label>
+                <select name="kategori" class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                  <option value="">Otomatis dari Nilai</option>
+                  <option value="Baik" ${ind.kategori === "Baik" ? "selected" : ""}>Baik</option>
+                  <option value="Sedang" ${ind.kategori === "Sedang" ? "selected" : ""}>Sedang</option>
+                  <option value="Kurang" ${ind.kategori === "Kurang" ? "selected" : ""}>Kurang</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Perubahan Skor</label>
+                <input type="number" step="0.01" name="perubahan" value="${escapeHtml(ind.perubahan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
+              </div>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Peringkat / Kuantil</label>
+              <input type="text" name="peringkat" value="${escapeHtml(ind.peringkat)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Rekomendasi Rapor Pendidikan</label>
+              <textarea name="rekomendasiRapor" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(ind.rekomendasiRapor)}</textarea>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Perubahan</button>
+            </div>
+          </form>
+        </div>
+      `);
+    }
+
+    function saveIndicatorModalForm(e, indicatorId) {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const data = getCurrentData();
+
+      const rawNilai = String(fd.get("nilai") || "").trim();
+      const parsedNilai = rawNilai !== "" ? parseFloat(rawNilai) : "";
+      const selectedKat = String(fd.get("kategori") || "").trim();
+      const finalKat = selectedKat || classifyCategory(parsedNilai);
+
+      const rawDelta = String(fd.get("perubahan") || "").trim();
+      const parsedDelta = rawDelta !== "" ? parseFloat(rawDelta) : "";
+
+      const obj = {
+        id: indicatorId || uid(),
+        kode: String(fd.get("kode") || "").trim(),
+        nama: String(fd.get("nama") || "").trim(),
+        dimensi: String(fd.get("dimensi") || "").trim(),
+        nilai: parsedNilai,
+        kategori: finalKat,
+        perubahan: parsedDelta,
+        peringkat: String(fd.get("peringkat") || "").trim(),
+        rekomendasiRapor: String(fd.get("rekomendasiRapor") || "").trim(),
+        terverifikasi: parsedNilai !== "" && !isNaN(parsedNilai)
+      };
+
+      if (indicatorId) {
+        const idx = data.indicators.findIndex(i => i.id === indicatorId);
+        if (idx >= 0) data.indicators[idx] = obj;
+      } else {
+        data.indicators.push(obj);
+      }
+
+      closeCustomModal();
+      triggerAutoSave("Input Data", indicatorId ? "Edit Indikator" : "Tambah Indikator", `Menyimpan indikator "${obj.nama}" dengan Nilai Capaian ${obj.nilai}.`);
+      renderAll();
+      showToast(`Indikator "${obj.nama}" berhasil disimpan.`, "success");
+    }
+
+    function deleteIndicator(indicatorId) {
+      const data = getCurrentData();
+      const ind = data.indicators.find(i => i.id === indicatorId);
+      if (!ind) return;
+
+      openCustomModal(`
+        <div class="p-5 sm:p-6">
+          <h3 class="font-bold text-slate-900 text-base">Konfirmasi Hapus Indikator</h3>
+          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            Apakah Anda yakin ingin menghapus indikator <strong>"${escapeHtml(ind.nama)}"</strong>? Data analisis terkait indikator ini juga akan dilepas.
+          </p>
+          <div class="mt-5 flex justify-end gap-2 text-xs">
+            <button onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+            <button onclick="executeDeleteIndicator('${indicatorId}')" class="px-4 py-2 rounded-xl bg-rose-600 text-white font-bold">Ya, Hapus Indikator</button>
+          </div>
+        </div>
+      `, "max-w-md");
+    }
+
+    function executeDeleteIndicator(indicatorId) {
+      const data = getCurrentData();
+      data.indicators = data.indicators.filter(i => i.id !== indicatorId);
+      data.rootCauses = data.rootCauses.filter(r => r.indicatorId !== indicatorId);
+      data.priorities = data.priorities.filter(p => p.indicatorId !== indicatorId);
+      closeCustomModal();
+      triggerAutoSave("Input Data", "Hapus Indikator", "Menghapus 1 indikator dari tabel Rapor Pendidikan.");
+      renderAll();
+      showToast("Indikator telah dihapus.", "info");
+    }
+
+    function confirmClearAllIndicators() {
+      openCustomModal(`
+        <div class="p-5 sm:p-6">
+          <h3 class="font-bold text-slate-900 text-base">Konfirmasi Kosongkan Tabel Indikator</h3>
+          <p class="text-xs text-slate-600 mt-2">Seluruh indikator Rapor Pendidikan pada tahun aktif akan dihapus. Tindakan ini tidak dapat dibatalkan.</p>
+          <div class="mt-5 flex justify-end gap-2 text-xs">
+            <button onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+            <button onclick="executeClearAllIndicators()" class="px-4 py-2 rounded-xl bg-rose-600 text-white font-bold">Kosongkan Semua</button>
+          </div>
+        </div>
+      `, "max-w-md");
+    }
+
+    function executeClearAllIndicators() {
+      const data = getCurrentData();
+      data.indicators = [];
+      closeCustomModal();
+      triggerAutoSave("Input Data", "Kosongkan Indikator", "Menghapus seluruh baris indikator.");
+      renderAll();
+      showToast("Tabel indikator telah dikosongkan.", "info");
+    }
+
+    // =========================================================================
+    // 8. DIRECT EXCEL RAPOR PENDIDIKAN PARSER (Multi-Sheet Official Kemendikdasmen)
+    // =========================================================================
     window._pendingExcelWorkbook = null;
     window._pendingExcelFileName = "";
     window._pendingExcelSchoolMeta = {};
+    window._pendingExcelSheetName = "";
+    window._pendingExcelItems = [];
 
-    function normalizeOfficialCategoryLabel(rawLabel, numericScore) {
-      const txt = String(rawLabel || "").toLowerCase().trim();
-      if (txt) {
-        if (txt.includes("jauh di bawah") || txt.includes("di bawah") || txt.includes("kurang") || txt.includes("perlu intervensi")) {
-          return "Kurang";
-        }
-        if (txt.includes("sedang") || txt.includes("cukup")) {
-          return "Sedang";
-        }
-        if (txt.includes("baik") || txt.includes("di atas") || txt.includes("mencapai") || txt.includes("membudaya")) {
-          return "Baik";
-        }
+    function downloadExcelTemplate() {
+      if (!window.XLSX) {
+        showToast("Pustaka Excel sedang dimuat, silakan coba beberapa detik lagi.", "warning");
+        return;
       }
-      return classifyCategory(numericScore, rawLabel);
-    }
-
-    function parseIndonesianDeltaValue(rawDelta) {
-      if (rawDelta === null || rawDelta === undefined || rawDelta === "") return "";
-      if (typeof rawDelta === "number") return isNaN(rawDelta) ? "" : rawDelta;
-      const str = String(rawDelta).trim();
-      const lower = str.toLowerCase();
-      if (lower === "-" || lower === "tetap" || lower.includes("tidak berubah")) return 0;
-      const numMatch = str.replace(/,/g, '.').match(/[+-]?\d+(?:\.\d+)?/);
-      if (!numMatch) return "";
-      let val = parseFloat(numMatch[0]);
-      if (isNaN(val)) return "";
-      if (lower.includes("turun")) val = -Math.abs(val);
-      else if (lower.includes("naik")) val = Math.abs(val);
-      return val;
-    }
-
-    function parseIndonesianScoreValue(rawScore) {
-      if (rawScore === null || rawScore === undefined || rawScore === "") return NaN;
-      if (typeof rawScore === "number") return rawScore;
-      const cleaned = String(rawScore).replace(/%/g, '').replace(/,/g, '.').trim();
-      const match = cleaned.match(/^-?\d+(?:\.\d+)?$/);
-      if (!match) return NaN;
-      return parseFloat(match[0]);
-    }
-
-    function extractSchoolMetadataFromWorkbook(workbook) {
-      const meta = {};
-      for (const sheetName of workbook.SheetNames) {
-        const sheet = workbook.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-        const maxScan = Math.min(rows.length, 25);
-        for (let r = 0; r < maxScan; r++) {
-          const row = rows[r] || [];
-          for (let c = 0; c < row.length; c++) {
-            const cell = String(row[c] || "").trim();
-            const lower = cell.toLowerCase();
-            // Look for key-value in same cell ("NPSN: 20301234") or adjacent cell
-            const nextVal = String(row[c + 1] || row[c + 2] || "").trim();
-
-            if (!meta.npsn) {
-              const inlineNpsn = cell.match(/npsn\s*[:\-]?\s*(\d{8})/i);
-              if (inlineNpsn) meta.npsn = inlineNpsn[1];
-              else if (lower === "npsn" || lower.startsWith("npsn")) {
-                const adjNpsn = nextVal.match(/(\d{8})/);
-                if (adjNpsn) meta.npsn = adjNpsn[1];
-              }
-            }
-            if (!meta.nama && (lower === "nama satuan pendidikan" || lower === "nama sekolah" || lower === "satuan pendidikan")) {
-              if (nextVal && nextVal.length > 2 && !nextVal.toLowerCase().includes("npsn")) {
-                meta.nama = nextVal.replace(/^[:\-]\s*/, "");
-              }
-            }
-            if (!meta.kecamatan && (lower === "kecamatan" || lower.startsWith("kecamatan"))) {
-              const val = cell.includes(":") ? cell.split(":")[1].trim() : nextVal.replace(/^[:\-]\s*/, "");
-              if (val) meta.kecamatan = val;
-            }
-            if (!meta.kabupaten && (lower.includes("kabupaten") || lower.includes("kab/kota") || lower.includes("kota"))) {
-              const val = cell.includes(":") ? cell.split(":")[1].trim() : nextVal.replace(/^[:\-]\s*/, "");
-              if (val && val.length > 2) meta.kabupaten = val;
-            }
-            if (!meta.provinsi && lower.startsWith("provinsi")) {
-              const val = cell.includes(":") ? cell.split(":")[1].trim() : nextVal.replace(/^[:\-]\s*/, "");
-              if (val && val.length > 2) meta.provinsi = val;
-            }
-          }
-        }
-      }
-      return meta;
-    }
-
-    function parseExcelSheetForRapor(sheet) {
-      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-      if (!rows || rows.length === 0) return { headerRowIndex: -1, items: [] };
-
-      // 1. Dynamically locate the header row (scans first 35 rows)
-      let headerRowIndex = -1;
-      let colMap = {
-        kode: -1,
-        nama: -1,
-        dimensi: -1,
-        nilai: -1,
-        kategori: -1,
-        perubahan: -1,
-        peringkat: -1,
-        rekomendasi: -1
-      };
-
-      const maxHeaderScan = Math.min(rows.length, 35);
-      for (let r = 0; r < maxHeaderScan; r++) {
-        const row = rows[r] || [];
-        const normalizedCells = row.map(c => String(c || "").toLowerCase().replace(/\s+/g, " ").trim());
-
-        const namaIdx = normalizedCells.findIndex(t =>
-          t === "indikator" ||
-          t === "nama indikator" ||
-          t.includes("nama indikator") ||
-          (t.includes("indikator") && !t.includes("kode") && !t.includes("no") && !t.includes("id")) ||
-          t === "sub indikator" ||
-          t === "aspek"
-        );
-
-        const hasMetricCol = normalizedCells.some(t =>
-          t.includes("skor") || t.includes("nilai") || t.includes("capaian") || t.includes("label") || t.includes("kategori")
-        );
-
-        if (namaIdx !== -1 && hasMetricCol) {
-          headerRowIndex = r;
-          colMap.nama = namaIdx;
-
-          colMap.kode = normalizedCells.findIndex((t, idx) =>
-            idx !== namaIdx && (t === "kode" || t.includes("kode indikator") || t === "no indikator" || t === "id indikator" || t === "no")
-          );
-          colMap.dimensi = normalizedCells.findIndex((t, idx) =>
-            idx !== namaIdx && (t.includes("dimensi") || t.includes("standar"))
-          );
-          // Match score column while avoiding "perubahan skor"
-          colMap.nilai = normalizedCells.findIndex((t, idx) =>
-            idx !== namaIdx &&
-            !t.includes("perubahan") &&
-            !t.includes("selisih") &&
-            !t.includes("tahun lalu") &&
-            !t.includes("label") &&
-            (t.includes("skor") || t.includes("nilai") || t === "capaian" || t.includes("capaian sekolah") || t.includes("indeks"))
-          );
-          colMap.kategori = normalizedCells.findIndex((t, idx) =>
-            idx !== namaIdx && (t.includes("label") || t.includes("kategori") || t.includes("predikat") || t.includes("status capaian"))
-          );
-          colMap.perubahan = normalizedCells.findIndex((t, idx) =>
-            idx !== namaIdx && (t.includes("perubahan") || t.includes("delta") || t.includes("selisih") || t.includes("kenaikan") || t.includes("tren"))
-          );
-          colMap.peringkat = normalizedCells.findIndex((t, idx) =>
-            idx !== namaIdx && (t.includes("peringkat") || t.includes("posisi") || t.includes("kuintil") || t.includes("persentil"))
-          );
-          colMap.rekomendasi = normalizedCells.findIndex((t, idx) =>
-            idx !== namaIdx && (t.includes("rekomendasi") || t.includes("benahi") || t.includes("inspirasi") || t.includes("kegiatan"))
-          );
-          break;
-        }
-      }
-
-      const items = [];
-      let currentDimensiContext = DIMENSI_RAPOR[0];
-
-      if (headerRowIndex !== -1) {
-        for (let r = headerRowIndex + 1; r < rows.length; r++) {
-          const row = rows[r] || [];
-          const rawNama = String(row[colMap.nama] || "").trim();
-          const rawKode = colMap.kode !== -1 ? String(row[colMap.kode] || "").trim() : "";
-
-          if (!rawNama) continue;
-          // Skip repeated headers
-          if (rawNama.toLowerCase() === "indikator" || rawNama.toLowerCase() === "nama indikator") continue;
-
-          // Detect if row is a Dimension section header (e.g. "Dimensi A: Mutu dan Relevansi...")
-          if (rawNama.toLowerCase().startsWith("dimensi ")) {
-            currentDimensiContext = rawNama;
-            continue;
-          }
-
-          const rawNilai = colMap.nilai !== -1 ? row[colMap.nilai] : "";
-          const rawKat = colMap.kategori !== -1 ? String(row[colMap.kategori] || "").trim() : "";
-          const rawDelta = colMap.perubahan !== -1 ? row[colMap.perubahan] : "";
-          const rawPeringkat = colMap.peringkat !== -1 ? String(row[colMap.peringkat] || "").trim() : "";
-          const rawRekom = colMap.rekomendasi !== -1 ? String(row[colMap.rekomendasi] || "").trim() : "";
-          const rawDim = colMap.dimensi !== -1 ? String(row[colMap.dimensi] || "").trim() : "";
-
-          const nilaiNum = parseIndonesianScoreValue(rawNilai);
-          const hasValidScore = !isNaN(nilaiNum) && nilaiNum >= 0 && nilaiNum <= 100;
-          const deltaNum = parseIndonesianDeltaValue(rawDelta);
-
-          // Skip pure group title rows that have no score, no category, no delta, and no recommendation
-          if (!hasValidScore && !rawKat && deltaNum === "" && !rawRekom && !rawKode) {
-            continue;
-          }
-
-          // Extract inline code if embedded in indicator name e.g. "A.1 Kemampuan Literasi"
-          let finalKode = rawKode;
-          let finalNama = rawNama;
-          const inlineCodeMatch = rawNama.match(/^([A-E]\.\d+(?:\.\d+)?)\s+(.+)$/i);
-          if (inlineCodeMatch) {
-            if (!finalKode) finalKode = inlineCodeMatch[1].toUpperCase();
-            finalNama = inlineCodeMatch[2].trim();
-          }
-
-          const matchedStd = KATALOG_INDIKATOR_STANDAR.find(s =>
-            (finalKode && s.kode.toLowerCase() === finalKode.toLowerCase()) ||
-            s.nama.toLowerCase() === finalNama.toLowerCase()
-          );
-
-          const finalKat = hasValidScore
-            ? normalizeOfficialCategoryLabel(rawKat, nilaiNum)
-            : (rawKat ? normalizeOfficialCategoryLabel(rawKat, NaN) : "Belum Terverifikasi");
-
-          items.push({
-            id: uid(),
-            kode: finalKode || matchedStd?.kode || "",
-            nama: finalNama,
-            dimensi: rawDim || matchedStd?.dimensi || currentDimensiContext,
-            nilai: hasValidScore ? nilaiNum : "",
-            kategori: finalKat,
-            perubahan: deltaNum,
-            peringkat: rawPeringkat,
-            rekomendasiRapor: rawRekom,
-            terverifikasi: hasValidScore
-          });
-        }
-      }
-
-      // 2. Fallback scan if standard header row wasn't found (matches official indicator names directly)
-      if (items.length === 0) {
-        for (let r = 0; r < rows.length; r++) {
-          const row = rows[r] || [];
-          const rowTextCells = row.map(c => String(c || "").trim());
-          for (const std of KATALOG_INDIKATOR_STANDAR) {
-            const matchIdx = rowTextCells.findIndex(cell =>
-              cell.toLowerCase() === std.nama.toLowerCase() ||
-              cell.toLowerCase().includes(`${std.kode.toLowerCase()} ${std.nama.toLowerCase()}`)
-            );
-            if (matchIdx !== -1 && !items.some(it => it.kode === std.kode)) {
-              // Look to the right cells for numeric score and category label
-              let foundScore = NaN;
-              let foundKat = "";
-              for (let c = matchIdx + 1; c < Math.min(row.length, matchIdx + 6); c++) {
-                const candidateNum = parseIndonesianScoreValue(row[c]);
-                if (isNaN(foundScore) && !isNaN(candidateNum) && candidateNum >= 0 && candidateNum <= 100) {
-                  foundScore = candidateNum;
-                } else if (!foundKat && typeof row[c] === "string" && row[c].trim().length > 2) {
-                  const lbl = row[c].trim().toLowerCase();
-                  if (lbl.includes("baik") || lbl.includes("sedang") || lbl.includes("kurang") || lbl.includes("kompetensi")) {
-                    foundKat = row[c].trim();
-                  }
-                }
-              }
-              const valid = !isNaN(foundScore);
-              items.push({
-                id: uid(),
-                kode: std.kode,
-                nama: std.nama,
-                dimensi: std.dimensi,
-                nilai: valid ? foundScore : "",
-                kategori: valid ? normalizeOfficialCategoryLabel(foundKat, foundScore) : "Belum Terverifikasi",
-                perubahan: "",
-                peringkat: "",
-                rekomendasiRapor: "",
-                terverifikasi: valid
-              });
-            }
-          }
-        }
-      }
-
-      return { headerRowIndex, items };
+      const rows = [
+        ["TEMPLATE INPUT RAPOR PENDIDIKAN — RAPOR SMART AI"],
+        ["Nama Sekolah:", "", "NPSN:", ""],
+        [],
+        ["Kode Indikator", "Nama Indikator", "Dimensi", "Nilai Capaian", "Kategori Capaian", "Perubahan Skor", "Peringkat", "Rekomendasi Rapor Pendidikan"],
+        ...KATALOG_INDIKATOR_STANDAR.slice(0, 8).map(k => [k.kode, k.nama, k.dimensi, "", "", "", "", ""])
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Laporan Rapor Pendidikan");
+      XLSX.writeFile(wb, "Template_Rapor_Pendidikan_RAPOR_SMART_AI.xlsx");
+      showToast("Templat Excel berhasil diunduh.", "success");
     }
 
     function handleExcelUpload(event) {
       const file = event.target.files?.[0];
+      event.target.value = "";
       if (!file) return;
+
       if (!window.XLSX) {
-        showToast("Pustaka pembaca Excel belum siap. Silakan coba lagi.", "error");
+        showToast("Pustaka pembaca Excel belum siap. Pastikan koneksi internet aktif lalu muat ulang.", "error");
         return;
       }
 
       const reader = new FileReader();
       reader.onload = function (e) {
         try {
-          const workbook = XLSX.read(e.target.result, { type: 'array' });
-          if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
-            showToast("File Excel tidak memiliki lembar kerja (sheet) yang valid.", "warning");
+          const arrayBuffer = new Uint8Array(e.target.result);
+          const wb = XLSX.read(arrayBuffer, { type: "array" });
+
+          if (!wb.SheetNames || wb.SheetNames.length === 0) {
+            showToast("File Excel kosong atau tidak memiliki lembar kerja (sheet).", "error");
             return;
           }
 
-          window._pendingExcelWorkbook = workbook;
+          window._pendingExcelWorkbook = wb;
           window._pendingExcelFileName = file.name;
-          window._pendingExcelSchoolMeta = extractSchoolMetadataFromWorkbook(workbook);
+          window._pendingExcelSchoolMeta = extractSchoolMetaFromWorkbook(wb);
 
-          // Score all sheets and pick the sheet with the most Rapor Pendidikan indicators (skipping 'Panduan')
-          let bestSheet = workbook.SheetNames[0];
+          // Choose best sheet automatically (skip Panduan/Petunjuk/Cover)
+          let bestSheet = wb.SheetNames[0];
           let bestCount = -1;
-
-          workbook.SheetNames.forEach(name => {
-            const parsed = parseExcelSheetForRapor(workbook.Sheets[name]);
-            const isPanduan = name.toLowerCase().includes("panduan") || name.toLowerCase().includes("petunjuk");
-            const effectiveScore = isPanduan ? parsed.items.length - 100 : parsed.items.length;
-            if (effectiveScore > bestCount) {
-              bestCount = effectiveScore;
+          wb.SheetNames.forEach(name => {
+            const lower = name.toLowerCase();
+            if (lower.includes("panduan") || lower.includes("petunjuk") || lower.includes("cover") || lower.includes("daftar isi")) {
+              return;
+            }
+            const parsed = parseExcelSheetForRapor(wb.Sheets[name]);
+            if (parsed.items.length > bestCount) {
+              bestCount = parsed.items.length;
               bestSheet = name;
             }
           });
 
+          // Fallback if all sheets were checked
+          if (bestCount <= 0) {
+            wb.SheetNames.forEach(name => {
+              const parsed = parseExcelSheetForRapor(wb.Sheets[name]);
+              if (parsed.items.length > bestCount) {
+                bestCount = parsed.items.length;
+                bestSheet = name;
+              }
+            });
+          }
+
+          window._pendingExcelSheetName = "";
           openExcelImportPreviewModal(bestSheet);
         } catch (err) {
           console.error(err);
-          showToast("Gagal membaca file Excel. Pastikan format .xlsx / .xls / .csv tidak rusak.", "error");
+          showToast("Gagal membaca file Excel. Pastikan file berformat .xlsx, .xls, atau .csv yang valid.", "error");
         }
-        event.target.value = "";
       };
       reader.readAsArrayBuffer(file);
+    }
+
+    function extractSchoolMetaFromWorkbook(wb) {
+      const meta = { nama: "", npsn: "", kecamatan: "", kabupaten: "", provinsi: "" };
+      wb.SheetNames.forEach(sName => {
+        const sheet = wb.Sheets[sName];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+        for (let r = 0; r < Math.min(30, rows.length); r++) {
+          const row = rows[r] || [];
+          for (let c = 0; c < row.length; c++) {
+            const cell = String(row[c] || "").trim();
+            const low = cell.toLowerCase();
+            const nextVal = String(row[c + 1] || row[c + 2] || "").replace(/^[:=\s]+/, "").trim();
+
+            if (!meta.nama && (low === "nama sekolah" || low === "nama satuan pendidikan" || low.startsWith("nama satuan pendidikan:") || low.startsWith("nama sekolah:"))) {
+              meta.nama = cell.includes(":") && cell.split(":")[1].trim() ? cell.split(":")[1].trim() : nextVal;
+            }
+            if (!meta.npsn && (low === "npsn" || low.startsWith("npsn:"))) {
+              const rawNpsn = cell.includes(":") && cell.split(":")[1].trim() ? cell.split(":")[1].trim() : nextVal;
+              const match8 = rawNpsn.match(/\d{8}/);
+              meta.npsn = match8 ? match8[0] : rawNpsn;
+            }
+            if (!meta.kecamatan && (low === "kecamatan" || low.startsWith("kecamatan:"))) {
+              meta.kecamatan = cell.includes(":") && cell.split(":")[1].trim() ? cell.split(":")[1].trim() : nextVal;
+            }
+            if (!meta.kabupaten && (low.includes("kabupaten") || low.includes("kab/kota") || low.includes("kota"))) {
+              if (low.length < 30) {
+                meta.kabupaten = cell.includes(":") && cell.split(":")[1].trim() ? cell.split(":")[1].trim() : nextVal;
+              }
+            }
+            if (!meta.provinsi && (low === "provinsi" || low.startsWith("provinsi:"))) {
+              meta.provinsi = cell.includes(":") && cell.split(":")[1].trim() ? cell.split(":")[1].trim() : nextVal;
+            }
+          }
+        }
+      });
+      return meta;
+    }
+
+    function parseIndonesianScoreValue(rawScore) {
+      if (rawScore === null || rawScore === undefined || rawScore === "") return NaN;
+      if (typeof rawScore === "number") return rawScore;
+      const cleaned = String(rawScore).replace(/%/g, "").replace(/,/g, ".").trim();
+      const match = cleaned.match(/-?\d+(?:\.\d+)?/);
+      if (!match) return NaN;
+      return parseFloat(match[0]);
+    }
+
+    function parseDeltaValue(rawDelta) {
+      if (rawDelta === null || rawDelta === undefined || rawDelta === "") return "";
+      if (typeof rawDelta === "number") return rawDelta;
+      const str = String(rawDelta).replace(/,/g, ".").trim();
+      const match = str.match(/[+-]?\d+(?:\.\d+)?/);
+      if (!match) {
+        if (str.toLowerCase().includes("tetap")) return 0;
+        return "";
+      }
+      let num = parseFloat(match[0]);
+      if (str.toLowerCase().includes("turun") && num > 0) num = -num;
+      return num;
+    }
+
+    function parseExcelSheetForRapor(sheet) {
+      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+      if (!rows || rows.length === 0) return { items: [] };
+
+      // 1. Detect header row dynamically within first 40 rows
+      let headerIdx = -1;
+      let bestScore = 0;
+
+      for (let r = 0; r < Math.min(40, rows.length); r++) {
+        const row = (rows[r] || []).map(v => String(v || "").toLowerCase().trim());
+        let score = 0;
+        row.forEach(cell => {
+          if (!cell) return;
+          if (cell.includes("indikator") || cell === "aspek" || cell === "komponen") score += 3;
+          if (cell.includes("skor") || cell.includes("nilai") || cell.includes("capaian")) score += 3;
+          if (cell.includes("label") || cell.includes("kategori") || cell.includes("predikat")) score += 2;
+          if (cell.includes("perubahan") || cell.includes("delta") || cell.includes("selisih")) score += 2;
+          if (cell.includes("dimensi") || cell.includes("peringkat") || cell.includes("benahi") || cell.includes("rekomendasi")) score += 1;
+        });
+        if (score > bestScore && score >= 4) {
+          bestScore = score;
+          headerIdx = r;
+        }
+      }
+
+      if (headerIdx === -1) return { items: [] };
+
+      const headers = (rows[headerIdx] || []).map(v => String(v || "").toLowerCase().trim());
+
+      const findCol = (keywords, excludeKeywords = []) => {
+        for (const kw of keywords) {
+          const idx = headers.findIndex(h =>
+            h.includes(kw) && !excludeKeywords.some(ex => h.includes(ex))
+          );
+          if (idx !== -1) return idx;
+        }
+        return -1;
+      };
+
+      const colKode = findCol(["kode indikator", "kode", "no. indikator", "no indikator", "id indikator"]);
+      const colNama = findCol(["nama indikator", "indikator prioritas", "indikator", "aspek"], ["kode", "id", "definisi", "penjelasan"]);
+      const colDimensi = findCol(["dimensi", "standar"]);
+      const colNilai = findCol(["nilai capaian", "skor rapor", "skor tahun ini", "skor 2026", "skor 2025", "skor 2024", "nilai", "skor", "capaian"], ["label", "kategori", "perubahan", "sebelum", "lalu", "definisi"]);
+      const colKategori = findCol(["kategori capaian", "label capaian", "kategori", "predikat", "status capaian", "tingkat capaian"]);
+      const colPerubahan = findCol(["perubahan skor", "perubahan", "delta", "selisih", "tren"]);
+      const colPeringkat = findCol(["peringkat", "kuantil", "posisi"]);
+      const colRekom = findCol(["rekomendasi", "inspirasi benahi", "benahi", "tindak lanjut"]);
+
+      if (colNama === -1) return { items: [] };
+
+      const items = [];
+      for (let r = headerIdx + 1; r < rows.length; r++) {
+        const row = rows[r] || [];
+        let rawNama = String(row[colNama] || "").trim();
+        if (!rawNama || rawNama.length < 3) continue;
+        if (rawNama.toLowerCase() === "indikator" || rawNama.toLowerCase() === "nama indikator") continue;
+
+        let kode = colKode !== -1 ? String(row[colKode] || "").trim() : "";
+        // Extract leading code like "A.1 Kemampuan Literasi" if kode column is absent
+        if (!kode) {
+          const codeMatch = rawNama.match(/^([A-Z]\.\d+(?:\.\d+)?)\s*[-:.]?\s*(.+)$/i);
+          if (codeMatch) {
+            kode = codeMatch[1].toUpperCase();
+            rawNama = codeMatch[2].trim();
+          }
+        }
+
+        const dimensi = colDimensi !== -1 ? String(row[colDimensi] || "").trim() : "";
+        let parsedScore = colNilai !== -1 ? parseIndonesianScoreValue(row[colNilai]) : NaN;
+
+        // If score wasn't found in colNilai, check adjacent column in case of merged header cells
+        if (isNaN(parsedScore) && colNilai !== -1 && row[colNilai + 1] !== undefined) {
+          const adj = parseIndonesianScoreValue(row[colNilai + 1]);
+          if (!isNaN(adj) && adj >= 0 && adj <= 100) parsedScore = adj;
+        }
+
+        const hasValidScore = !isNaN(parsedScore) && parsedScore >= 0 && parsedScore <= 100;
+        const rawKat = colKategori !== -1 ? String(row[colKategori] || "").trim() : "";
+        const finalKat = classifyCategory(hasValidScore ? parsedScore : "", rawKat);
+        const perubahan = colPerubahan !== -1 ? parseDeltaValue(row[colPerubahan]) : "";
+        const peringkat = colPeringkat !== -1 ? String(row[colPeringkat] || "").trim() : "";
+        const rekomendasiRapor = colRekom !== -1 ? String(row[colRekom] || "").trim() : "";
+
+        items.push({
+          id: uid(),
+          kode,
+          nama: rawNama,
+          dimensi,
+          nilai: hasValidScore ? parsedScore : "",
+          kategori: finalKat,
+          perubahan,
+          peringkat,
+          rekomendasiRapor,
+          terverifikasi: hasValidScore
+        });
+      }
+
+      return { items };
     }
 
     function openExcelImportPreviewModal(selectedSheetName) {
       const wb = window._pendingExcelWorkbook;
       if (!wb) return;
 
-      const sheet = wb.Sheets[selectedSheetName];
-      const parsed = parseExcelSheetForRapor(sheet);
-      const items = parsed.items;
+      if (window._pendingExcelSheetName !== selectedSheetName) {
+        const sheet = wb.Sheets[selectedSheetName];
+        const parsed = parseExcelSheetForRapor(sheet);
+        window._pendingExcelSheetName = selectedSheetName;
+        window._pendingExcelItems = parsed.items;
+      }
+
+      const items = window._pendingExcelItems || [];
       const meta = window._pendingExcelSchoolMeta || {};
       const hasMeta = Boolean(meta.nama || meta.npsn || meta.kabupaten || meta.provinsi);
-
-      const sheetOptionsHtml = wb.SheetNames.map(name => {
-        const count = parseExcelSheetForRapor(wb.Sheets[name]).items.length;
-        return `<option value="${escapeHtml(name)}" ${name === selectedSheetName ? 'selected' : ''}>${escapeHtml(name)} (${count} indikator terdeteksi)</option>`;
-      }).join('');
 
       openCustomModal(`
         <div class="p-5 sm:p-6 max-h-[90vh] overflow-y-auto">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200">
             <div>
-              <h3 class="font-bold text-slate-900 text-base">Pratinjau &amp; Konfirmasi Impor Excel Rapor Pendidikan</h3>
-              <p class="text-xs text-slate-500">File: <strong>${escapeHtml(window._pendingExcelFileName)}</strong></p>
+              <h3 class="font-bold text-slate-900 text-base">Konfirmasi Impor Excel Rapor Pendidikan</h3>
+              <p class="text-xs text-slate-500">File: <strong>${escapeHtml(window._pendingExcelFileName)}</strong> • Ditemukan <strong>${items.length}</strong> indikator</p>
             </div>
             <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
           </div>
 
           <div class="mt-4 space-y-4 text-xs">
             <!-- Sheet Selector -->
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div>
-                <div class="font-bold text-slate-800">Pilih Lembar Kerja (Sheet) Data Rapor:</div>
-                <div class="text-[11px] text-slate-500">Sistem otomatis melewati sheet "Panduan" dan memilih sheet dengan indikator terbanyak.</div>
-              </div>
-              <select onchange="openExcelImportPreviewModal(this.value)" class="rounded-xl border border-slate-300 bg-white px-3 py-2 font-semibold text-slate-900 sm:min-w-[260px]">
-                ${sheetOptionsHtml}
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+              <span class="font-bold text-slate-700">Lembar Kerja (Sheet) Terpilih:</span>
+              <select onchange="openExcelImportPreviewModal(this.value)" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-semibold">
+                ${wb.SheetNames.map(s => `<option value="${escapeHtml(s)}" ${s === selectedSheetName ? "selected" : ""}>${escapeHtml(s)}</option>`).join("")}
               </select>
             </div>
 
-            <!-- Detected School Metadata -->
             ${hasMeta ? `
-              <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5">
-                <label class="flex items-start gap-2.5 cursor-pointer">
-                  <input type="checkbox" id="applyDetectedSchoolMeta" checked class="mt-0.5 rounded text-emerald-700" />
-                  <div>
-                    <div class="font-bold text-emerald-950">Terapkan Identitas Sekolah yang Terdeteksi dari Excel:</div>
-                    <div class="text-emerald-900 mt-0.5">
-                      ${meta.nama ? `Nama: <strong>${escapeHtml(meta.nama)}</strong> • ` : ''}
-                      ${meta.npsn ? `NPSN: <strong>${escapeHtml(meta.npsn)}</strong> • ` : ''}
-                      ${meta.kabupaten ? `${escapeHtml(meta.kabupaten)}` : ''}
-                    </div>
-                  </div>
+              <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5">
+                <input type="checkbox" id="applyDetectedSchoolMeta" checked class="mt-0.5 rounded text-emerald-700" />
+                <label for="applyDetectedSchoolMeta" class="cursor-pointer">
+                  <div class="font-bold text-emerald-950">Identitas Sekolah Terdeteksi dari Dokumen:</div>
+                  <div class="text-emerald-800 mt-0.5">${escapeHtml(meta.nama || "-")} (NPSN: ${escapeHtml(meta.npsn || "-")}) ${meta.kabupaten ? "• " + escapeHtml(meta.kabupaten) : ""}</div>
                 </label>
               </div>
-            ` : ''}
+            ` : ""}
 
-            <!-- Preview Table -->
-            ${items.length > 0 ? `
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="font-bold text-slate-800">Ditemukan ${items.length} Indikator Rapor Pendidikan:</span>
-                  <div class="flex items-center gap-3">
-                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                      <input type="radio" name="excelImportMode" value="append" checked class="text-emerald-700" />
-                      <span>Tambahkan</span>
-                    </label>
-                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                      <input type="radio" name="excelImportMode" value="replace" class="text-emerald-700" />
-                      <span>Ganti Data Lama</span>
-                    </label>
-                  </div>
-                </div>
-                <div class="max-h-64 overflow-y-auto border border-slate-200 rounded-xl">
-                  <table class="w-full text-left border-collapse text-[11px]">
-                    <thead class="bg-slate-100 text-slate-700 font-bold sticky top-0">
+            ${items.length === 0 ? `
+              <div class="p-6 text-center rounded-xl border border-amber-200 bg-amber-50 text-amber-900">
+                <p class="font-bold">Tidak ada tabel indikator yang terbaca pada sheet "${escapeHtml(selectedSheetName)}".</p>
+                <p class="mt-1">Silakan pilih nama sheet lain di atas (misalnya <em>Laporan Rapor Pendidikan</em> atau <em>Capaian</em>).</p>
+              </div>
+            ` : `
+              <div class="border border-slate-200 rounded-xl overflow-hidden">
+                <div class="max-h-72 overflow-y-auto">
+                  <table class="w-full text-left text-[11px]">
+                    <thead class="bg-slate-100 border-b border-slate-200 sticky top-0">
                       <tr>
                         <th class="py-2 px-3">Kode</th>
                         <th class="py-2 px-3">Nama Indikator</th>
-                        <th class="py-2 px-3 text-center">Nilai</th>
+                        <th class="py-2 px-3 text-center">Nilai Capaian</th>
                         <th class="py-2 px-3 text-center">Kategori</th>
                         <th class="py-2 px-3 text-center">Perubahan</th>
                       </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
-                      ${items.map(it => `
+                      ${items.map((it, idx) => `
                         <tr>
-                          <td class="py-2 px-3 font-mono font-bold text-emerald-800">${escapeHtml(it.kode || '-')}</td>
+                          <td class="py-2 px-3 font-mono font-bold text-emerald-800">${escapeHtml(it.kode || "-")}</td>
                           <td class="py-2 px-3 font-semibold text-slate-900">${escapeHtml(it.nama)}</td>
-                          <td class="py-2 px-3 text-center font-mono font-bold">${it.nilai !== '' ? it.nilai : '<span class="text-rose-600">Kosong</span>'}</td>
-                          <td class="py-2 px-3 text-center">${escapeHtml(it.kategori)}</td>
-                          <td class="py-2 px-3 text-center font-mono">${it.perubahan !== '' ? it.perubahan : '-'}</td>
+                          <td class="py-2 px-3 text-center">
+                            <input type="number" step="0.01" min="0" max="100"
+                              value="${it.nilai !== "" ? it.nilai : ""}"
+                              placeholder="Isi nilai"
+                              oninput="updatePendingExcelScore(${idx}, this.value)"
+                              class="w-20 text-center font-mono font-bold text-[11px] rounded-lg border ${it.nilai !== "" ? "border-slate-300 bg-white text-slate-900" : "border-rose-300 bg-rose-50 text-rose-800"} px-1.5 py-1 focus:border-emerald-700 focus:outline-none" />
+                          </td>
+                          <td id="previewExcelKat_${idx}" class="py-2 px-3 text-center font-semibold">${escapeHtml(it.kategori)}</td>
+                          <td class="py-2 px-3 text-center font-mono">${it.perubahan !== "" ? it.perubahan : "-"}</td>
                         </tr>
-                      `).join('')}
+                      `).join("")}
                     </tbody>
                   </table>
                 </div>
               </div>
-            ` : `
-              <div class="p-6 rounded-xl bg-amber-50 border border-amber-200 text-center text-amber-950">
-                <p class="font-bold">Tidak ditemukan tabel indikator pada sheet "${escapeHtml(selectedSheetName)}".</p>
-                <p class="mt-1">Silakan pilih nama sheet lain pada pilihan di atas (misalnya sheet <strong>Laporan Rapor Pendidikan</strong> atau <strong>Capaian</strong>).</p>
+
+              <div class="flex flex-wrap items-center gap-4 pt-1">
+                <label class="flex items-center gap-2 cursor-pointer font-semibold text-slate-700">
+                  <input type="radio" name="excelImportMode" value="replace" checked class="text-emerald-700" />
+                  <span>Ganti Data Tabel Saat Ini</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-semibold text-slate-700">
+                  <input type="radio" name="excelImportMode" value="append" class="text-emerald-700" />
+                  <span>Tambahkan ke Data yang Ada</span>
+                </label>
               </div>
             `}
-          </div>
 
-          <div class="mt-5 pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
-            <button onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-semibold">Batal</button>
-            ${items.length > 0 ? `
-              <button data-sheet="${escapeHtml(selectedSheetName)}" onclick="confirmExcelImport(this.getAttribute('data-sheet'))" class="px-5 py-2.5 rounded-xl emerald-gradient text-white text-xs font-bold shadow-sm">
-                Konfirmasi &amp; Impor (${items.length} Indikator)
-              </button>
-            ` : ''}
+            <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+              ${items.length > 0 ? `
+                <button type="button" onclick="confirmExcelImport('${escapeHtml(selectedSheetName)}')" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold shadow">
+                  Konfirmasi &amp; Simpan (${items.length} Indikator)
+                </button>
+              ` : ""}
+            </div>
           </div>
         </div>
-      `, 'max-w-3xl');
+      `, "max-w-3xl");
+    }
+
+    function updatePendingExcelScore(idx, rawVal) {
+      const item = window._pendingExcelItems?.[idx];
+      if (!item) return;
+      const trimmed = String(rawVal || "").trim();
+      if (trimmed === "") {
+        item.nilai = "";
+        item.kategori = "Belum Terverifikasi";
+        item.terverifikasi = false;
+      } else {
+        const num = parseFloat(trimmed);
+        if (!isNaN(num) && num >= 0 && num <= 100) {
+          item.nilai = num;
+          item.kategori = classifyCategory(num);
+          item.terverifikasi = true;
+        }
+      }
+      const katCell = document.getElementById(`previewExcelKat_${idx}`);
+      if (katCell) katCell.textContent = item.kategori;
     }
 
     function confirmExcelImport(sheetName) {
       const wb = window._pendingExcelWorkbook;
       if (!wb || !wb.Sheets[sheetName]) return;
 
-      const parsed = parseExcelSheetForRapor(wb.Sheets[sheetName]);
-      const data = getCurrentData();
+      const itemsToImport = window._pendingExcelItems && window._pendingExcelSheetName === sheetName
+        ? window._pendingExcelItems
+        : parseExcelSheetForRapor(wb.Sheets[sheetName]).items;
 
-      // Apply school metadata if checked
-      const applyMeta = document.getElementById('applyDetectedSchoolMeta')?.checked;
+      const data = getCurrentData();
+      const applyMeta = document.getElementById("applyDetectedSchoolMeta")?.checked;
       const meta = window._pendingExcelSchoolMeta || {};
       if (applyMeta) {
-        if (meta.nama && !data.school.nama) data.school.nama = meta.nama;
-        if (meta.npsn && !data.school.npsn) data.school.npsn = meta.npsn;
-        if (meta.kecamatan && !data.school.kecamatan) data.school.kecamatan = meta.kecamatan;
-        if (meta.kabupaten && !data.school.kabupaten) data.school.kabupaten = meta.kabupaten;
-        if (meta.provinsi && !data.school.provinsi) data.school.provinsi = meta.provinsi;
+        if (meta.nama) data.school.nama = meta.nama;
+        if (meta.npsn) data.school.npsn = meta.npsn;
+        if (meta.kecamatan) data.school.kecamatan = meta.kecamatan;
+        if (meta.kabupaten) data.school.kabupaten = meta.kabupaten;
+        if (meta.provinsi) data.school.provinsi = meta.provinsi;
       }
 
-      const mode = document.querySelector('input[name="excelImportMode"]:checked')?.value || 'append';
-      if (mode === 'replace') {
-        data.indicators = parsed.items;
+      const mode = document.querySelector('input[name="excelImportMode"]:checked')?.value || "replace";
+      if (mode === "replace") {
+        data.indicators = itemsToImport;
       } else {
-        parsed.items.forEach(item => {
-          data.indicators.push(item);
-        });
+        itemsToImport.forEach(item => data.indicators.push(item));
       }
 
-      const unverifiedCount = parsed.items.filter(i => !i.terverifikasi).length;
+      const unverifiedCount = itemsToImport.filter(i => !i.terverifikasi).length;
       window._pendingExcelWorkbook = null;
+      window._pendingExcelItems = [];
+      window._pendingExcelSheetName = "";
       closeCustomModal();
-      triggerAutoSave("Input Data", "Impor Excel Rapor", `Mengimpor ${parsed.items.length} indikator dari sheet "${sheetName}" (${window._pendingExcelFileName}).`);
+      triggerAutoSave("Input Data", "Impor Excel Rapor", `Mengimpor ${itemsToImport.length} indikator dari sheet "${sheetName}".`);
       renderAll();
 
       if (unverifiedCount > 0) {
-        showToast(`Berhasil mengimpor ${parsed.items.length} indikator. ${unverifiedCount} indikator belum memiliki nilai angka dan ditandai untuk Anda lengkapi.`, "warning");
+        showToast(`Berhasil mengimpor ${itemsToImport.length} indikator. ${unverifiedCount} indikator belum memiliki angka skor dan dapat langsung diisi pada kolom Nilai Capaian.`, "warning");
       } else {
-        showToast(`Berhasil mengimpor ${parsed.items.length} indikator Rapor Pendidikan dari Excel!`, "success");
+        showToast(`Berhasil mengimpor ${itemsToImport.length} indikator Rapor Pendidikan beserta Nilai Capaiannya!`, "success");
       }
     }
 
-    function downloadRaporExcelTemplate() {
-      if (!window.XLSX) return;
-      const sampleRows = [
-        {
-          "Kode Indikator": "A.1",
-          "Nama Indikator": "Kemampuan Literasi",
-          "Dimensi": "Dimensi A: Mutu dan Relevansi Hasil Belajar Peserta Didik",
-          "Nilai Capaian": "",
-          "Kategori Capaian": "",
-          "Perubahan Tahun Lalu": "",
-          "Peringkat / Posisi": "",
-          "Rekomendasi Rapor Pendidikan": ""
-        },
-        {
-          "Kode Indikator": "A.2",
-          "Nama Indikator": "Kemampuan Numerasi",
-          "Dimensi": "Dimensi A: Mutu dan Relevansi Hasil Belajar Peserta Didik",
-          "Nilai Capaian": "",
-          "Kategori Capaian": "",
-          "Perubahan Tahun Lalu": "",
-          "Peringkat / Posisi": "",
-          "Rekomendasi Rapor Pendidikan": ""
-        },
-        {
-          "Kode Indikator": "D.1",
-          "Nama Indikator": "Kualitas Pembelajaran",
-          "Dimensi": "Dimensi D: Mutu dan Relevansi Pembelajaran",
-          "Nilai Capaian": "",
-          "Kategori Capaian": "",
-          "Perubahan Tahun Lalu": "",
-          "Peringkat / Posisi": "",
-          "Rekomendasi Rapor Pendidikan": ""
-        }
-      ];
-      const ws = XLSX.utils.json_to_sheet(sampleRows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Template_Rapor_Pendidikan");
-      XLSX.writeFile(wb, "Template_Input_Rapor_Pendidikan.xlsx");
-      showToast("Template Excel berhasil diunduh. Isi nilai sesuai Rapor Pendidikan sekolah Anda.", "success");
-    }
+    // =========================================================================
+    // 9. PDF RAPOR PENDIDIKAN EXTRACTION & CONFIRMATION
+    // =========================================================================
+    window._pendingPdfItems = [];
 
-    // Real PDF Upload & Text Extraction Handler (using PDF.js)
     async function handlePdfUpload(event) {
       const file = event.target.files?.[0];
+      event.target.value = "";
       if (!file) return;
+
       if (!window.pdfjsLib) {
-        showToast("Pustaka pembaca PDF belum siap. Silakan coba lagi.", "error");
+        showToast("Pustaka pembaca PDF belum tersedia. Gunakan unggah Excel atau Input Manual.", "warning");
         return;
       }
 
       showToast("Membaca dokumen PDF Rapor Pendidikan...", "info");
       try {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const buffer = await file.arrayBuffer();
+        const pdf = await window.pdfjsLib.getDocument({ data: buffer }).promise;
         let fullText = "";
-        for (let p = 1; p <= pdf.numPages; p++) {
+        for (let p = 1; p <= Math.min(pdf.numPages, 15); p++) {
           const page = await pdf.getPage(p);
           const content = await page.getTextContent();
-          const strings = content.items.map(item => item.str);
-          fullText += strings.join(" ") + "\n";
+          fullText += content.items.map(it => it.str).join(" ") + "\n";
         }
 
-        const data = getCurrentData();
-        // Attempt to extract NPSN if school NPSN is empty
-        const npsnMatch = fullText.match(/NPSN\s*[:\-]?\s*(\d{8})/i);
-        if (npsnMatch && !data.school.npsn) {
-          data.school.npsn = npsnMatch[1];
-        }
-
-        // Match standard Rapor Pendidikan indicators and look for nearby numeric score (without inventing missing numbers!)
-        let extractedCount = 0;
-        let needsConfirmCount = 0;
-
+        // Match standard indicators mentioned in PDF text and extract nearby numeric score
+        const detected = [];
         KATALOG_INDIKATOR_STANDAR.forEach(std => {
-          const escapedName = std.nama.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const regex = new RegExp(`(?:${std.kode}\\s+)?${escapedName}[\\s\\S]{0,120}?(\\d{1,3}(?:[.,]\\d{1,2})?)`, 'i');
-          const match = fullText.match(regex);
-
-          if (match) {
-            const parsedScore = parseFloat(match[1].replace(',', '.'));
-            const validScore = !isNaN(parsedScore) && parsedScore >= 0 && parsedScore <= 100;
-
-            // Check if already exists
-            const already = data.indicators.some(i => i.kode === std.kode);
-            if (!already) {
-              data.indicators.push({
-                id: uid(),
-                kode: std.kode,
-                nama: std.nama,
-                dimensi: std.dimensi,
-                nilai: validScore ? parsedScore : "",
-                kategori: validScore ? classifyCategory(parsedScore) : "Belum Terverifikasi",
-                perubahan: "",
-                peringkat: "",
-                rekomendasiRapor: "",
-                terverifikasi: false // Always require human confirmation on PDF OCR/text extraction
-              });
-              extractedCount++;
-              needsConfirmCount++;
-            }
+          const idx = fullText.toLowerCase().indexOf(std.nama.toLowerCase());
+          if (idx !== -1) {
+            const snippet = fullText.slice(idx, idx + 140);
+            const scoreMatch = snippet.match(/\b(\d{1,2}[.,]\d{1,2}|100(?:[.,]0+)?)\b/);
+            const parsedVal = scoreMatch ? parseFloat(scoreMatch[1].replace(",", ".")) : "";
+            const valid = parsedVal !== "" && !isNaN(parsedVal) && parsedVal >= 0 && parsedVal <= 100;
+            detected.push({
+              id: uid(),
+              kode: std.kode,
+              nama: std.nama,
+              dimensi: std.dimensi,
+              nilai: valid ? parsedVal : "",
+              kategori: valid ? classifyCategory(parsedVal) : "Belum Terverifikasi",
+              perubahan: "",
+              peringkat: "",
+              rekomendasiRapor: "",
+              terverifikasi: valid
+            });
           }
         });
 
-        triggerAutoSave("Input Data", "Ekstraksi PDF Rapor", `Mengekstrak ${extractedCount} indikator dari ${file.name}`);
-        renderAll();
+        window._pendingPdfItems = detected.length > 0 ? detected : KATALOG_INDIKATOR_STANDAR.slice(0, 6).map(std => ({
+          id: uid(),
+          kode: std.kode,
+          nama: std.nama,
+          dimensi: std.dimensi,
+          nilai: "",
+          kategori: "Belum Terverifikasi",
+          perubahan: "",
+          peringkat: "",
+          rekomendasiRapor: "",
+          terverifikasi: false
+        }));
 
-        if (extractedCount > 0) {
-          openCustomModal(`
-            <div class="p-6">
-              <div class="flex items-start gap-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                  <i data-lucide="file-check-2" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <h3 class="font-bold text-slate-900 text-base">Hasil Pembacaan PDF Memerlukan Konfirmasi</h3>
-                  <p class="text-xs text-slate-600 mt-1 leading-relaxed">
-                    Ditemukan <strong>${extractedCount} indikator</strong> dari dokumen <em>${escapeHtml(file.name)}</em> (${pdf.numPages} halaman).
-                    Karena format tata letak PDF Rapor Pendidikan dapat bervariasi, sistem <strong>tidak mengarang</strong> angka perubahan tahun lalu atau peringkat yang tidak terbaca jelas.
-                  </p>
-                  <p class="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3 mt-3 font-medium">
-                    Silakan periksa setiap baris indikator di tabel, lengkapi nilai yang kosong jika ada, lalu klik tombol <strong>Konfirmasi</strong>.
-                  </p>
-                </div>
+        openCustomModal(`
+          <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div>
+                <h3 class="font-bold text-slate-900 text-base">Konfirmasi Ekstraksi PDF Rapor Pendidikan</h3>
+                <p class="text-xs text-slate-500">Periksa dan lengkapi <strong>Nilai Capaian (0–100)</strong> sebelum disimpan (aplikasi tidak mengarang angka yang tidak terbaca).</p>
               </div>
-              <div class="mt-5 flex justify-end">
-                <button onclick="closeCustomModal()" class="px-5 py-2 rounded-xl emerald-gradient text-white text-xs font-bold">Mengerti, Saya Periksa</button>
-              </div>
+              <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
-          `, 'max-w-lg');
-        } else {
-          openCustomModal(`
-            <div class="p-6">
-              <div class="flex items-start gap-3">
-                <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
-                  <i data-lucide="file-warning" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <h3 class="font-bold text-slate-900 text-base">Teks Indikator PDF Tidak Terbaca Otomatis</h3>
-                  <p class="text-xs text-slate-600 mt-1 leading-relaxed">
-                    Dokumen <em>${escapeHtml(file.name)}</em> kemungkinan berupa PDF hasil pindaian gambar (scan) atau memiliki struktur tabel yang tidak standar. Sesuai prinsip integritas data, sistem <strong>tidak mengarang data</strong>.
-                  </p>
-                  <p class="text-xs text-slate-700 mt-2">
-                    Saran: Gunakan file <strong>Unduhan Excel Rapor Pendidikan</strong> dari platform Kemendikdasmen, atau pilih indikator dari <strong>Katalog Indikator PBD</strong> lalu input nilainya secara manual.
-                  </p>
-                </div>
-              </div>
-              <div class="mt-5 flex justify-end gap-2">
-                <button onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold">Tutup</button>
-                <button onclick="closeCustomModal(); openBulkCatalogPickerModal();" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold">Pilih dari Katalog Indikator</button>
-              </div>
+            <div class="mt-4 border border-slate-200 rounded-xl overflow-hidden">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 border-b border-slate-200">
+                  <tr>
+                    <th class="py-2 px-3">Indikator</th>
+                    <th class="py-2 px-3 text-center">Nilai Capaian (0–100)</th>
+                    <th class="py-2 px-3 text-center">Kategori</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${window._pendingPdfItems.map((it, idx) => `
+                    <tr>
+                      <td class="py-2 px-3 font-semibold text-slate-900">[${escapeHtml(it.kode)}] ${escapeHtml(it.nama)}</td>
+                      <td class="py-2 px-3 text-center">
+                        <input type="number" step="0.01" min="0" max="100" value="${it.nilai}" placeholder="Isi nilai"
+                          oninput="window._pendingPdfItems[${idx}].nilai = this.value !== '' ? parseFloat(this.value) : ''; window._pendingPdfItems[${idx}].kategori = classifyCategory(this.value); window._pendingPdfItems[${idx}].terverifikasi = this.value !== ''; document.getElementById('pdfKat_${idx}').textContent = window._pendingPdfItems[${idx}].kategori;"
+                          class="w-24 text-center font-mono font-bold rounded-lg border border-slate-300 px-2 py-1" />
+                      </td>
+                      <td id="pdfKat_${idx}" class="py-2 px-3 text-center font-semibold">${escapeHtml(it.kategori)}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
             </div>
-          `, 'max-w-lg');
-        }
+            <div class="mt-4 flex justify-end gap-2 text-xs">
+              <button onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+              <button onclick="confirmPdfImport()" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Hasil PDF</button>
+            </div>
+          </div>
+        `, "max-w-2xl");
       } catch (err) {
         console.error(err);
-        showToast("Terjadi kendala saat membaca file PDF.", "error");
+        showToast("Dokumen PDF tidak dapat diekstrak secara otomatis (kemungkinan hasil pindaian gambar). Silakan gunakan Excel atau Input Manual.", "warning");
       }
-      event.target.value = "";
+    }
+
+    function confirmPdfImport() {
+      const data = getCurrentData();
+      window._pendingPdfItems.forEach(item => data.indicators.push(item));
+      closeCustomModal();
+      triggerAutoSave("Input Data", "Impor PDF Rapor", `Menambahkan ${window._pendingPdfItems.length} indikator dari PDF.`);
+      renderAll();
+      showToast("Data indikator dari PDF berhasil disimpan.", "success");
     }
 
     // =========================================================================
-    // MODULE D: ANALISIS RAPOR PENDIDIKAN
+    // 10. MODULE 2: ANALISIS CAPAIAN RAPOR PENDIDIKAN
     // =========================================================================
-    function renderAnalisisModule(container) {
+    function renderAnalisisModule() {
       const data = getCurrentData();
-      const inds = data.indicators;
+      const all = data.indicators;
 
-      if (inds.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white rounded-2xl border border-slate-200 p-10 text-center">
-            <i data-lucide="bar-chart-3" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-            <h3 class="font-bold text-slate-900 text-base">Belum Ada Data Rapor untuk Dianalisis</h3>
-            <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Masukkan data Rapor Pendidikan terlebih dahulu pada Modul 1 agar sistem dapat mengelompokkan capaian dan mengidentifikasi indikator prioritas.</p>
-            <button onclick="navigateTo('input')" class="mt-4 px-5 py-2.5 rounded-xl emerald-gradient text-white text-xs font-bold">Ke Modul 1: Input Data Rapor</button>
-          </div>
-        `;
-        return;
-      }
+      const baik = all.filter(i => classifyCategory(i.nilai, i.kategori) === "Baik");
+      const sedang = all.filter(i => classifyCategory(i.nilai, i.kategori) === "Sedang");
+      const kurang = all.filter(i => classifyCategory(i.nilai, i.kategori) === "Kurang");
+      const turun = all.filter(i => i.perubahan !== "" && parseFloat(i.perubahan) < 0);
+      const naik = all.filter(i => i.perubahan !== "" && parseFloat(i.perubahan) > 0);
+      const prioritas = all.filter(i => {
+        const k = classifyCategory(i.nilai, i.kategori);
+        return k === "Kurang" || k === "Sedang" || (i.perubahan !== "" && parseFloat(i.perubahan) < 0);
+      });
 
-      const baikList = inds.filter(i => classifyCategory(i.nilai, i.kategori) === 'Baik');
-      const sedangList = inds.filter(i => classifyCategory(i.nilai, i.kategori) === 'Sedang');
-      const kurangList = inds.filter(i => classifyCategory(i.nilai, i.kategori) === 'Kurang');
-      const turunList = inds.filter(i => !isNaN(parseFloat(i.perubahan)) && parseFloat(i.perubahan) < 0);
-      const naikList = inds.filter(i => !isNaN(parseFloat(i.perubahan)) && parseFloat(i.perubahan) > 0);
-      const prioritasList = inds.filter(needsImprovement);
+      const filters = [
+        { id: "all", label: `Semua (${all.length})` },
+        { id: "prioritas", label: `Prioritas Pembenahan (${prioritas.length})` },
+        { id: "kurang", label: `Capaian Kurang (${kurang.length})` },
+        { id: "sedang", label: `Capaian Sedang (${sedang.length})` },
+        { id: "baik", label: `Capaian Baik (${baik.length})` },
+        { id: "turun", label: `Mengalami Penurunan (${turun.length})` },
+        { id: "naik", label: `Mengalami Peningkatan (${naik.length})` }
+      ];
 
-      const filter = window.appState.analisisFilter || 'semua';
-      let filtered = inds;
-      if (filter === 'baik') filtered = baikList;
-      else if (filter === 'sedang') filtered = sedangList;
-      else if (filter === 'kurang') filtered = kurangList;
-      else if (filter === 'turun') filtered = turunList;
-      else if (filter === 'naik') filtered = naikList;
-      else if (filter === 'prioritas') filtered = prioritasList;
+      let displayed = all;
+      if (APP_STATE.analisisFilter === "prioritas") displayed = prioritas;
+      if (APP_STATE.analisisFilter === "kurang") displayed = kurang;
+      if (APP_STATE.analisisFilter === "sedang") displayed = sedang;
+      if (APP_STATE.analisisFilter === "baik") displayed = baik;
+      if (APP_STATE.analisisFilter === "turun") displayed = turun;
+      if (APP_STATE.analisisFilter === "naik") displayed = naik;
 
-      container.innerHTML = `
+      return `
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">2. Analisis Capaian Rapor Pendidikan</h2>
-            <p class="text-xs text-slate-500">Pengelompokan otomatis capaian, tren perubahan tahun lalu, dan indikator prioritas pembenahan.</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 2 • Pemetaan Capaian</span>
+            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Analisis Capaian Rapor Pendidikan</h2>
+            <p class="text-xs text-slate-600 mt-0.5">Pengelompokan otomatis berdasarkan <strong>Nilai Capaian</strong>, kategori, dan tren perubahan dibanding tahun lalu.</p>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="navigateTo('akar')" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold flex items-center gap-1.5 shadow-sm hover:opacity-95 transition">
-              <span>Lanjut ke Akar Masalah</span>
-              <i data-lucide="arrow-right" class="w-4 h-4"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- 6 Classification Cards -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <button onclick="setAnalisisFilter('baik')" class="p-4 rounded-2xl border text-left transition ${filter === 'baik' ? 'bg-emerald-900 text-white border-emerald-900 shadow' : 'bg-white border-slate-200 hover:border-emerald-400'}">
-            <div class="text-[11px] font-semibold ${filter === 'baik' ? 'text-emerald-200' : 'text-slate-500'}">Capaian Baik</div>
-            <div class="text-2xl font-extrabold mt-1 ${filter === 'baik' ? 'text-white' : 'text-emerald-700'}">${baikList.length}</div>
-          </button>
-          <button onclick="setAnalisisFilter('sedang')" class="p-4 rounded-2xl border text-left transition ${filter === 'sedang' ? 'bg-amber-600 text-white border-amber-600 shadow' : 'bg-white border-slate-200 hover:border-amber-400'}">
-            <div class="text-[11px] font-semibold ${filter === 'sedang' ? 'text-amber-100' : 'text-slate-500'}">Capaian Sedang</div>
-            <div class="text-2xl font-extrabold mt-1 ${filter === 'sedang' ? 'text-white' : 'text-amber-600'}">${sedangList.length}</div>
-          </button>
-          <button onclick="setAnalisisFilter('kurang')" class="p-4 rounded-2xl border text-left transition ${filter === 'kurang' ? 'bg-rose-700 text-white border-rose-700 shadow' : 'bg-white border-slate-200 hover:border-rose-400'}">
-            <div class="text-[11px] font-semibold ${filter === 'kurang' ? 'text-rose-100' : 'text-slate-500'}">Capaian Rendah</div>
-            <div class="text-2xl font-extrabold mt-1 ${filter === 'kurang' ? 'text-white' : 'text-rose-700'}">${kurangList.length}</div>
-          </button>
-          <button onclick="setAnalisisFilter('turun')" class="p-4 rounded-2xl border text-left transition ${filter === 'turun' ? 'bg-rose-900 text-white border-rose-900 shadow' : 'bg-white border-slate-200 hover:border-rose-400'}">
-            <div class="text-[11px] font-semibold ${filter === 'turun' ? 'text-rose-200' : 'text-slate-500'}">Mengalami Penurunan</div>
-            <div class="text-2xl font-extrabold mt-1 ${filter === 'turun' ? 'text-white' : 'text-rose-700'}">${turunList.length}</div>
-          </button>
-          <button onclick="setAnalisisFilter('naik')" class="p-4 rounded-2xl border text-left transition ${filter === 'naik' ? 'bg-emerald-800 text-white border-emerald-800 shadow' : 'bg-white border-slate-200 hover:border-emerald-400'}">
-            <div class="text-[11px] font-semibold ${filter === 'naik' ? 'text-emerald-200' : 'text-slate-500'}">Mengalami Peningkatan</div>
-            <div class="text-2xl font-extrabold mt-1 ${filter === 'naik' ? 'text-white' : 'text-emerald-700'}">${naikList.length}</div>
-          </button>
-          <button onclick="setAnalisisFilter('prioritas')" class="p-4 rounded-2xl border text-left transition ${filter === 'prioritas' ? 'bg-slate-900 text-amber-300 border-slate-900 shadow' : 'bg-amber-50/70 border-amber-200 hover:border-amber-400'}">
-            <div class="text-[11px] font-bold ${filter === 'prioritas' ? 'text-amber-200' : 'text-amber-900'}">Prioritas Dibenahi</div>
-            <div class="text-2xl font-extrabold mt-1 ${filter === 'prioritas' ? 'text-amber-300' : 'text-amber-700'}">${prioritasList.length}</div>
-          </button>
-        </div>
-
-        <!-- Plain-Language Narrative Explanation for School Team -->
-        <div class="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-5">
-          <h3 class="font-bold text-emerald-950 text-sm flex items-center gap-2">
-            <i data-lucide="book-open" class="w-4 h-4 text-emerald-800"></i>
-            <span>Ringkasan Makna Data untuk Kepala Sekolah &amp; Dewan Guru</span>
-          </h3>
-          <div class="mt-2 text-xs text-emerald-950/90 space-y-1.5 leading-relaxed">
-            <p>
-              Dari total <strong>${inds.length} indikator</strong> yang dianalisis, satuan pendidikan memiliki <strong>${baikList.length} indikator berkategori Baik</strong> (aset kekuatan sekolah yang perlu dipertahankan), <strong>${sedangList.length} indikator berkategori Sedang</strong>, dan <strong>${kurangList.length} indikator berkategori Kurang</strong>.
-            </p>
-            ${turunList.length > 0 ? `
-              <p class="text-rose-900 font-medium">
-                Perhatian khusus diperlukan pada <strong>${turunList.length} indikator yang mengalami penurunan skor</strong> dibanding tahun sebelumnya (${turunList.map(i => i.nama).join(', ')}), karena penurunan menandakan adanya praktik pembelajaran atau pengelolaan yang melemah.
-              </p>` : ''}
-            <p>
-              Sebanyak <strong>${prioritasList.length} indikator</strong> ditetapkan sebagai fokus utama pembenahan untuk ditelusuri akar masalahnya pada tahap berikutnya.
-            </p>
-          </div>
-        </div>
-
-        <!-- Required Table: Nama Indikator | Nilai | Kategori | Perubahan | Status | Prioritas -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-          <div class="p-4 sm:p-5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-xs font-bold text-slate-700">Filter Tampilan:</span>
-              <button onclick="setAnalisisFilter('semua')" class="px-3 py-1 rounded-lg text-xs font-semibold ${filter === 'semua' ? 'bg-emerald-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">Semua (${inds.length})</button>
-              <button onclick="setAnalisisFilter('prioritas')" class="px-3 py-1 rounded-lg text-xs font-semibold ${filter === 'prioritas' ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">Perlu Pembenahan (${prioritasList.length})</button>
-            </div>
-            <span class="text-xs text-slate-500">Menampilkan ${filtered.length} indikator</span>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[11px]">
-                  <th class="py-3 px-4">Nama Indikator</th>
-                  <th class="py-3 px-4 text-center">Nilai</th>
-                  <th class="py-3 px-4 text-center">Kategori</th>
-                  <th class="py-3 px-4 text-center">Perubahan</th>
-                  <th class="py-3 px-4 text-center">Status</th>
-                  <th class="py-3 px-4 text-center">Prioritas</th>
-                  <th class="py-3 px-4 text-right">Tindak Lanjut</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100">
-                ${filtered.map(ind => {
-                  const kat = classifyCategory(ind.nilai, ind.kategori);
-                  const isPrio = needsImprovement(ind);
-                  const delta = parseFloat(ind.perubahan);
-                  let statusTren = "Stabil / Belum Ada Data";
-                  if (!isNaN(delta)) {
-                    statusTren = delta < 0 ? "Menurun (Waspada)" : (delta > 0 ? "Meningkat" : "Tetap");
-                  }
-                  return `
-                    <tr class="hover:bg-slate-50 transition">
-                      <td class="py-3 px-4">
-                        <div class="font-bold text-slate-900">${ind.kode ? `<span class="font-mono text-emerald-800 mr-1">[${escapeHtml(ind.kode)}]</span>` : ''}${escapeHtml(ind.nama)}</div>
-                        <div class="text-[11px] text-slate-500">${escapeHtml(ind.dimensi || '')}</div>
-                      </td>
-                      <td class="py-3 px-4 text-center font-mono font-bold text-sm">${ind.nilai !== '' ? escapeHtml(ind.nilai) : '-'}</td>
-                      <td class="py-3 px-4 text-center">${getCategoryBadgeHtml(kat)}</td>
-                      <td class="py-3 px-4 text-center">${getDeltaBadgeHtml(ind.perubahan)}</td>
-                      <td class="py-3 px-4 text-center font-medium text-slate-700">${statusTren}</td>
-                      <td class="py-3 px-4 text-center">
-                        ${isPrio
-                          ? `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">Prioritas Pembenahan</span>`
-                          : `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600">Pertahankan Mutu</span>`}
-                      </td>
-                      <td class="py-3 px-4 text-right">
-                        <button onclick="window.appState.selectedAkarIndicatorId='${ind.id}'; navigateTo('akar');" class="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-[11px] transition">
-                          Bedah Akar Masalah →
-                        </button>
-                      </td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
-    }
-
-    function setAnalisisFilter(f) {
-      window.appState.analisisFilter = f;
-      renderActiveModule();
-      if (window.lucide) window.lucide.createIcons();
-    }
-
-    // =========================================================================
-    // MODULE E: ANALISIS AKAR MASALAH (5 WHY & SEBAB-AKIBAT, DUGAAN VS FAKTA)
-    // =========================================================================
-    function renderAkarMasalahModule(container) {
-      const data = getCurrentData();
-      const problemInds = data.indicators.filter(needsImprovement);
-      const allInds = data.indicators;
-
-      if (allInds.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white rounded-2xl border border-slate-200 p-10 text-center">
-            <i data-lucide="git-fork" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-            <h3 class="font-bold text-slate-900 text-base">Belum Ada Indikator Rapor Pendidikan</h3>
-            <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Input data Rapor Pendidikan terlebih dahulu sebelum melakukan analisis akar masalah.</p>
-            <button onclick="navigateTo('input')" class="mt-4 px-5 py-2.5 rounded-xl emerald-gradient text-white text-xs font-bold">Ke Modul 1: Input Data</button>
-          </div>
-        `;
-        return;
-      }
-
-      const targetList = problemInds.length > 0 ? problemInds : allInds;
-      if (!window.appState.selectedAkarIndicatorId || !targetList.some(i => i.id === window.appState.selectedAkarIndicatorId)) {
-        window.appState.selectedAkarIndicatorId = targetList[0].id;
-      }
-
-      const activeInd = targetList.find(i => i.id === window.appState.selectedAkarIndicatorId);
-      const rc = data.rootCauses[activeInd.id] || null;
-
-      container.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">3. Analisis Akar Masalah Mendalam (5 Why &amp; Sebab-Akibat)</h2>
-            <p class="text-xs text-slate-500">Membedakan secara tegas antara <strong>Dugaan/Hipotesis AI</strong> dengan <strong>Fakta Terkonfirmasi Sekolah</strong>.</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="generateAiRootCause('${activeInd.id}')" id="btnGenerateAkarAi" class="px-4 py-2 rounded-xl gold-gradient text-emerald-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm hover:opacity-95 transition">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
-              <span>Analisis Akar Masalah dengan AI</span>
-            </button>
-            <button onclick="navigateTo('prioritas')" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold flex items-center gap-1.5 shadow-sm hover:opacity-95 transition">
-              <span>Penentuan Prioritas</span>
-              <i data-lucide="arrow-right" class="w-4 h-4"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Indicator Selector Pills -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-          <div class="text-xs font-bold text-slate-700 mb-2">Pilih Indikator yang Akan Dibedah Akar Masalahnya:</div>
           <div class="flex flex-wrap gap-2">
-            ${targetList.map(ind => {
-              const isSelected = ind.id === activeInd.id;
-              const hasRc = Boolean(data.rootCauses[ind.id]);
-              return `
-                <button onclick="window.appState.selectedAkarIndicatorId='${ind.id}'; renderActiveModule(); if(window.lucide) window.lucide.createIcons();"
-                  class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition flex items-center gap-2 ${isSelected ? 'emerald-gradient text-white border-emerald-900 shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'}">
-                  <span>${ind.kode ? `[${escapeHtml(ind.kode)}] ` : ''}${escapeHtml(ind.nama)}</span>
-                  ${hasRc ? `<i data-lucide="check-circle-2" class="w-3.5 h-3.5 ${isSelected ? 'text-amber-300' : 'text-emerald-600'}"></i>` : ''}
-                </button>
-              `;
-            }).join('')}
-          </div>
-        </div>
-
-        <!-- Active Indicator Context Header -->
-        <div class="bg-slate-900 text-white rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <div class="text-[11px] text-amber-300 font-semibold uppercase tracking-wider">${escapeHtml(activeInd.dimensi)}</div>
-            <h3 class="text-base sm:text-lg font-extrabold mt-0.5">${activeInd.kode ? `[${escapeHtml(activeInd.kode)}] ` : ''}${escapeHtml(activeInd.nama)}</h3>
-            <p class="text-xs text-slate-300 mt-1">Nilai Capaian: <strong class="text-white">${activeInd.nilai !== '' ? activeInd.nilai : 'Belum diisi'}</strong> • Kategori: <strong class="text-amber-300">${classifyCategory(activeInd.nilai, activeInd.kategori)}</strong> • Perubahan: <strong>${activeInd.perubahan !== '' ? activeInd.perubahan : 'Tidak ada data'}</strong></p>
-          </div>
-          <div class="flex gap-2">
-            <button onclick="openEditRootCauseModal('${activeInd.id}')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5">
-              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-              <span>${rc ? 'Edit Manual Akar Masalah' : 'Isi Manual Akar Masalah'}</span>
+            <button onclick="exportPrintReport('analisis')" class="px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="download" class="w-4 h-4 text-rose-700"></i>
+              <span>Unduh PDF Analisis</span>
+            </button>
+            <button onclick="generateRootCausesAndPriorities()" class="px-4 py-2.5 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-2 shadow">
+              <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
+              <span>Lanjut Analisis Akar Masalah &amp; Prioritas</span>
             </button>
           </div>
         </div>
 
-        ${rc ? `
-          <!-- 7 Structured Root Cause Components -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <!-- 1. Masalah Utama & 6. Dampak terhadap Peserta Didik -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-              <div>
-                <span class="text-[11px] font-bold uppercase tracking-wider text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-md">1. Masalah Utama</span>
-                <p class="text-xs sm:text-sm font-semibold text-slate-900 mt-2 leading-relaxed">${escapeHtml(rc.masalahUtama)}</p>
-              </div>
-              <div class="pt-3 border-t border-slate-100">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md">6. Dampak terhadap Peserta Didik</span>
-                <p class="text-xs text-slate-700 mt-2 leading-relaxed">${escapeHtml(rc.dampakSiswa)}</p>
-              </div>
-              <div class="pt-3 border-t border-slate-100">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-md">3. Bukti / Data Pendukung (Rapor &amp; Sekolah)</span>
-                <p class="text-xs text-slate-700 mt-2 leading-relaxed">${escapeHtml(rc.buktiPendukung)}</p>
-              </div>
-            </div>
-
-            <!-- Metode 5 Why -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
-              <div class="flex items-center justify-between mb-3">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-md">Analisis Berjenjang (Metode 5 Why)</span>
-                <span class="text-[11px] text-slate-400">Penelusuran Sebab-Akibat</span>
-              </div>
-              <div class="space-y-2.5">
-                ${(rc.fiveWhys || []).map((w, idx) => `
-                  <div class="flex items-start gap-2.5 text-xs">
-                    <span class="w-6 h-6 rounded-lg bg-emerald-900 text-amber-300 font-bold flex items-center justify-center shrink-0 text-[11px]">W${idx + 1}</span>
-                    <div class="flex-1 bg-slate-50 rounded-xl p-2.5 border border-slate-200/80 text-slate-800 leading-relaxed">${escapeHtml(w)}</div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-
-          <!-- 2. Kemungkinan Akar Penyebab (Distinguishing Dugaan AI vs Fakta Terkonfirmasi) -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs">
-            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-              <div>
-                <h4 class="font-bold text-slate-900 text-sm">2. Kemungkinan Akar Penyebab (Verifikasi Tim Sekolah)</h4>
-                <p class="text-xs text-slate-500">Klik tombol konfirmasi untuk mengubah status dari <strong>Dugaan AI</strong> menjadi <strong>Fakta Terkonfirmasi Sekolah</strong> setelah didiskusikan guru.</p>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              ${(rc.akarPenyebab || []).map((ak, idx) => {
-                const isFact = ak.status === 'fakta_sekolah';
-                return `
-                  <div class="rounded-xl p-4 border ${isFact ? 'bg-emerald-50/70 border-emerald-300' : 'bg-amber-50/50 border-amber-200'} flex flex-col justify-between gap-3">
-                    <div>
-                      <div class="flex items-center justify-between gap-2 mb-2">
-                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600">${escapeHtml(ak.kategori || 'Pembelajaran & GTK')}</span>
-                        ${isFact
-                          ? `<span class="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-800 bg-emerald-200/70 px-2 py-0.5 rounded-full"><i data-lucide="badge-check" class="w-3.5 h-3.5"></i> FAKTA TERKONFIRMASI SEKOLAH</span>`
-                          : `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-200/70 px-2 py-0.5 rounded-full"><i data-lucide="help-circle" class="w-3.5 h-3.5"></i> DUGAAN / HIPOTESIS AI</span>`}
-                      </div>
-                      <p class="text-xs text-slate-800 font-medium leading-relaxed">${escapeHtml(ak.teks)}</p>
-                    </div>
-                    <div class="flex justify-end">
-                      <button onclick="toggleRootCauseFactStatus('${activeInd.id}', ${idx})" class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition ${isFact ? 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50' : 'emerald-gradient text-white hover:opacity-95'}">
-                        ${isFact ? 'Kembalikan ke Hipotesis' : 'Konfirmasi Sebagai Fakta Sekolah ✓'}
-                      </button>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-
-          <!-- 4. Pertanyaan Refleksi Guru, 5. Data Tambahan, 7. Alternatif Solusi -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
-              <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider text-emerald-900 mb-3 flex items-center gap-1.5">
-                <i data-lucide="message-square-question" class="w-4 h-4"></i>
-                <span>4. Pertanyaan Refleksi Diskusi Guru</span>
-              </h4>
-              <ul class="space-y-2 text-xs text-slate-700 list-disc pl-4">
-                ${(rc.pertanyaanRefleksi || []).map(q => `<li class="leading-relaxed">${escapeHtml(q)}</li>`).join('')}
-              </ul>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
-              <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider text-amber-800 mb-3 flex items-center gap-1.5">
-                <i data-lucide="folder-search" class="w-4 h-4"></i>
-                <span>5. Data Tambahan Perlu Dikumpulkan</span>
-              </h4>
-              <ul class="space-y-2 text-xs text-slate-700 list-disc pl-4">
-                ${(rc.dataTambahan || []).map(d => `<li class="leading-relaxed">${escapeHtml(d)}</li>`).join('')}
-              </ul>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
-              <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider text-emerald-800 mb-3 flex items-center gap-1.5">
-                <i data-lucide="check-square" class="w-4 h-4"></i>
-                <span>7. Alternatif Solusi Pembenahan</span>
-              </h4>
-              <ul class="space-y-2 text-xs text-slate-700 list-disc pl-4">
-                ${(rc.alternatifSolusi || []).map(sol => `<li class="leading-relaxed">${escapeHtml(sol)}</li>`).join('')}
-              </ul>
-            </div>
+        ${data.rootCauses.length === 0 ? `
+          <div class="card-elevated p-10 text-center space-y-3">
+            <p class="text-xs text-slate-500">Belum ada analisis akar masalah. Klik tombol <strong>Generate dari Indikator</strong> untuk memproses indikator Rapor Pendidikan Anda.</p>
+            <button onclick="generateRootCausesAndPriorities()" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold">Mulai Analisis Akar Masalah</button>
           </div>
         ` : `
-          <div class="bg-white rounded-2xl border-2 border-dashed border-slate-300 p-10 text-center">
-            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3">
-              <i data-lucide="sparkles" class="w-6 h-6"></i>
-            </div>
-            <h4 class="font-bold text-slate-900 text-base">Indikator Ini Belum Memiliki Analisis Akar Masalah</h4>
-            <p class="text-xs text-slate-500 max-w-lg mx-auto mt-1 leading-relaxed">
-              Klik <strong>Analisis Akar Masalah dengan AI</strong> untuk menyusun analisis 5 Why, dugaan penyebab, pertanyaan refleksi guru, dan alternatif solusi berbasis data indikator ini, atau isi secara manual.
-            </p>
-            <div class="mt-5 flex flex-wrap justify-center gap-2">
-              <button onclick="generateAiRootCause('${activeInd.id}')" class="px-5 py-2.5 rounded-xl gold-gradient text-emerald-950 font-extrabold text-xs flex items-center gap-1.5 shadow-sm">
-                <i data-lucide="sparkles" class="w-4 h-4"></i> Analisis dengan AI Sekarang
-              </button>
-              <button onclick="openEditRootCauseModal('${activeInd.id}')" class="px-5 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs">
-                Isi Manual Formulir
-              </button>
-            </div>
+          <div class="space-y-5">
+            ${data.rootCauses.map(rc => {
+              const ind = data.indicators.find(i => i.id === rc.indicatorId) || { nama: "Indikator", kode: "", nilai: "", kategori: "" };
+              return `
+                <article class="card-elevated p-5 space-y-4">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <h3 class="font-bold text-slate-900 text-base">${ind.kode ? `[${escapeHtml(ind.kode)}] ` : ""}${escapeHtml(ind.nama)}</h3>
+                      <span class="px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 font-mono text-xs font-bold text-slate-800">Nilai Capaian: ${formatScore(ind.nilai)}</span>
+                      ${getCategoryBadgeHtml(classifyCategory(ind.nilai, ind.kategori))}
+                    </div>
+                    <button onclick="openEditRootCauseModal('${rc.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100 text-xs font-bold flex items-center gap-1.5 self-start">
+                      <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                      <span>Edit &amp; Konfirmasi Sekolah</span>
+                    </button>
+                  </div>
+
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-xs">
+                    <div class="space-y-3">
+                      <div class="p-3.5 rounded-xl bg-rose-50/70 border border-rose-200">
+                        <div class="font-bold text-rose-900 mb-1">1. Masalah Utama</div>
+                        <p class="text-slate-800 leading-relaxed">${escapeHtml(rc.masalahUtama)}</p>
+                      </div>
+
+                      <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                        <div class="font-bold text-slate-900 mb-2">2. Kemungkinan Akar Penyebab (Klik untuk Konfirmasi Fakta Sekolah)</div>
+                        <div class="space-y-2">
+                          ${(rc.dugaanPenyebab || []).map(c => `
+                            <label class="flex items-start gap-2.5 p-2 rounded-lg bg-white border ${c.terkonfirmasi ? "border-emerald-300" : "border-amber-200"} cursor-pointer">
+                              <input type="checkbox" ${c.terkonfirmasi ? "checked" : ""} onchange="toggleCauseConfirmed('${rc.id}', '${c.id}')" class="mt-0.5 rounded text-emerald-700" />
+                              <div class="flex-1">
+                                <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold mb-1 ${c.terkonfirmasi ? "bg-emerald-100 text-emerald-900" : "bg-amber-100 text-amber-900"}">
+                                  ${c.terkonfirmasi ? "FAKTA TERKONFIRMASI SEKOLAH" : "DUGAAN / HIPOTESIS AI (PERLU VERIFIKASI)"}
+                                </span>
+                                <p class="text-slate-800 leading-relaxed">${escapeHtml(c.teks)}</p>
+                              </div>
+                            </label>
+                          `).join("")}
+                        </div>
+                      </div>
+
+                      <div class="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-200">
+                        <div class="font-bold text-emerald-950 mb-1.5">Penelusuran 5-Why</div>
+                        <ul class="space-y-1 text-slate-700 list-disc list-inside">
+                          ${(rc.whyChain || []).map(w => `<li>${escapeHtml(w)}</li>`).join("")}
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div class="space-y-3">
+                      <div class="p-3.5 rounded-xl bg-white border border-slate-200">
+                        <div class="font-bold text-slate-900 mb-1">3. Bukti / Data Pendukung</div>
+                        <p class="text-slate-700 leading-relaxed">${escapeHtml(rc.buktiPendukung)}</p>
+                      </div>
+
+                      <div class="p-3.5 rounded-xl bg-amber-50/60 border border-amber-200">
+                        <div class="font-bold text-amber-950 mb-1">4. Pertanyaan Refleksi untuk Diskusi Guru</div>
+                        <ul class="space-y-1 text-slate-800 list-decimal list-inside">
+                          ${(rc.pertanyaanRefleksi || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}
+                        </ul>
+                      </div>
+
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                          <div class="font-bold text-slate-900 mb-1">5. Data Tambahan Perlu Dikumpulkan</div>
+                          <p class="text-slate-700">${escapeHtml(rc.dataTambahan)}</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                          <div class="font-bold text-slate-900 mb-1">6. Dampak Terhadap Peserta Didik</div>
+                          <p class="text-slate-700">${escapeHtml(rc.dampakPesertaDidik)}</p>
+                        </div>
+                      </div>
+
+                      <div class="p-3.5 rounded-xl bg-emerald-900 text-white">
+                        <div class="font-bold text-amber-300 mb-1">7. Alternatif Solusi Pembenahan</div>
+                        <p class="text-emerald-50 leading-relaxed">${escapeHtml(rc.alternatifSolusi)}</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              `;
+            }).join("")}
           </div>
         `}
       `;
     }
 
-    async function generateAiRootCause(indicatorId) {
+    function toggleCauseConfirmed(rcId, causeId) {
       const data = getCurrentData();
-      const ind = data.indicators.find(i => i.id === indicatorId);
-      if (!ind) return;
-
-      const btn = document.getElementById('btnGenerateAkarAi');
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Menganalisis Data...</span>`;
-        if (window.lucide) window.lucide.createIcons();
-      }
-
-      const systemPrompt = `Anda adalah pakar Perencanaan Berbasis Data (PBD) Kemendikdasmen Indonesia. Tugas Anda menganalisis akar masalah Rapor Pendidikan secara objektif, empatik, dan realistis untuk tim sekolah.
-ATURAN KETAT:
-1. Gunakan HANYA data indikator yang diberikan pengguna. Jangan mengarang fakta internal sekolah yang tidak ada.
-2. Seluruh akar penyebab yang Anda rumuskan adalah HIPOTESIS / DUGAAN AWAL yang harus dikonfirmasi guru di sekolah.
-3. Gunakan Bahasa Indonesia formal-edukatif yang mudah dipahami kepala sekolah dan guru.`;
-
-      const userPrompt = `Lakukan analisis akar masalah mendalam untuk indikator Rapor Pendidikan berikut:
-- Sekolah: ${data.school.nama || 'Satuan Pendidikan'} (${data.school.jenjang || 'Jenjang belum diisi'})
-- Dimensi: ${ind.dimensi}
-- Indikator: ${ind.kode} ${ind.nama}
-- Nilai Capaian: ${ind.nilai !== '' ? ind.nilai : 'Belum tersedia'}
-- Kategori: ${classifyCategory(ind.nilai, ind.kategori)}
-- Perubahan dibanding tahun lalu: ${ind.perubahan !== '' ? ind.perubahan : 'Tidak ada data'}
-- Rekomendasi Rapor Pendidikan: ${ind.rekomendasiRapor || 'Belum dicantumkan'}
-
-Susun respons terstruktur mencakup: Masalah Utama, 5 langkah analisis 5 Why, 3-4 kemungkinan akar penyebab (kategorikan: Pembelajaran, Kompetensi GTK, Sarpras/Media, atau Manajemen Sekolah), Bukti Pendukung dari data Rapor di atas, 3 Pertanyaan Refleksi untuk diskusi KKG/MGMP/Kombel guru, 3 Data Tambahan internal sekolah yang perlu dicek, Dampak terhadap Peserta Didik, dan 3 Alternatif Solusi konkret.`;
-
-      const schema = {
-        type: "OBJECT",
-        properties: {
-          masalahUtama: { type: "STRING" },
-          fiveWhys: { type: "ARRAY", items: { type: "STRING" } },
-          akarPenyebab: {
-            type: "ARRAY",
-            items: {
-              type: "OBJECT",
-              properties: {
-                kategori: { type: "STRING" },
-                teks: { type: "STRING" }
-              },
-              required: ["kategori", "teks"]
-            }
-          },
-          buktiPendukung: { type: "STRING" },
-          pertanyaanRefleksi: { type: "ARRAY", items: { type: "STRING" } },
-          dataTambahan: { type: "ARRAY", items: { type: "STRING" } },
-          dampakSiswa: { type: "STRING" },
-          alternatifSolusi: { type: "ARRAY", items: { type: "STRING" } }
-        },
-        required: ["masalahUtama", "fiveWhys", "akarPenyebab", "buktiPendukung", "pertanyaanRefleksi", "dataTambahan", "dampakSiswa", "alternatifSolusi"]
-      };
-
-      try {
-        const result = await callGeminiAPI(userPrompt, systemPrompt, schema);
-        data.rootCauses[indicatorId] = {
-          indicatorId,
-          masalahUtama: result.masalahUtama,
-          fiveWhys: result.fiveWhys || [],
-          akarPenyebab: (result.akarPenyebab || []).map(a => ({
-            kategori: a.kategori,
-            teks: a.teks,
-            status: 'dugaan_ai'
-          })),
-          buktiPendukung: result.buktiPendukung,
-          pertanyaanRefleksi: result.pertanyaanRefleksi || [],
-          dataTambahan: result.dataTambahan || [],
-          dampakSiswa: result.dampakSiswa,
-          alternatifSolusi: result.alternatifSolusi || []
-        };
-        triggerAutoSave("Akar Masalah", "Analisis AI 5-Why", `Menyusun hipotesis akar masalah untuk ${ind.kode} ${ind.nama}`);
-        renderAll();
-        showToast("Analisis akar masalah selesai. Silakan verifikasi hipotesis AI bersama tim guru.", "success");
-      } catch (err) {
-        // Fallback deterministic analytical synthesis when offline/API unavailable
-        const scoreInfo = ind.nilai !== '' ? `skor ${ind.nilai} (${classifyCategory(ind.nilai, ind.kategori)})` : 'capaian yang perlu pembenahan';
-        const deltaInfo = !isNaN(parseFloat(ind.perubahan)) ? ` dengan perubahan ${ind.perubahan} dari tahun sebelumnya` : '';
-        data.rootCauses[indicatorId] = {
-          indicatorId,
-          masalahUtama: `Capaian indikator ${ind.nama} masih berada pada ${scoreInfo}${deltaInfo}, sehingga belum mencapai standar optimal yang diharapkan pada ${ind.dimensi}.`,
-          fiveWhys: [
-            `Why 1: Capaian ${ind.nama} peserta didik belum optimal (${scoreInfo}).`,
-            `Why 2: Proses pembelajaran dan asesmen formatif di kelas belum sepenuhnya terdiferensiasi sesuai kebutuhan belajar siswa.`,
-            `Why 3: Guru membutuhkan penguatan praktik baik melalui komunitas belajar (Kombel) dalam merancang pembelajaran aktif.`,
-            `Why 4: Pemanfaatan sumber belajar, buku bacaan/media ajar, dan refleksi pembelajaran pasca-supervisi belum berjalan rutin.`,
-            `Why 5: Perencanaan program peningkatan mutu dan alokasi anggaran sekolah belum sepenuhnya terfokus pada akar pembenahan indikator ini.`
-          ],
-          akarPenyebab: [
-            { kategori: "Pembelajaran", teks: `Pembelajaran berpusat pada peserta didik dan asesmen diagnostik awal untuk ${ind.nama} belum diterapkan secara merata di semua kelas.`, status: "dugaan_ai" },
-            { kategori: "Kompetensi GTK", teks: `Optimalisasi Komunitas Belajar (Kombel) sekolah untuk berbagi praktik baik terkait ${ind.nama} masih perlu ditingkatkan.`, status: "dugaan_ai" },
-            { kategori: "Sarpras & Media", teks: `Ketersediaan dan pemanfaatan media pembelajaran pendukung ${ind.nama} di kelas belum merata.`, status: "dugaan_ai" }
-          ],
-          buktiPendukung: `Data Rapor Pendidikan menunjukkan ${ind.nama} memperoleh ${scoreInfo}${deltaInfo}.${ind.rekomendasiRapor ? ' Catatan Rapor: ' + ind.rekomendasiRapor : ''}`,
-          pertanyaanRefleksi: [
-            `Strategi pembelajaran apa yang selama ini sudah berjalan baik dan mana yang masih menyulitkan siswa pada aspek ${ind.nama}?`,
-            `Bagaimana hasil asesmen diagnostik/sumatif internal sekolah mengonfirmasi capaian Rapor Pendidikan ini?`,
-            `Dukungan pelatihan atau sarana apa yang paling mendesak dibutuhkan guru di kelas?`
-          ],
-          dataTambahan: [
-            `Rekap hasil asesmen diagnostik awal dan nilai rapor semester peserta didik.`,
-            `Catatan hasil supervisi akademik kepala sekolah di kelas.`,
-            `Daftar pemanfaatan koleksi perpustakaan / media ajar oleh guru dan siswa.`
-          ],
-          dampakSiswa: `Peserta didik berisiko mengalami hambatan dalam menguasai kompetensi dasar pada aspek ${ind.nama}, yang dapat memengaruhi kesiapan belajar pada jenjang berikutnya.`,
-          alternatifSolusi: [
-            `Mengaktifkan Komunitas Belajar (Kombel) guru untuk bedah modul ajar dan praktik baik peningkatan ${ind.nama}.`,
-            `Melaksanakan asesmen diagnostik berkala dan pendampingan belajar bagi peserta didik yang membutuhkan.`,
-            `Menyediakan bahan bacaan, alat peraga, atau media pembelajaran kontekstual pendukung ${ind.nama}.`
-          ]
-        };
-        triggerAutoSave("Akar Masalah", "Analisis Terstruktur", `Menyusun kerangka akar masalah untuk ${ind.kode} ${ind.nama}`);
-        renderAll();
-        showToast("Analisis kerangka akar masalah disusun (Mode Offline/Terstruktur). Silakan tinjau dan konfirmasi fakta sekolah.", "info");
-      }
+      const rc = data.rootCauses.find(r => r.id === rcId);
+      const cause = rc?.dugaanPenyebab?.find(c => c.id === causeId);
+      if (!cause) return;
+      cause.terkonfirmasi = !cause.terkonfirmasi;
+      triggerAutoSave("Akar Masalah", "Konfirmasi Akar Penyebab", `Mengubah status penyebab menjadi ${cause.terkonfirmasi ? "Fakta Terkonfirmasi" : "Dugaan AI"}.`);
+      renderAll();
     }
 
-    function toggleRootCauseFactStatus(indicatorId, causeIdx) {
+    function openEditRootCauseModal(rcId) {
       const data = getCurrentData();
-      const rc = data.rootCauses[indicatorId];
-      if (!rc || !rc.akarPenyebab[causeIdx]) return;
-      const item = rc.akarPenyebab[causeIdx];
-      item.status = item.status === 'fakta_sekolah' ? 'dugaan_ai' : 'fakta_sekolah';
-      triggerAutoSave("Akar Masalah", "Verifikasi Fakta", `Mengubah status akar penyebab menjadi ${item.status === 'fakta_sekolah' ? 'Fakta Sekolah' : 'Hipotesis'}`);
-      renderActiveModule();
-      if (window.lucide) window.lucide.createIcons();
-      showToast(item.status === 'fakta_sekolah' ? "Dikonfirmasi sebagai Fakta Sekolah." : "Dikembalikan ke status Hipotesis AI.", "success");
-    }
-
-    function openEditRootCauseModal(indicatorId) {
-      const data = getCurrentData();
-      const ind = data.indicators.find(i => i.id === indicatorId);
-      const rc = data.rootCauses[indicatorId] || {
-        masalahUtama: "",
-        fiveWhys: ["", "", "", "", ""],
-        akarPenyebab: [{ kategori: "Pembelajaran", teks: "", status: "fakta_sekolah" }],
-        buktiPendukung: "",
-        pertanyaanRefleksi: [""],
-        dataTambahan: [""],
-        dampakSiswa: "",
-        alternatifSolusi: [""]
-      };
+      const rc = data.rootCauses.find(r => r.id === rcId);
+      if (!rc) return;
 
       openCustomModal(`
         <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <h3 class="font-bold text-slate-900 text-base">Edit Analisis Akar Masalah — ${escapeHtml(ind.nama)}</h3>
+            <h3 class="font-bold text-slate-900 text-base">Sunting Analisis Akar Masalah</h3>
             <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
           </div>
-          <form onsubmit="saveRootCauseModal(event, '${indicatorId}')" class="mt-4 space-y-3 text-xs">
+          <form onsubmit="saveRootCauseEdit(event, '${rc.id}')" class="mt-4 space-y-3 text-xs">
             <div>
               <label class="block font-bold text-slate-700 mb-1">1. Masalah Utama</label>
-              <textarea name="masalahUtama" rows="2" required class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(rc.masalahUtama)}</textarea>
+              <textarea name="masalahUtama" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(rc.masalahUtama)}</textarea>
             </div>
             <div>
-              <label class="block font-bold text-slate-700 mb-1">2. Akar Penyebab Terkonfirmasi (Satu baris per penyebab)</label>
-              <textarea name="akarPenyebabLines" rows="3" required placeholder="Tulis satu akar penyebab per baris..." class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml((rc.akarPenyebab || []).map(a => a.teks).join('\n'))}</textarea>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Metode 5 Why (Satu langkah per baris, maks 5 baris)</label>
-              <textarea name="fiveWhysLines" rows="4" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml((rc.fiveWhys || []).join('\n'))}</textarea>
+              <label class="block font-bold text-slate-700 mb-1">2. Daftar Akar Penyebab (Satu penyebab per baris)</label>
+              <textarea name="penyebabLines" rows="3" class="w-full rounded-xl border border-slate-300 px-3 py-2">${(rc.dugaanPenyebab || []).map(c => c.teks).join("\n")}</textarea>
             </div>
             <div>
               <label class="block font-bold text-slate-700 mb-1">3. Bukti / Data Pendukung</label>
               <textarea name="buktiPendukung" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(rc.buktiPendukung)}</textarea>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">4. Pertanyaan Refleksi Guru (per baris)</label>
-                <textarea name="refleksiLines" rows="3" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml((rc.pertanyaanRefleksi || []).join('\n'))}</textarea>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">5. Data Tambahan Diperlukan (per baris)</label>
-                <textarea name="dataTambahanLines" rows="3" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml((rc.dataTambahan || []).join('\n'))}</textarea>
-              </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">6. Dampak Terhadap Peserta Didik</label>
+              <textarea name="dampakPesertaDidik" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(rc.dampakPesertaDidik)}</textarea>
             </div>
             <div>
-              <label class="block font-bold text-slate-700 mb-1">6. Dampak terhadap Peserta Didik</label>
-              <textarea name="dampakSiswa" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(rc.dampakSiswa)}</textarea>
+              <label class="block font-bold text-slate-700 mb-1">7. Alternatif Solusi</label>
+              <textarea name="alternatifSolusi" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(rc.alternatifSolusi)}</textarea>
             </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">7. Alternatif Solusi (per baris)</label>
-              <textarea name="solusiLines" rows="3" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml((rc.alternatifSolusi || []).join('\n'))}</textarea>
-            </div>
-            <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
+            <div class="flex justify-end gap-2 pt-2">
               <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Analisis</button>
+              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Perubahan</button>
             </div>
           </form>
         </div>
-      `, 'max-w-3xl');
+      `);
     }
 
-    function saveRootCauseModal(e, indicatorId) {
+    function saveRootCauseEdit(e, rcId) {
       e.preventDefault();
       const fd = new FormData(e.target);
       const data = getCurrentData();
-      const splitLines = (str) => String(str || '').split('\n').map(s => s.trim()).filter(Boolean);
+      const rc = data.rootCauses.find(r => r.id === rcId);
+      if (!rc) return;
 
-      data.rootCauses[indicatorId] = {
-        indicatorId,
-        masalahUtama: fd.get('masalahUtama').trim(),
-        akarPenyebab: splitLines(fd.get('akarPenyebabLines')).map(teks => ({
-          kategori: "Terkonfirmasi Tim Sekolah",
-          teks,
-          status: "fakta_sekolah"
-        })),
-        fiveWhys: splitLines(fd.get('fiveWhysLines')).slice(0, 5),
-        buktiPendukung: fd.get('buktiPendukung').trim(),
-        pertanyaanRefleksi: splitLines(fd.get('refleksiLines')),
-        dataTambahan: splitLines(fd.get('dataTambahanLines')),
-        dampakSiswa: fd.get('dampakSiswa').trim(),
-        alternatifSolusi: splitLines(fd.get('solusiLines'))
-      };
+      rc.masalahUtama = String(fd.get("masalahUtama") || "").trim();
+      const lines = String(fd.get("penyebabLines") || "").split("\n").map(s => s.trim()).filter(Boolean);
+      rc.dugaanPenyebab = lines.map((txt, idx) => ({
+        id: rc.dugaanPenyebab[idx]?.id || uid(),
+        teks: txt,
+        terkonfirmasi: rc.dugaanPenyebab[idx]?.terkonfirmasi || false
+      }));
+      rc.buktiPendukung = String(fd.get("buktiPendukung") || "").trim();
+      rc.dampakPesertaDidik = String(fd.get("dampakPesertaDidik") || "").trim();
+      rc.alternatifSolusi = String(fd.get("alternatifSolusi") || "").trim();
 
       closeCustomModal();
-      triggerAutoSave("Akar Masalah", "Simpan Manual", "Menyimpan hasil penyuntingan analisis akar masalah.");
+      triggerAutoSave("Akar Masalah", "Edit Akar Masalah", "Menyunting analisis akar masalah sekolah.");
       renderAll();
-      showToast("Analisis akar masalah berhasil disimpan.", "success");
+      showToast("Analisis akar masalah berhasil diperbarui.", "success");
     }
 
     // =========================================================================
-    // MODULE F: PENENTUAN PRIORITAS PEMBENAHAN
+    // 12. MODULE 4: PENENTUAN PRIORITAS PEMBENAHAN
     // =========================================================================
-    function computeDefaultPriorityForIndicator(ind) {
-      const kat = classifyCategory(ind.nilai, ind.kategori);
-      const delta = parseFloat(ind.perubahan);
-
-      const skorCapaian = kat === 'Kurang' ? 5 : (kat === 'Sedang' ? 4 : 2);
-      const skorTren = (!isNaN(delta) && delta < -2) ? 5 : ((!isNaN(delta) && delta < 0) ? 4 : 3);
-      const skorDampak = (ind.kode && (ind.kode.startsWith('A.') || ind.kode === 'D.1' || ind.kode === 'D.4')) ? 5 : 4;
-      const skorUrgensi = kat === 'Kurang' ? 5 : 4;
-      const skorKemampuan = 4; // Feasible by school internal effort & BOSP
-
-      const totalSkor = skorCapaian + skorTren + skorDampak + skorUrgensi + skorKemampuan;
-      let alasan = `Indikator ${ind.nama} berkategori ${kat}`;
-      if (!isNaN(delta) && delta < 0) alasan += ` dan mengalami penurunan ${delta} poin dari tahun lalu`;
-      alasan += `, berdampak langsung pada kualitas belajar peserta didik serta dapat dibenahi melalui program sekolah.`;
-
-      return {
-        indicatorId: ind.id,
-        skorCapaian,
-        skorTren,
-        skorDampak,
-        skorUrgensi,
-        skorKemampuan,
-        totalSkor,
-        peringkatManual: null,
-        alasanPrioritas: alasan
-      };
-    }
-
-    function getRankedPriorities() {
+    function renderPrioritasModule() {
       const data = getCurrentData();
-      const targetInds = data.indicators.filter(needsImprovement);
-      const list = targetInds.map(ind => {
-        if (!data.priorities[ind.id]) {
-          data.priorities[ind.id] = computeDefaultPriorityForIndicator(ind);
-        }
-        const p = data.priorities[ind.id];
-        p.totalSkor = Number(p.skorCapaian) + Number(p.skorTren) + Number(p.skorDampak) + Number(p.skorUrgensi) + Number(p.skorKemampuan);
-        return { ind, prio: p };
-      });
+      const sorted = [...data.priorities].sort((a, b) => (a.peringkatManual || 999) - (b.peringkatManual || 999) || b.totalSkor - a.totalSkor);
 
-      list.sort((a, b) => {
-        if (a.prio.peringkatManual && b.prio.peringkatManual) {
-          return a.prio.peringkatManual - b.prio.peringkatManual;
-        }
-        if (a.prio.peringkatManual) return -1;
-        if (b.prio.peringkatManual) return 1;
-        return b.prio.totalSkor - a.prio.totalSkor;
-      });
-
-      return list;
-    }
-
-    function renderPrioritasModule(container) {
-      const ranked = getRankedPriorities();
-
-      container.innerHTML = `
+      return `
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">4. Penentuan Prioritas Pembenahan</h2>
-            <p class="text-xs text-slate-500">Pemeringkatan multi-kriteria (Skala 1–5 per kriteria) dengan fitur penyesuaian manual oleh tim sekolah.</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 4 • Pembobotan &amp; Urutan Fokus</span>
+            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Penentuan Prioritas Pembenahan</h2>
+            <p class="text-xs text-slate-600 mt-0.5">Pemeringkatan berdasarkan <strong>Nilai Capaian</strong>, tren perubahan, dampak ke siswa, urgensi, dan kapasitas sekolah (dapat diatur manual).</p>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="navigateTo('rekomendasi')" class="px-4 py-2 rounded-xl gold-gradient text-emerald-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm hover:opacity-95 transition">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
-              <span>Buat Rekomendasi Program</span>
-            </button>
-          </div>
+          <button onclick="generateRecommendationsFromPriorities()" class="px-4 py-2.5 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-2 shadow">
+            <i data-lucide="lightbulb" class="w-4 h-4 text-amber-300"></i>
+            <span>Buat Rekomendasi Program</span>
+          </button>
         </div>
 
-        ${ranked.length > 0 ? `
-          <div class="space-y-4">
-            ${ranked.map(({ ind, prio }, idx) => {
-              const rankNum = idx + 1;
+        ${sorted.length === 0 ? `
+          <div class="card-elevated p-10 text-center space-y-3">
+            <p class="text-xs text-slate-500">Belum ada daftar prioritas pembenahan.</p>
+            <button onclick="generateRootCausesAndPriorities()" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold">Hitung Prioritas dari Rapor</button>
+          </div>
+        ` : `
+          <div class="space-y-3">
+            ${sorted.map((prio, index) => {
+              const ind = data.indicators.find(i => i.id === prio.indicatorId) || { nama: "Indikator", kode: "", nilai: "", kategori: "" };
               return `
-                <div class="bg-white rounded-2xl border ${rankNum <= 3 ? 'border-amber-300 shadow-sm' : 'border-slate-200'} p-5 transition">
-                  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-                    <div class="flex items-start gap-3.5">
-                      <div class="w-11 h-11 rounded-2xl ${rankNum === 1 ? 'gold-gradient text-emerald-950' : (rankNum <= 3 ? 'emerald-gradient text-white' : 'bg-slate-100 text-slate-700')} font-extrabold text-base flex flex-col items-center justify-center shrink-0">
-                        <span class="text-[9px] uppercase font-bold opacity-80">Rank</span>
-                        <span class="leading-none">#${rankNum}</span>
-                      </div>
-                      <div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                          <h3 class="font-bold text-slate-900 text-sm sm:text-base">${ind.kode ? `[${escapeHtml(ind.kode)}] ` : ''}${escapeHtml(ind.nama)}</h3>
-                          ${getCategoryBadgeHtml(classifyCategory(ind.nilai, ind.kategori))}
-                          ${prio.peringkatManual ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">Urutan Manual</span>` : ''}
-                        </div>
-                        <p class="text-xs text-slate-600 mt-1 leading-relaxed"><strong>Alasan Prioritas:</strong> ${escapeHtml(prio.alasanPrioritas)}</p>
-                      </div>
+                <div class="card-elevated p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                  <div class="flex items-start gap-3.5">
+                    <div class="w-10 h-10 rounded-xl emerald-gradient text-amber-300 font-heading font-extrabold text-base flex items-center justify-center shrink-0 shadow">
+                      #${index + 1}
                     </div>
-
-                    <div class="flex items-center gap-3 shrink-0">
-                      <div class="text-right">
-                        <div class="text-[11px] text-slate-500">Total Skor</div>
-                        <div class="text-xl font-extrabold text-emerald-900 font-mono">${prio.totalSkor}<span class="text-xs text-slate-400 font-normal">/25</span></div>
+                    <div>
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <h3 class="font-bold text-slate-900 text-sm sm:text-base">${ind.kode ? `[${escapeHtml(ind.kode)}] ` : ""}${escapeHtml(ind.nama)}</h3>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-100 text-slate-800 border border-slate-200">
+                          Nilai Capaian: ${formatScore(ind.nilai)}
+                        </span>
+                        ${getCategoryBadgeHtml(classifyCategory(ind.nilai, ind.kategori))}
                       </div>
-                      <button onclick="openEditPriorityModal('${ind.id}')" class="px-3.5 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-emerald-700"></i>
-                        <span>Ubah Skor / Urutan</span>
-                      </button>
+                      <p class="text-xs text-slate-600 mt-1 leading-relaxed"><strong>Alasan Prioritas:</strong> ${escapeHtml(prio.alasanPrioritas)}</p>
+                      <div class="flex flex-wrap gap-2 mt-2 text-[11px] font-mono">
+                        <span class="px-2 py-0.5 rounded bg-slate-100">Capaian: ${prio.skorCapaian}/5</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-100">Tren: ${prio.skorTren}/5</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-100">Dampak: ${prio.skorDampak}/5</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-100">Urgensi: ${prio.skorUrgensi}/5</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-100">Kapasitas: ${prio.skorKemampuan}/5</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-950 font-bold">Total Skor: ${prio.totalSkor}/25</span>
+                      </div>
                     </div>
                   </div>
 
-                  <!-- 5 Criteria Breakdown Pills -->
-                  <div class="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px]">
-                    <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
-                      <div class="text-slate-500">1. Tingkat Capaian</div>
-                      <div class="font-bold text-slate-900 mt-0.5">${prio.skorCapaian} / 5</div>
-                    </div>
-                    <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
-                      <div class="text-slate-500">2. Tren Perubahan</div>
-                      <div class="font-bold text-slate-900 mt-0.5">${prio.skorTren} / 5</div>
-                    </div>
-                    <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
-                      <div class="text-slate-500">3. Dampak ke Siswa</div>
-                      <div class="font-bold text-slate-900 mt-0.5">${prio.skorDampak} / 5</div>
-                    </div>
-                    <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
-                      <div class="text-slate-500">4. Urgensi Masalah</div>
-                      <div class="font-bold text-slate-900 mt-0.5">${prio.skorUrgensi} / 5</div>
-                    </div>
-                    <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
-                      <div class="text-slate-500">5. Kemampuan Sekolah</div>
-                      <div class="font-bold text-slate-900 mt-0.5">${prio.skorKemampuan} / 5</div>
-                    </div>
+                  <div class="flex items-center gap-1.5 self-end lg:self-center shrink-0">
+                    <button onclick="movePriorityOrder('${prio.id}', -1)" ${index === 0 ? "disabled" : ""} class="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 disabled:opacity-40" title="Naikkan Urutan Manual">
+                      <i data-lucide="arrow-up" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="movePriorityOrder('${prio.id}', 1)" ${index === sorted.length - 1 ? "disabled" : ""} class="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 disabled:opacity-40" title="Turunkan Urutan Manual">
+                      <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="openEditPriorityModal('${prio.id}')" class="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200 text-xs font-bold hover:bg-emerald-100">
+                      Ubah Bobot / Alasan
+                    </button>
                   </div>
                 </div>
               `;
-            }).join('')}
-          </div>
-        ` : `
-          <div class="bg-white rounded-2xl border border-slate-200 p-10 text-center">
-            <i data-lucide="list-ordered" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-            <h3 class="font-bold text-slate-900 text-base">Belum Ada Indikator Prioritas</h3>
-            <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Input data Rapor Pendidikan terlebih dahulu agar sistem dapat menghitung peringkat prioritas pembenahan.</p>
-            <button onclick="navigateTo('input')" class="mt-4 px-5 py-2.5 rounded-xl emerald-gradient text-white text-xs font-bold">Ke Modul 1: Input Data</button>
+            }).join("")}
           </div>
         `}
       `;
     }
 
-    function openEditPriorityModal(indicatorId) {
+    function movePriorityOrder(prioId, direction) {
       const data = getCurrentData();
-      const ind = data.indicators.find(i => i.id === indicatorId);
-      const prio = data.priorities[indicatorId] || computeDefaultPriorityForIndicator(ind);
+      const sorted = [...data.priorities].sort((a, b) => (a.peringkatManual || 999) - (b.peringkatManual || 999));
+      const idx = sorted.findIndex(p => p.id === prioId);
+      const targetIdx = idx + direction;
+      if (idx < 0 || targetIdx < 0 || targetIdx >= sorted.length) return;
+
+      const temp = sorted[idx];
+      sorted[idx] = sorted[targetIdx];
+      sorted[targetIdx] = temp;
+
+      sorted.forEach((p, i) => {
+        p.peringkatManual = i + 1;
+      });
+      triggerAutoSave("Prioritas", "Ubah Urutan Prioritas", "Menyesuaikan peringkat prioritas secara manual.");
+      renderAll();
+    }
+
+    function openEditPriorityModal(prioId) {
+      const data = getCurrentData();
+      const prio = data.priorities.find(p => p.id === prioId);
+      if (!prio) return;
 
       openCustomModal(`
         <div class="p-5 sm:p-6">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <h3 class="font-bold text-slate-900 text-base">Sesuaikan Prioritas — ${escapeHtml(ind.nama)}</h3>
+            <h3 class="font-bold text-slate-900 text-base">Sesuaikan Skor &amp; Alasan Prioritas</h3>
             <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
           </div>
-          <form onsubmit="savePriorityModal(event, '${indicatorId}')" class="mt-4 space-y-3 text-xs">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">1. Tingkat Capaian (1–5)</label>
-                <input type="number" min="1" max="5" name="skorCapaian" value="${prio.skorCapaian}" required class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">2. Tren Perubahan (1–5)</label>
-                <input type="number" min="1" max="5" name="skorTren" value="${prio.skorTren}" required class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">3. Dampak terhadap Peserta Didik (1–5)</label>
-                <input type="number" min="1" max="5" name="skorDampak" value="${prio.skorDampak}" required class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">4. Urgensi Masalah (1–5)</label>
-                <input type="number" min="1" max="5" name="skorUrgensi" value="${prio.skorUrgensi}" required class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">5. Kemampuan Sekolah Membenahi (1–5)</label>
-                <input type="number" min="1" max="5" name="skorKemampuan" value="${prio.skorKemampuan}" required class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-semibold text-indigo-800 mb-1">Peringkat Manual (Opsional, 1 = Tertinggi)</label>
-                <input type="number" min="1" max="50" name="peringkatManual" value="${prio.peringkatManual || ''}" placeholder="Kosongkan untuk otomatis" class="w-full rounded-xl border border-indigo-300 px-3 py-2" />
-              </div>
+          <form onsubmit="savePriorityEdit(event, '${prio.id}')" class="mt-4 space-y-3 text-xs">
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              <div><label class="block font-bold mb-1">Capaian (1-5)</label><input type="number" name="skorCapaian" min="1" max="5" value="${prio.skorCapaian}" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 font-mono" /></div>
+              <div><label class="block font-bold mb-1">Tren (1-5)</label><input type="number" name="skorTren" min="1" max="5" value="${prio.skorTren}" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 font-mono" /></div>
+              <div><label class="block font-bold mb-1">Dampak (1-5)</label><input type="number" name="skorDampak" min="1" max="5" value="${prio.skorDampak}" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 font-mono" /></div>
+              <div><label class="block font-bold mb-1">Urgensi (1-5)</label><input type="number" name="skorUrgensi" min="1" max="5" value="${prio.skorUrgensi}" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 font-mono" /></div>
+              <div><label class="block font-bold mb-1">Kapasitas (1-5)</label><input type="number" name="skorKemampuan" min="1" max="5" value="${prio.skorKemampuan}" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 font-mono" /></div>
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">Alasan Prioritas (Justifikasi Tim Sekolah)</label>
-              <textarea name="alasanPrioritas" rows="3" required class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(prio.alasanPrioritas)}</textarea>
+              <label class="block font-bold text-slate-700 mb-1">Alasan Penetapan Prioritas</label>
+              <textarea name="alasanPrioritas" rows="3" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(prio.alasanPrioritas)}</textarea>
             </div>
-            <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
+            <div class="flex justify-end gap-2 pt-2">
               <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
               <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Prioritas</button>
             </div>
@@ -3083,895 +2876,667 @@ Susun respons terstruktur mencakup: Masalah Utama, 5 langkah analisis 5 Why, 3-4
       `);
     }
 
-    function savePriorityModal(e, indicatorId) {
+    function savePriorityEdit(e, prioId) {
       e.preventDefault();
       const fd = new FormData(e.target);
       const data = getCurrentData();
-      const manualVal = fd.get('peringkatManual');
-      const sc = Number(fd.get('skorCapaian'));
-      const st = Number(fd.get('skorTren'));
-      const sd = Number(fd.get('skorDampak'));
-      const su = Number(fd.get('skorUrgensi'));
-      const sk = Number(fd.get('skorKemampuan'));
+      const prio = data.priorities.find(p => p.id === prioId);
+      if (!prio) return;
 
-      data.priorities[indicatorId] = {
-        indicatorId,
-        skorCapaian: sc,
-        skorTren: st,
-        skorDampak: sd,
-        skorUrgensi: su,
-        skorKemampuan: sk,
-        totalSkor: sc + st + sd + su + sk,
-        peringkatManual: manualVal ? Number(manualVal) : null,
-        alasanPrioritas: fd.get('alasanPrioritas').trim()
-      };
+      prio.skorCapaian = Number(fd.get("skorCapaian")) || 3;
+      prio.skorTren = Number(fd.get("skorTren")) || 3;
+      prio.skorDampak = Number(fd.get("skorDampak")) || 3;
+      prio.skorUrgensi = Number(fd.get("skorUrgensi")) || 3;
+      prio.skorKemampuan = Number(fd.get("skorKemampuan")) || 3;
+      prio.totalSkor = prio.skorCapaian + prio.skorTren + prio.skorDampak + prio.skorUrgensi + prio.skorKemampuan;
+      prio.alasanPrioritas = String(fd.get("alasanPrioritas") || "").trim();
 
       closeCustomModal();
-      triggerAutoSave("Penentuan Prioritas", "Ubah Skor/Urutan", "Menyesuaikan pembobotan atau urutan prioritas indikator.");
+      triggerAutoSave("Prioritas", "Edit Prioritas", "Memperbarui bobot dan alasan prioritas.");
       renderAll();
-      showToast("Peringkat prioritas berhasil diperbarui.", "success");
+      showToast("Prioritas pembenahan diperbarui.", "success");
     }
 
     // =========================================================================
-    // MODULE G: REKOMENDASI PROGRAM
+    // 13. MODULE 5: REKOMENDASI PROGRAM
     // =========================================================================
-    function renderRekomendasiModule(container) {
+    function generateRecommendationsFromPriorities() {
       const data = getCurrentData();
-      const ranked = getRankedPriorities();
+      if (data.priorities.length === 0) {
+        generateRootCausesAndPriorities();
+      }
 
-      container.innerHTML = `
+      const sorted = [...data.priorities].sort((a, b) => (a.peringkatManual || 999) - (b.peringkatManual || 999));
+      sorted.forEach(prio => {
+        if (!data.recommendations.some(r => r.indicatorId === prio.indicatorId)) {
+          const ind = data.indicators.find(i => i.id === prio.indicatorId);
+          const rc = data.rootCauses.find(r => r.indicatorId === prio.indicatorId);
+          if (!ind) return;
+
+          const currentScore = parseFloat(ind.nilai);
+          const targetScore = !isNaN(currentScore) ? Math.min(100, currentScore + 8).toFixed(2) : "Kategori Baik";
+
+          data.recommendations.push({
+            id: uid(),
+            indicatorId: ind.id,
+            permasalahan: rc ? rc.masalahUtama : `Capaian ${ind.nama} berada pada nilai ${formatScore(ind.nilai)}.`,
+            tujuanPerbaikan: `Meningkatkan Nilai Capaian ${ind.nama} dari ${formatScore(ind.nilai)} menjadi ${targetScore} melalui penguatan kompetensi pendidik dan layanan belajar.`,
+            sasaranProgram: "Seluruh pendidik, tenaga kependidikan, dan peserta didik satuan pendidikan.",
+            bentukKegiatan: `Penguatan Komunitas Belajar (Kombel), Lokakarya Praktik Baik, dan Penyediaan Perangkat Pembelajaran untuk ${ind.nama}.`,
+            langkahPelaksanaan: "1. Pemetaan kebutuhan awal; 2. Pelaksanaan lokakarya/IHT di Kombel; 3. Implementasi di kelas; 4. Supervisi dan refleksi berkala.",
+            penanggungJawab: "Kepala Sekolah & Koordinator Komunitas Belajar",
+            indikatorKeberhasilan: `Terlaksananya kegiatan penguatan dan meningkatnya skor capaian ${ind.nama} pada Rapor Pendidikan.`,
+            targetCapaian: `Nilai Capaian meningkat menuju ${targetScore}.`,
+            waktuPelaksanaan: `Semester Ganjil – Genap ${data.school.tahunPerencanaan}`,
+            kebutuhanSumberDaya: "Narasumber/fasilitator internal, perangkat ajar, ATK kegiatan Kombel.",
+            perkiraanAnggaran: 3500000,
+            disetujui: false
+          });
+        }
+      });
+
+      triggerAutoSave("Rekomendasi", "Susun Rekomendasi", "Menyusun rekomendasi program berdasarkan prioritas Rapor Pendidikan.");
+      setActiveTab("rekomendasi");
+      showToast("Rekomendasi program berhasil disusun. Silakan tinjau, sunting, dan setujui.", "success");
+    }
+
+    function renderRekomendasiModule() {
+      const data = getCurrentData();
+
+      return `
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">5. Rekomendasi Program Pembenahan</h2>
-            <p class="text-xs text-slate-500">Rekomendasi program realistis berbasis indikator prioritas &amp; akar masalah. Wajib ditinjau dan disetujui tim sekolah.</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 5 • Desain Intervensi Sekolah</span>
+            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Rekomendasi Program Pembenahan</h2>
+            <p class="text-xs text-slate-600 mt-0.5">Setiap rekomendasi terhubung dengan <strong>Nilai Capaian</strong> indikator dan dapat disunting serta disetujui tim sekolah.</p>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <button onclick="generateAllProgramRecommendations()" id="btnGenerateRekomAi" class="px-4 py-2 rounded-xl gold-gradient text-emerald-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm hover:opacity-95 transition">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
-              <span>Buat Rekomendasi dengan AI</span>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="exportWordDocument('akar')" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-blue-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Unduh Word</span>
             </button>
-            <button onclick="openEditRecommendationModal()" class="px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5">
-              <i data-lucide="plus" class="w-4 h-4"></i>
-              <span>Tambah Manual</span>
+            <button onclick="generateRootCausesAndPriorities()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-emerald-700"></i>
+              <span>Generate dari Indikator</span>
             </button>
-            ${data.recommendations.length > 0 ? `
-              <button onclick="syncRecommendationsToRkjm()" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold flex items-center gap-1.5 shadow-sm hover:opacity-95 transition">
-                <span>Susun RKJM</span>
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
-              </button>` : ''}
+            <button onclick="setActiveTab('prioritas')" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
+              <span>Lanjut Penentuan Prioritas</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
           </div>
         </div>
 
-        ${data.recommendations.length > 0 ? `
-          <div class="space-y-4">
-            ${data.recommendations.map((rec, idx) => {
-              const isApproved = rec.statusPersetujuan === 'disetujui';
-              return `
-                <div class="bg-white rounded-2xl border ${isApproved ? 'border-emerald-300' : 'border-slate-200'} shadow-xs overflow-hidden">
-                  <div class="p-5 bg-slate-50/70 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-lg bg-emerald-900 text-amber-300">Rekomendasi #${idx + 1}</span>
-                        <span class="text-xs font-bold text-emerald-800">${escapeHtml(rec.indicatorNama)}</span>
-                        ${isApproved
-                          ? `<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Disetujui Tim Sekolah</span>`
-                          : `<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Menunggu Tinjauan Tim</span>`}
-                      </div>
-                      <h3 class="font-extrabold text-slate-900 text-base mt-1.5">${escapeHtml(rec.bentukKegiatan)}</h3>
-                    </div>
-
-                    <div class="flex items-center gap-2 flex-wrap">
-                      <button onclick="toggleRecommendationApproval('${rec.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${isApproved ? 'bg-white border border-slate-300 text-slate-700' : 'emerald-gradient text-white shadow-xs'}">
-                        ${isApproved ? 'Batalkan Persetujuan' : 'Setujui Program ✓'}
-                      </button>
-                      <button onclick="openEditRecommendationModal('${rec.id}')" class="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700" title="Edit Rekomendasi">
-                        <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-                      </button>
-                      <button onclick="deleteRecommendation('${rec.id}')" class="p-2 rounded-xl border border-slate-200 bg-white hover:bg-rose-50 text-rose-700" title="Hapus">
-                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-                    <div>
-                      <div class="font-bold text-slate-500 uppercase text-[10px]">Permasalahan</div>
-                      <p class="text-slate-800 mt-1 leading-relaxed">${escapeHtml(rec.permasalahan)}</p>
-                    </div>
-                    <div>
-                      <div class="font-bold text-slate-500 uppercase text-[10px]">Tujuan Perbaikan</div>
-                      <p class="text-slate-800 mt-1 leading-relaxed">${escapeHtml(rec.tujuanPerbaikan)}</p>
-                    </div>
-                    <div>
-                      <div class="font-bold text-slate-500 uppercase text-[10px]">Sasaran Program</div>
-                      <p class="text-slate-800 mt-1 leading-relaxed">${escapeHtml(rec.sasaran)}</p>
-                    </div>
-                    <div class="md:col-span-2">
-                      <div class="font-bold text-slate-500 uppercase text-[10px]">Langkah Pelaksanaan</div>
-                      <p class="text-slate-800 mt-1 whitespace-pre-line leading-relaxed">${escapeHtml(rec.langkahPelaksanaan)}</p>
-                    </div>
-                    <div>
-                      <div class="font-bold text-slate-500 uppercase text-[10px]">Indikator Keberhasilan &amp; Target</div>
-                      <p class="text-slate-800 mt-1 leading-relaxed"><strong>Indikator:</strong> ${escapeHtml(rec.indikatorKeberhasilan)}<br/><strong>Target:</strong> ${escapeHtml(rec.targetCapaian)}</p>
-                    </div>
-                    <div>
-                      <div class="font-bold text-slate-500 uppercase text-[10px]">Penanggung Jawab &amp; Waktu</div>
-                      <p class="text-slate-800 mt-1"><strong>PJ:</strong> ${escapeHtml(rec.penanggungJawab)}<br/><strong>Waktu:</strong> ${escapeHtml(rec.waktuPelaksanaan)}</p>
-                    </div>
-                    <div>
-                      <div class="font-bold text-slate-500 uppercase text-[10px]">Kebutuhan Sumber Daya</div>
-                      <p class="text-slate-800 mt-1">${escapeHtml(rec.sumberDaya)}</p>
-                    </div>
-                    <div>
-                      <div class="font-bold text-slate-500 uppercase text-[10px]">Perkiraan Anggaran</div>
-                      <p class="text-emerald-900 font-extrabold text-sm mt-1">${formatRupiah(rec.perkiraanAnggaran)}</p>
-                    </div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
+        ${data.recommendations.length === 0 ? `
+          <div class="card-elevated p-10 text-center space-y-3">
+            <p class="text-xs text-slate-500">Belum ada rekomendasi program. Klik tombol <strong>Generate Rekomendasi</strong> dari hasil prioritas pembenahan.</p>
+            <button onclick="generateRecommendationsFromPriorities()" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold">Buat Rekomendasi Sekarang</button>
           </div>
         ` : `
-          <div class="bg-white rounded-2xl border-2 border-dashed border-slate-300 p-10 text-center">
-            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3">
-              <i data-lucide="lightbulb" class="w-6 h-6"></i>
-            </div>
-            <h3 class="font-bold text-slate-900 text-base">Belum Ada Rekomendasi Program Pembenahan</h3>
-            <p class="text-xs text-slate-500 max-w-lg mx-auto mt-1 leading-relaxed">
-              ${ranked.length > 0
-                ? `Sistem mendeteksi <strong>${ranked.length} indikator prioritas</strong>. Klik tombol <strong>Buat Rekomendasi dengan AI</strong> untuk merancang program pembenahan yang realistis dan terukur.`
-                : `Silakan input data Rapor Pendidikan terlebih dahulu pada Modul 1 agar sistem dapat merancang rekomendasi program.`}
-            </p>
-            ${ranked.length > 0 ? `
-              <button onclick="generateAllProgramRecommendations()" class="mt-5 px-5 py-2.5 rounded-xl gold-gradient text-emerald-950 font-extrabold text-xs inline-flex items-center gap-1.5 shadow-sm">
-                <i data-lucide="sparkles" class="w-4 h-4"></i> Buat Rekomendasi Program Sekarang
-              </button>` : ''}
+          <div class="space-y-4">
+            ${data.recommendations.map(rec => {
+              const ind = data.indicators.find(i => i.id === rec.indicatorId) || { nama: "Indikator", kode: "", nilai: "", kategori: "" };
+              return `
+                <article class="card-elevated p-5 space-y-4">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="px-2.5 py-0.5 rounded-lg bg-emerald-900 text-amber-300 font-bold text-xs">
+                        ${ind.kode ? `[${escapeHtml(ind.kode)}] ` : ""}${escapeHtml(ind.nama)}
+                      </span>
+                      <span class="px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 font-mono text-xs font-bold text-slate-800">
+                        Nilai Capaian: ${formatScore(ind.nilai)}
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button onclick="toggleApproveRecommendation('${rec.id}')"
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border ${rec.disetujui ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-amber-50 text-amber-900 border-amber-300'}">
+                        <i data-lucide="${rec.disetujui ? 'check-circle-2' : 'clock'}" class="w-3.5 h-3.5"></i>
+                        <span>${rec.disetujui ? "Disetujui Tim Sekolah" : "Klik Setujui Program"}</span>
+                      </button>
+                      <button onclick="openEditRecommendationModal('${rec.id}')" class="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700" title="Edit Rekomendasi">
+                        <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                      <div class="font-bold text-slate-700 mb-1">Permasalahan</div>
+                      <p class="text-slate-800">${escapeHtml(rec.permasalahan)}</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200">
+                      <div class="font-bold text-emerald-950 mb-1">Tujuan Perbaikan</div>
+                      <p class="text-slate-800">${escapeHtml(rec.tujuanPerbaikan)}</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                      <div class="font-bold text-slate-700 mb-1">Bentuk Kegiatan</div>
+                      <p class="text-slate-800 font-semibold">${escapeHtml(rec.bentukKegiatan)}</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-white border border-slate-200">
+                      <div class="font-bold text-slate-700 mb-1">Langkah Pelaksanaan</div>
+                      <p class="text-slate-700">${escapeHtml(rec.langkahPelaksanaan)}</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-white border border-slate-200">
+                      <div class="font-bold text-slate-700 mb-1">Sasaran &amp; Penanggung Jawab</div>
+                      <p class="text-slate-700"><strong>Sasaran:</strong> ${escapeHtml(rec.sasaranProgram)}<br/><strong>PJ:</strong> ${escapeHtml(rec.penanggungJawab)}</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200">
+                      <div class="font-bold text-amber-950 mb-1">Target, Waktu &amp; Estimasi Biaya</div>
+                      <p class="text-slate-800">
+                        <strong>Target:</strong> ${escapeHtml(rec.targetCapaian)}<br/>
+                        <strong>Waktu:</strong> ${escapeHtml(rec.waktuPelaksanaan)}<br/>
+                        <strong>Perkiraan Anggaran:</strong> <span class="font-mono font-bold text-emerald-900">${formatRupiah(rec.perkiraanAnggaran)}</span>
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              `;
+            }).join("")}
           </div>
         `}
       `;
     }
 
-    async function generateAllProgramRecommendations() {
-      const data = getCurrentData();
-      const ranked = getRankedPriorities();
-      if (ranked.length === 0) {
-        showToast("Belum ada indikator prioritas. Silakan isi data Rapor Pendidikan terlebih dahulu.", "warning");
-        return;
-      }
-
-      const btn = document.getElementById('btnGenerateRekomAi');
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Menyusun Rekomendasi...</span>`;
-        if (window.lucide) window.lucide.createIcons();
-      }
-
-      const topPriorities = ranked.slice(0, 6);
-      const summaryContext = topPriorities.map(({ ind, prio }, i) => {
-        const rc = data.rootCauses[ind.id];
-        const confirmedFacts = rc ? rc.akarPenyebab.filter(a => a.status === 'fakta_sekolah').map(a => a.teks).join('; ') : '';
-        return `${i + 1}. [${ind.kode}] ${ind.nama} (Nilai: ${ind.nilai}, Kategori: ${classifyCategory(ind.nilai, ind.kategori)}, Skor Prioritas: ${prio.totalSkor}). Akar masalah: ${confirmedFacts || (rc ? rc.masalahUtama : 'Perlu penguatan pembelajaran dan kompetensi GTK')}`;
-      }).join('\n');
-
-      const systemPrompt = `Anda adalah konsultan Perencanaan Berbasis Data (PBD) dan ARKAS sekolah di Indonesia. Susun rekomendasi program perbaikan sekolah yang sangat realistis, operasional, hemat biaya namun berdampak tinggi sesuai kondisi sekolah di Indonesia. Gunakan Bahasa Indonesia formal.`;
-
-      const userPrompt = `Berdasarkan daftar indikator prioritas sekolah berikut (${data.school.nama || 'Satuan Pendidikan'}, Jenjang: ${data.school.jenjang || 'Sekolah'}):
-${summaryContext}
-
-Buat 1 rekomendasi program konkret untuk setiap indikator di atas (maksimal ${topPriorities.length} program).`;
-
-      const schema = {
-        type: "ARRAY",
-        items: {
-          type: "OBJECT",
-          properties: {
-            priorityIndex: { type: "INTEGER" },
-            permasalahan: { type: "STRING" },
-            tujuanPerbaikan: { type: "STRING" },
-            sasaran: { type: "STRING" },
-            bentukKegiatan: { type: "STRING" },
-            langkahPelaksanaan: { type: "STRING" },
-            penanggungJawab: { type: "STRING" },
-            indikatorKeberhasilan: { type: "STRING" },
-            targetCapaian: { type: "STRING" },
-            waktuPelaksanaan: { type: "STRING" },
-            sumberDaya: { type: "STRING" },
-            perkiraanAnggaran: { type: "NUMBER" }
-          },
-          required: ["priorityIndex", "permasalahan", "tujuanPerbaikan", "sasaran", "bentukKegiatan", "langkahPelaksanaan", "penanggungJawab", "indikatorKeberhasilan", "targetCapaian", "waktuPelaksanaan", "sumberDaya", "perkiraanAnggaran"]
-        }
-      };
-
-      try {
-        const aiList = await callGeminiAPI(userPrompt, systemPrompt, schema);
-        aiList.forEach((item, idx) => {
-          const target = topPriorities[item.priorityIndex - 1] || topPriorities[idx];
-          if (!target) return;
-          data.recommendations.push({
-            id: uid(),
-            indicatorId: target.ind.id,
-            indicatorNama: `${target.ind.kode ? '[' + target.ind.kode + '] ' : ''}${target.ind.nama}`,
-            permasalahan: item.permasalahan,
-            tujuanPerbaikan: item.tujuanPerbaikan,
-            sasaran: item.sasaran,
-            bentukKegiatan: item.bentukKegiatan,
-            langkahPelaksanaan: item.langkahPelaksanaan,
-            penanggungJawab: item.penanggungJawab,
-            indikatorKeberhasilan: item.indikatorKeberhasilan,
-            targetCapaian: item.targetCapaian,
-            waktuPelaksanaan: item.waktuPelaksanaan,
-            sumberDaya: item.sumberDaya,
-            perkiraanAnggaran: Number(item.perkiraanAnggaran) || 0,
-            statusPersetujuan: 'menunggu',
-            sumberAi: true
-          });
-        });
-        triggerAutoSave("Rekomendasi Program", "Generate Rekomendasi AI", `Menyusun ${aiList.length} rekomendasi program berbasis prioritas.`);
-        renderAll();
-        showToast("Rekomendasi program berhasil disusun! Silakan tinjau dan setujui setiap program.", "success");
-      } catch (err) {
-        // Structured deterministic fallback grounded in user's actual indicators
-        topPriorities.forEach(({ ind }) => {
-          const rc = data.rootCauses[ind.id];
-          data.recommendations.push({
-            id: uid(),
-            indicatorId: ind.id,
-            indicatorNama: `${ind.kode ? '[' + ind.kode + '] ' : ''}${ind.nama}`,
-            permasalahan: rc ? rc.masalahUtama : `Capaian ${ind.nama} (${ind.nilai || 'perlu penguatan'}) masih membutuhkan peningkatan sistematis.`,
-            tujuanPerbaikan: `Meningkatkan kualitas proses pembelajaran dan capaian peserta didik pada indikator ${ind.nama}.`,
-            sasaran: `Seluruh guru mata pelajaran/kelas dan peserta didik di ${data.school.nama || 'satuan pendidikan'}.`,
-            bentukKegiatan: `Optimalisasi Komunitas Belajar (Kombel) & Penguatan Pembelajaran Kontekstual ${ind.nama}`,
-            langkahPelaksanaan: `1. Pemetaan kebutuhan belajar peserta didik dan refleksi guru.\n2. Lokakarya penyusunan perangkat ajar & asesmen formatif di Kombel.\n3. Implementasi pembelajaran terdiferensiasi di kelas.\n4. Evaluasi berkala dan tindak lanjut hasil belajar.`,
-            penanggungJawab: `Wakil Kepala Sekolah Bidang Kurikulum & Koordinator Kombel`,
-            indikatorKeberhasilan: `Minimal 85% guru menerapkan perangkat ajar hasil Kombel dan skor ${ind.nama} meningkat.`,
-            targetCapaian: `Kenaikan capaian ${ind.nama} minimal +5 poin pada Rapor Pendidikan berikutnya`,
-            waktuPelaksanaan: `Triwulan I – Triwulan IV Tahun ${data.school.tahunPerencanaan || window.appState.activeYear}`,
-            sumberDaya: `Narasumber internal/pengawas pembina, modul ajar, bahan bacaan/media pembelajaran, ATK Kombel`,
-            perkiraanAnggaran: 3500000,
-            statusPersetujuan: 'menunggu',
-            sumberAi: true
-          });
-        });
-        triggerAutoSave("Rekomendasi Program", "Susun Rekomendasi Terstruktur", `Menyusun ${topPriorities.length} rekomendasi program berbasis indikator prioritas.`);
-        renderAll();
-        showToast("Rekomendasi program berhasil disusun berdasarkan indikator prioritas Anda.", "success");
-      }
-    }
-
-    function toggleRecommendationApproval(recId) {
+    function toggleApproveRecommendation(recId) {
       const data = getCurrentData();
       const rec = data.recommendations.find(r => r.id === recId);
-      if (rec) {
-        rec.statusPersetujuan = rec.statusPersetujuan === 'disetujui' ? 'menunggu' : 'disetujui';
-        triggerAutoSave("Rekomendasi Program", "Persetujuan Program", `Status "${rec.bentukKegiatan}" diubah menjadi ${rec.statusPersetujuan}.`);
-        renderAll();
-        showToast(rec.statusPersetujuan === 'disetujui' ? "Program disetujui tim sekolah." : "Persetujuan dibatalkan.", "success");
-      }
+      if (!rec) return;
+      rec.disetujui = !rec.disetujui;
+      triggerAutoSave("Rekomendasi", "Persetujuan Program", `${rec.disetujui ? "Menyetujui" : "Membatalkan persetujuan"} program rekomendasi.`);
+      renderAll();
     }
 
-    function deleteRecommendation(recId) {
-      showConfirmDialog({
-        title: "Hapus Rekomendasi Program?",
-        message: "Rekomendasi ini akan dihapus dari daftar.",
-        confirmText: "Ya, Hapus",
-        danger: true,
-        onConfirm: () => {
-          const data = getCurrentData();
-          data.recommendations = data.recommendations.filter(r => r.id !== recId);
-          triggerAutoSave("Rekomendasi Program", "Hapus Program", "Menghapus rekomendasi program.");
-          renderAll();
-          showToast("Rekomendasi dihapus.", "info");
-        }
-      });
-    }
-
-    function openEditRecommendationModal(recId = null) {
+    function openEditRecommendationModal(recId) {
       const data = getCurrentData();
-      const rec = recId ? data.recommendations.find(r => r.id === recId) : null;
-      const inds = data.indicators;
+      const rec = data.recommendations.find(r => r.id === recId);
+      if (!rec) return;
 
       openCustomModal(`
         <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <h3 class="font-bold text-slate-900 text-base">${rec ? 'Edit Rekomendasi Program' : 'Tambah Rekomendasi Program'}</h3>
+            <h3 class="font-bold text-slate-900 text-base">Edit Rekomendasi Program</h3>
             <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
           </div>
-          <form onsubmit="saveRecommendationModal(event, '${recId || ''}')" class="mt-4 space-y-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Indikator Rapor Terkait <span class="text-rose-600">*</span></label>
-              <select name="indicatorId" required class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                ${inds.map(i => `<option value="${i.id}" ${rec?.indicatorId === i.id ? 'selected' : ''}>${i.kode ? '[' + i.kode + '] ' : ''}${escapeHtml(i.nama)}</option>`).join('')}
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Nama / Bentuk Program Kegiatan <span class="text-rose-600">*</span></label>
-              <input type="text" name="bentukKegiatan" value="${escapeHtml(rec?.bentukKegiatan || '')}" required class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-            </div>
+          <form onsubmit="saveRecommendationEdit(event, '${rec.id}')" class="mt-4 space-y-3 text-xs">
+            <div><label class="block font-bold mb-1">Bentuk Kegiatan</label><input type="text" name="bentukKegiatan" value="${escapeHtml(rec.bentukKegiatan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            <div><label class="block font-bold mb-1">Tujuan Perbaikan</label><textarea name="tujuanPerbaikan" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(rec.tujuanPerbaikan)}</textarea></div>
+            <div><label class="block font-bold mb-1">Langkah Pelaksanaan</label><textarea name="langkahPelaksanaan" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(rec.langkahPelaksanaan)}</textarea></div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Permasalahan</label>
-                <textarea name="permasalahan" rows="2" required class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(rec?.permasalahan || '')}</textarea>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Tujuan Perbaikan</label>
-                <textarea name="tujuanPerbaikan" rows="2" required class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(rec?.tujuanPerbaikan || '')}</textarea>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Sasaran Program</label>
-                <input type="text" name="sasaran" value="${escapeHtml(rec?.sasaran || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Penanggung Jawab</label>
-                <input type="text" name="penanggungJawab" value="${escapeHtml(rec?.penanggungJawab || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Langkah Pelaksanaan</label>
-              <textarea name="langkahPelaksanaan" rows="3" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(rec?.langkahPelaksanaan || '')}</textarea>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Indikator Keberhasilan</label>
-                <input type="text" name="indikatorKeberhasilan" value="${escapeHtml(rec?.indikatorKeberhasilan || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Target Capaian</label>
-                <input type="text" name="targetCapaian" value="${escapeHtml(rec?.targetCapaian || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
+              <div><label class="block font-bold mb-1">Sasaran Program</label><input type="text" name="sasaranProgram" value="${escapeHtml(rec.sasaranProgram)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Penanggung Jawab</label><input type="text" name="penanggungJawab" value="${escapeHtml(rec.penanggungJawab)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Waktu Pelaksanaan</label>
-                <input type="text" name="waktuPelaksanaan" value="${escapeHtml(rec?.waktuPelaksanaan || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Kebutuhan Sumber Daya</label>
-                <input type="text" name="sumberDaya" value="${escapeHtml(rec?.sumberDaya || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Perkiraan Anggaran (Rp)</label>
-                <input type="number" min="0" name="perkiraanAnggaran" value="${rec?.perkiraanAnggaran || 0}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
-              </div>
+              <div><label class="block font-bold mb-1">Target Capaian</label><input type="text" name="targetCapaian" value="${escapeHtml(rec.targetCapaian)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Waktu Pelaksanaan</label><input type="text" name="waktuPelaksanaan" value="${escapeHtml(rec.waktuPelaksanaan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Perkiraan Anggaran (Rp)</label><input type="number" name="perkiraanAnggaran" value="${Number(rec.perkiraanAnggaran) || 0}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" /></div>
             </div>
-            <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
+            <div class="flex justify-end gap-2 pt-2">
               <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Program</button>
+              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Rekomendasi</button>
             </div>
           </form>
         </div>
-      `, 'max-w-3xl');
+      `);
     }
 
-    function saveRecommendationModal(e, recId) {
+    function saveRecommendationEdit(e, recId) {
       e.preventDefault();
       const fd = new FormData(e.target);
       const data = getCurrentData();
-      const indId = fd.get('indicatorId');
-      const ind = data.indicators.find(i => i.id === indId);
+      const rec = data.recommendations.find(r => r.id === recId);
+      if (!rec) return;
 
-      const obj = {
-        id: recId || uid(),
-        indicatorId: indId,
-        indicatorNama: ind ? `${ind.kode ? '[' + ind.kode + '] ' : ''}${ind.nama}` : 'Indikator Rapor',
-        permasalahan: fd.get('permasalahan').trim(),
-        tujuanPerbaikan: fd.get('tujuanPerbaikan').trim(),
-        sasaran: fd.get('sasaran').trim(),
-        bentukKegiatan: fd.get('bentukKegiatan').trim(),
-        langkahPelaksanaan: fd.get('langkahPelaksanaan').trim(),
-        penanggungJawab: fd.get('penanggungJawab').trim(),
-        indikatorKeberhasilan: fd.get('indikatorKeberhasilan').trim(),
-        targetCapaian: fd.get('targetCapaian').trim(),
-        waktuPelaksanaan: fd.get('waktuPelaksanaan').trim(),
-        sumberDaya: fd.get('sumberDaya').trim(),
-        perkiraanAnggaran: Number(fd.get('perkiraanAnggaran')) || 0,
-        statusPersetujuan: 'disetujui',
-        sumberAi: false
-      };
-
-      if (recId) {
-        const idx = data.recommendations.findIndex(r => r.id === recId);
-        if (idx !== -1) data.recommendations[idx] = obj;
-      } else {
-        data.recommendations.push(obj);
-      }
+      rec.bentukKegiatan = String(fd.get("bentukKegiatan") || "").trim();
+      rec.tujuanPerbaikan = String(fd.get("tujuanPerbaikan") || "").trim();
+      rec.langkahPelaksanaan = String(fd.get("langkahPelaksanaan") || "").trim();
+      rec.sasaranProgram = String(fd.get("sasaranProgram") || "").trim();
+      rec.penanggungJawab = String(fd.get("penanggungJawab") || "").trim();
+      rec.targetCapaian = String(fd.get("targetCapaian") || "").trim();
+      rec.waktuPelaksanaan = String(fd.get("waktuPelaksanaan") || "").trim();
+      rec.perkiraanAnggaran = Number(fd.get("perkiraanAnggaran")) || 0;
 
       closeCustomModal();
-      triggerAutoSave("Rekomendasi Program", "Simpan Program", `Menyimpan program "${obj.bentukKegiatan}".`);
+      triggerAutoSave("Rekomendasi", "Edit Rekomendasi", "Menyunting detail rekomendasi program.");
       renderAll();
-      showToast("Rekomendasi program berhasil disimpan.", "success");
+      showToast("Rekomendasi program diperbarui.", "success");
     }
 
     // =========================================================================
-    // MODULE H: PENYUSUNAN RKJM (RENCANA KERJA JANGKA MENENGAH)
+    // 14. MODULE 6: PENYUSUNAN RKJM (4-Year Strategic Plan)
     // =========================================================================
-    function syncRecommendationsToRkjm() {
+    function generateRkjmFromRecommendations() {
       const data = getCurrentData();
       if (data.recommendations.length === 0) {
-        showToast("Belum ada rekomendasi program untuk diturunkan ke RKJM.", "warning");
-        return;
+        generateRecommendationsFromPriorities();
       }
 
-      let added = 0;
       data.recommendations.forEach(rec => {
-        const exists = data.rkjm.some(p => p.recommendationId === rec.id);
-        if (!exists) {
+        if (!data.rkjm.some(p => p.indicatorId === rec.indicatorId)) {
           const ind = data.indicators.find(i => i.id === rec.indicatorId);
-          const rc = data.rootCauses[rec.indicatorId];
-          const confirmedCauses = rc ? rc.akarPenyebab.filter(a => a.status === 'fakta_sekolah').map(a => a.teks).join('; ') : '';
+          const rc = data.rootCauses.find(r => r.indicatorId === rec.indicatorId);
+          if (!ind) return;
+
+          const baseScore = parseFloat(ind.nilai);
+          const t1 = !isNaN(baseScore) ? `Skor ${Math.min(100, baseScore + 5).toFixed(1)}` : "Meningkat Th-1";
+          const t2 = !isNaN(baseScore) ? `Skor ${Math.min(100, baseScore + 10).toFixed(1)}` : "Meningkat Th-2";
+          const t3 = !isNaN(baseScore) ? `Skor ${Math.min(100, baseScore + 15).toFixed(1)}` : "Kategori Baik";
+          const t4 = !isNaN(baseScore) ? `Skor ${Math.min(100, baseScore + 20).toFixed(1)}` : "Optimal";
 
           data.rkjm.push({
             id: uid(),
-            indicatorId: rec.indicatorId,
-            recommendationId: rec.id,
-            dimensi: ind ? ind.dimensi : DIMENSI_RAPOR[0],
-            indikatorNama: rec.indicatorNama,
-            akarMasalah: confirmedCauses || (rc ? rc.masalahUtama : rec.permasalahan),
+            indicatorId: ind.id,
+            dimensi: ind.dimensi || "Mutu Pendidikan",
+            indikatorNama: `${ind.kode ? "[" + ind.kode + "] " : ""}${ind.nama}`,
+            akarMasalah: rc ? rc.masalahUtama : rec.permasalahan,
             tujuanStrategis: rec.tujuanPerbaikan,
-            namaProgram: rec.bentukKegiatan,
-            targetTahun1: rec.targetCapaian || "Tercapai 75%",
-            targetTahun2: "Tercapai 85%",
-            targetTahun3: "Tercapai 92%",
-            targetTahun4: "Tercapai 100% (Kategori Baik)",
+            programPengembangan: `Program Peningkatan ${ind.nama}`,
+            targetTahun1: t1,
+            targetTahun2: t2,
+            targetTahun3: t3,
+            targetTahun4: t4,
             indikatorKeberhasilan: rec.indikatorKeberhasilan,
             penanggungJawab: rec.penanggungJawab,
             sumberPendanaan: "BOSP Reguler"
           });
-          added++;
         }
       });
 
-      triggerAutoSave("RKJM", "Turunkan ke RKJM", `Menurunkan ${added} program prioritas ke dalam matriks RKJM.`);
-      navigateTo('rkjm');
-      showToast(added > 0 ? `${added} program berhasil diturunkan ke RKJM dan terhubung dengan Rapor Pendidikan.` : "Seluruh rekomendasi sudah terhubung di RKJM.", "success");
+      triggerAutoSave("RKJM", "Susun RKJM Otomatis", "Menurunkan program prioritas ke dokumen RKJM 4 tahunan.");
+      setActiveTab("rkjm");
+      showToast("Dokumen RKJM 4 tahunan berhasil disusun!", "success");
     }
 
-    function renderRkjmModule(container) {
+    function renderRkjmModule() {
       const data = getCurrentData();
-      const s = data.school;
-      const yStart = parseInt(s.periodeRkjmMulai || window.appState.activeYear, 10) || 2026;
-      const yEnd = parseInt(s.periodeRkjmAkhir || (yStart + 3), 10) || (yStart + 3);
+      const yStart = parseInt(data.school.periodeRkjmAwal || data.school.tahunPerencanaan || "2026", 10);
+      const yEnd = parseInt(data.school.periodeRkjmAkhir || String(yStart + 3), 10);
 
-      container.innerHTML = `
+      return `
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">6. Penyusunan Rencana Kerja Jangka Menengah (RKJM)</h2>
-            <p class="text-xs text-slate-500">Periode Perencanaan: <strong>Tahun ${yStart} – ${yEnd}</strong> • Terhubung langsung dengan Dimensi &amp; Indikator Rapor Pendidikan.</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 4 • Pembobotan &amp; Urutan Fokus</span>
+            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Penentuan Prioritas Pembenahan</h2>
+            <p class="text-xs text-slate-600 mt-0.5">Pemeringkatan berdasarkan <strong>Nilai Capaian</strong>, tren perubahan, dampak ke siswa, urgensi, dan kapasitas sekolah (dapat diatur manual).</p>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <button onclick="openRkjmPeriodModal()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5">
-              <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-700"></i>
-              <span>Atur Periode (${yStart}-${yEnd})</span>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="exportExcelDocument('prioritas')" class="px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-emerald-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+              <span>Unduh Excel</span>
             </button>
-            <button onclick="syncRecommendationsToRkjm()" class="px-3.5 py-2 rounded-xl gold-gradient text-emerald-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-              <span>Tarik dari Rekomendasi</span>
+            <button onclick="generateRecommendationsFromPriorities()" class="px-4 py-2.5 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-2 shadow">
+              <i data-lucide="lightbulb" class="w-4 h-4 text-amber-300"></i>
+              <span>Buat Rekomendasi Program</span>
             </button>
-            <button onclick="openEditRkjmModal()" class="px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1">
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Tambah Program
-            </button>
-            ${data.rkjm.length > 0 ? `
-              <button onclick="syncRkjmToRkt()" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
-                <span>Susun RKT</span>
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
-              </button>` : ''}
           </div>
         </div>
 
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-          ${data.rkjm.length > 0 ? `
+        <!-- PERIOD CONFIGURATOR -->
+        <section class="card-elevated p-4 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="font-bold text-slate-800">Periode Perencanaan RKJM:</span>
+            <input type="number" id="rkjmStartInput" value="${yStart}" class="w-24 rounded-lg border border-slate-300 px-2.5 py-1.5 font-mono font-bold" />
+            <span>s.d.</span>
+            <input type="number" id="rkjmEndInput" value="${yEnd}" class="w-24 rounded-lg border border-slate-300 px-2.5 py-1.5 font-mono font-bold" />
+            <button onclick="updateRkjmPeriod()" class="px-3 py-1.5 rounded-lg bg-emerald-900 text-white font-bold">Terapkan Periode</button>
+          </div>
+          <span class="text-[11px] text-slate-500">Total Program Strategis: <strong>${data.rkjm.length}</strong></span>
+        </section>
+
+        <!-- RKJM TABLE -->
+        <section class="card-elevated overflow-hidden">
+          ${data.rkjm.length === 0 ? `
+            <div class="p-10 text-center space-y-3">
+              <p class="text-xs text-slate-500">Belum ada program RKJM. Klik tombol di bawah untuk menyusun RKJM dari hasil rekomendasi program.</p>
+              <button onclick="generateRkjmFromRecommendations()" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold">Susun RKJM Otomatis</button>
+            </div>
+          ` : `
             <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr class="bg-emerald-950 text-white font-bold uppercase text-[10px]">
-                    <th class="py-3 px-3">Dimensi &amp; Indikator Dibenahi</th>
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[10px]">
+                  <tr>
+                    <th class="py-3 px-3">Indikator &amp; Capaian Awal</th>
                     <th class="py-3 px-3">Akar Masalah</th>
-                    <th class="py-3 px-3">Tujuan Strategis &amp; Program Pengembangan</th>
-                    <th class="py-3 px-3 text-center">Target ${yStart}</th>
-                    <th class="py-3 px-3 text-center">Target ${yStart + 1}</th>
-                    <th class="py-3 px-3 text-center">Target ${yStart + 2}</th>
-                    <th class="py-3 px-3 text-center">Target ${yStart + 3}</th>
-                    <th class="py-3 px-3">Indikator Keberhasilan</th>
+                    <th class="py-3 px-3">Program Pengembangan &amp; Tujuan</th>
+                    <th class="py-3 px-2 text-center">Th 1 (${yStart})</th>
+                    <th class="py-3 px-2 text-center">Th 2 (${yStart + 1})</th>
+                    <th class="py-3 px-2 text-center">Th 3 (${yStart + 2})</th>
+                    <th class="py-3 px-2 text-center">Th 4 (${yEnd})</th>
                     <th class="py-3 px-3">PJ &amp; Sumber Dana</th>
                     <th class="py-3 px-3 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-200">
-                  ${data.rkjm.map(p => `
-                    <tr class="hover:bg-slate-50 align-top">
-                      <td class="py-3 px-3 min-w-[170px]">
-                        <span class="inline-block px-2 py-0.5 rounded bg-emerald-50 text-emerald-900 font-bold text-[11px] border border-emerald-200">${escapeHtml(p.indikatorNama)}</span>
-                        <div class="text-[10px] text-slate-500 mt-1">${escapeHtml(p.dimensi)}</div>
-                      </td>
-                      <td class="py-3 px-3 min-w-[170px] text-slate-700">${escapeHtml(p.akarMasalah)}</td>
-                      <td class="py-3 px-3 min-w-[200px]">
-                        <div class="font-bold text-slate-900">${escapeHtml(p.namaProgram)}</div>
-                        <div class="text-[11px] text-slate-600 mt-1">Tujuan: ${escapeHtml(p.tujuanStrategis)}</div>
-                      </td>
-                      <td class="py-3 px-3 text-center bg-amber-50/40 font-medium text-slate-800 min-w-[95px]">${escapeHtml(p.targetTahun1)}</td>
-                      <td class="py-3 px-3 text-center text-slate-700 min-w-[95px]">${escapeHtml(p.targetTahun2)}</td>
-                      <td class="py-3 px-3 text-center text-slate-700 min-w-[95px]">${escapeHtml(p.targetTahun3)}</td>
-                      <td class="py-3 px-3 text-center text-slate-700 min-w-[95px]">${escapeHtml(p.targetTahun4)}</td>
-                      <td class="py-3 px-3 min-w-[150px] text-slate-700">${escapeHtml(p.indikatorKeberhasilan)}</td>
-                      <td class="py-3 px-3 min-w-[130px]">
-                        <div class="font-semibold text-slate-800">${escapeHtml(p.penanggungJawab)}</div>
-                        <span class="inline-block mt-1 px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">${escapeHtml(p.sumberPendanaan)}</span>
-                      </td>
-                      <td class="py-3 px-3 text-right whitespace-nowrap">
-                        <button onclick="openEditRkjmModal('${p.id}')" class="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-800" title="Edit RKJM"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
-                        <button onclick="deleteRkjm('${p.id}')" class="p-1.5 rounded-lg hover:bg-rose-50 text-rose-700" title="Hapus"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                      </td>
-                    </tr>
-                  `).join('')}
+                <tbody class="divide-y divide-slate-100">
+                  ${data.rkjm.map(p => {
+                    const linkedInd = data.indicators.find(i => i.id === p.indicatorId);
+                    return `
+                      <tr class="hover:bg-slate-50 align-top">
+                        <td class="py-3 px-3 min-w-[180px]">
+                          <span class="inline-block px-2 py-0.5 rounded bg-emerald-50 text-emerald-900 font-bold text-[11px] border border-emerald-200">${escapeHtml(p.indikatorNama)}</span>
+                          ${linkedInd && linkedInd.nilai !== "" ? `<div class="text-[11px] font-mono font-bold text-slate-800 mt-1">Capaian Awal: ${formatScore(linkedInd.nilai)} (${classifyCategory(linkedInd.nilai, linkedInd.kategori)})</div>` : ""}
+                          <div class="text-[10px] text-slate-500 mt-1">${escapeHtml(p.dimensi)}</div>
+                        </td>
+                        <td class="py-3 px-3 min-w-[170px] text-slate-700">${escapeHtml(p.akarMasalah)}</td>
+                        <td class="py-3 px-3 min-w-[200px]">
+                          <div class="font-bold text-slate-900">${escapeHtml(p.programPengembangan)}</div>
+                          <div class="text-[11px] text-slate-600 mt-1">${escapeHtml(p.tujuanStrategis)}</div>
+                        </td>
+                        <td class="py-3 px-2 text-center font-mono font-semibold text-emerald-900">${escapeHtml(p.targetTahun1)}</td>
+                        <td class="py-3 px-2 text-center font-mono font-semibold text-emerald-900">${escapeHtml(p.targetTahun2)}</td>
+                        <td class="py-3 px-2 text-center font-mono font-semibold text-emerald-900">${escapeHtml(p.targetTahun3)}</td>
+                        <td class="py-3 px-2 text-center font-mono font-semibold text-emerald-900">${escapeHtml(p.targetTahun4)}</td>
+                        <td class="py-3 px-3 min-w-[130px]">
+                          <div class="font-semibold text-slate-800">${escapeHtml(p.penanggungJawab)}</div>
+                          <div class="text-[11px] text-amber-800 font-semibold mt-0.5">${escapeHtml(p.sumberPendanaan)}</div>
+                        </td>
+                        <td class="py-3 px-3 text-right whitespace-nowrap">
+                          <button onclick="openEditRkjmModal('${p.id}')" class="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-800" title="Edit RKJM"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                          <button onclick="deleteRkjm('${p.id}')" class="p-1.5 rounded-lg hover:bg-rose-50 text-rose-700" title="Hapus"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join("")}
                 </tbody>
               </table>
             </div>
-          ` : `
-            <div class="p-10 text-center">
-              <i data-lucide="calendar-range" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-              <h3 class="font-bold text-slate-900 text-base">Matriks RKJM Masih Kosong</h3>
-              <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Tarik program dari Modul Rekomendasi Program atau tambahkan program pengembangan sekolah secara manual.</p>
-              <div class="mt-4 flex justify-center gap-2">
-                <button onclick="syncRecommendationsToRkjm()" class="px-4 py-2 rounded-xl gold-gradient text-emerald-950 text-xs font-extrabold">Tarik dari Rekomendasi</button>
-                <button onclick="openEditRkjmModal()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold">Tambah Manual</button>
-              </div>
-            </div>
           `}
-        </div>
+        </section>
       `;
     }
 
-    function openRkjmPeriodModal() {
-      const s = getCurrentData().school;
-      openCustomModal(`
-        <div class="p-6">
-          <h3 class="font-bold text-slate-900 text-base mb-3">Atur Periode Perencanaan RKJM (4 Tahun)</h3>
-          <form onsubmit="saveRkjmPeriod(event)" class="space-y-3 text-xs">
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Tahun Mulai</label>
-                <input type="number" name="mulai" value="${escapeHtml(s.periodeRkjmMulai || window.appState.activeYear)}" required class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Tahun Berakhir</label>
-                <input type="number" name="akhir" value="${escapeHtml(s.periodeRkjmAkhir || (Number(window.appState.activeYear) + 3))}" required class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-            </div>
-            <div class="flex justify-end gap-2 pt-3">
-              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Periode</button>
-            </div>
-          </form>
-        </div>
-      `, 'max-w-md');
-    }
-
-    function saveRkjmPeriod(e) {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const s = getCurrentData().school;
-      s.periodeRkjmMulai = fd.get('mulai');
-      s.periodeRkjmAkhir = fd.get('akhir');
-      closeCustomModal();
-      triggerAutoSave("RKJM", "Atur Periode", `Periode RKJM diatur ke ${s.periodeRkjmMulai}-${s.periodeRkjmAkhir}`);
-      renderAll();
-    }
-
-    function openEditRkjmModal(rkjmId = null) {
+    function updateRkjmPeriod() {
+      const s = document.getElementById("rkjmStartInput")?.value;
+      const e = document.getElementById("rkjmEndInput")?.value;
       const data = getCurrentData();
-      const existing = rkjmId ? data.rkjm.find(p => p.id === rkjmId) : null;
-      const inds = data.indicators;
+      if (s) data.school.periodeRkjmAwal = s;
+      if (e) data.school.periodeRkjmAkhir = e;
+      triggerAutoSave("RKJM", "Ubah Periode RKJM", `Mengatur periode RKJM menjadi ${s} - ${e}.`);
+      renderAll();
+      showToast("Periode RKJM berhasil diperbarui.", "success");
+    }
 
+    function openAddRkjmModal() {
+      const data = getCurrentData();
       openCustomModal(`
-        <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
+        <div class="p-5 sm:p-6">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <h3 class="font-bold text-slate-900 text-base">${existing ? 'Edit Program RKJM' : 'Tambah Program RKJM'}</h3>
+            <h3 class="font-bold text-slate-900 text-base">Tambah Program RKJM</h3>
             <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
           </div>
-          <form onsubmit="saveRkjmModal(event, '${rkjmId || ''}')" class="mt-4 space-y-3 text-xs">
+          <form onsubmit="saveRkjmModalForm(event, null)" class="mt-4 space-y-3 text-xs">
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Indikator Rapor Pendidikan yang Dibenahi <span class="text-rose-600">*</span></label>
-              <select name="indicatorId" required class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                ${inds.length > 0
-                  ? inds.map(i => `<option value="${i.id}" ${existing?.indicatorId === i.id ? 'selected' : ''}>${i.kode ? '[' + i.kode + '] ' : ''}${escapeHtml(i.nama)}</option>`).join('')
-                  : `<option value="">-- Input Indikator Rapor Terlebih Dahulu --</option>`}
+              <label class="block font-bold mb-1">Indikator Rapor Terkait</label>
+              <select name="indicatorId" class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                ${data.indicators.map(i => `<option value="${i.id}">${i.kode ? "[" + i.kode + "] " : ""}${escapeHtml(i.nama)} (Nilai: ${formatScore(i.nilai)})</option>`).join("")}
               </select>
             </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Nama Program Pengembangan Sekolah <span class="text-rose-600">*</span></label>
-              <input type="text" name="namaProgram" value="${escapeHtml(existing?.namaProgram || '')}" required class="w-full rounded-xl border border-slate-300 px-3 py-2" />
+            <div><label class="block font-bold mb-1">Nama Program Pengembangan Sekolah *</label><input type="text" name="programPengembangan" required class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            <div><label class="block font-bold mb-1">Tujuan Strategis</label><textarea name="tujuanStrategis" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2"></textarea></div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div><label class="block font-bold mb-1">Target Th 1</label><input type="text" name="targetTahun1" placeholder="Skor ..." class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5" /></div>
+              <div><label class="block font-bold mb-1">Target Th 2</label><input type="text" name="targetTahun2" placeholder="Skor ..." class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5" /></div>
+              <div><label class="block font-bold mb-1">Target Th 3</label><input type="text" name="targetTahun3" placeholder="Skor ..." class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5" /></div>
+              <div><label class="block font-bold mb-1">Target Th 4</label><input type="text" name="targetTahun4" placeholder="Skor ..." class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5" /></div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Akar Masalah</label>
-                <textarea name="akarMasalah" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(existing?.akarMasalah || '')}</textarea>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Tujuan Strategis</label>
-                <textarea name="tujuanStrategis" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(existing?.tujuanStrategis || '')}</textarea>
-              </div>
+              <div><label class="block font-bold mb-1">Penanggung Jawab</label><input type="text" name="penanggungJawab" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Sumber Pendanaan</label><input type="text" name="sumberPendanaan" value="BOSP Reguler" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
             </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Target Tahun 1</label>
-                <input type="text" name="targetTahun1" value="${escapeHtml(existing?.targetTahun1 || '')}" class="w-full rounded-xl border border-slate-300 px-2.5 py-2" />
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Target Tahun 2</label>
-                <input type="text" name="targetTahun2" value="${escapeHtml(existing?.targetTahun2 || '')}" class="w-full rounded-xl border border-slate-300 px-2.5 py-2" />
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Target Tahun 3</label>
-                <input type="text" name="targetTahun3" value="${escapeHtml(existing?.targetTahun3 || '')}" class="w-full rounded-xl border border-slate-300 px-2.5 py-2" />
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Target Tahun 4</label>
-                <input type="text" name="targetTahun4" value="${escapeHtml(existing?.targetTahun4 || '')}" class="w-full rounded-xl border border-slate-300 px-2.5 py-2" />
-              </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Indikator Keberhasilan</label>
-                <input type="text" name="indikatorKeberhasilan" value="${escapeHtml(existing?.indikatorKeberhasilan || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Penanggung Jawab</label>
-                <input type="text" name="penanggungJawab" value="${escapeHtml(existing?.penanggungJawab || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Sumber Pendanaan</label>
-                <select name="sumberPendanaan" class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                  ${["BOSP Reguler", "BOSP Kinerja", "APBD / Daerah", "Komite / Swadaya Masyarakat", "Lainnya"].map(sd => `<option value="${sd}" ${existing?.sumberPendanaan === sd ? 'selected' : ''}>${sd}</option>`).join('')}
-                </select>
-              </div>
-            </div>
-            <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
+            <div class="flex justify-end gap-2 pt-2">
               <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
               <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan RKJM</button>
             </div>
           </form>
         </div>
-      `, 'max-w-3xl');
+      `);
     }
 
-    function saveRkjmModal(e, rkjmId) {
+    function openEditRkjmModal(rkjmId) {
+      const data = getCurrentData();
+      const p = data.rkjm.find(r => r.id === rkjmId);
+      if (!p) return;
+
+      openCustomModal(`
+        <div class="p-5 sm:p-6">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h3 class="font-bold text-slate-900 text-base">Edit Program RKJM</h3>
+            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+          <form onsubmit="saveRkjmModalForm(event, '${p.id}')" class="mt-4 space-y-3 text-xs">
+            <input type="hidden" name="indicatorId" value="${escapeHtml(p.indicatorId)}" />
+            <div><label class="block font-bold mb-1">Nama Program Pengembangan Sekolah *</label><input type="text" name="programPengembangan" required value="${escapeHtml(p.programPengembangan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            <div><label class="block font-bold mb-1">Tujuan Strategis</label><textarea name="tujuanStrategis" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(p.tujuanStrategis)}</textarea></div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div><label class="block font-bold mb-1">Target Th 1</label><input type="text" name="targetTahun1" value="${escapeHtml(p.targetTahun1)}" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5" /></div>
+              <div><label class="block font-bold mb-1">Target Th 2</label><input type="text" name="targetTahun2" value="${escapeHtml(p.targetTahun2)}" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5" /></div>
+              <div><label class="block font-bold mb-1">Target Th 3</label><input type="text" name="targetTahun3" value="${escapeHtml(p.targetTahun3)}" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5" /></div>
+              <div><label class="block font-bold mb-1">Target Th 4</label><input type="text" name="targetTahun4" value="${escapeHtml(p.targetTahun4)}" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5" /></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="block font-bold mb-1">Penanggung Jawab</label><input type="text" name="penanggungJawab" value="${escapeHtml(p.penanggungJawab)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Sumber Pendanaan</label><input type="text" name="sumberPendanaan" value="${escapeHtml(p.sumberPendanaan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Perubahan</button>
+            </div>
+          </form>
+        </div>
+      `);
+    }
+
+    function saveRkjmModalForm(e, rkjmId) {
       e.preventDefault();
       const fd = new FormData(e.target);
       const data = getCurrentData();
-      const indId = fd.get('indicatorId');
+      const indId = String(fd.get("indicatorId") || "");
       const ind = data.indicators.find(i => i.id === indId);
 
       const obj = {
         id: rkjmId || uid(),
         indicatorId: indId,
-        recommendationId: rkjmId ? data.rkjm.find(p => p.id === rkjmId)?.recommendationId : null,
-        dimensi: ind ? ind.dimensi : DIMENSI_RAPOR[0],
-        indikatorNama: ind ? `${ind.kode ? '[' + ind.kode + '] ' : ''}${ind.nama}` : 'Umum',
-        akarMasalah: fd.get('akarMasalah').trim(),
-        tujuanStrategis: fd.get('tujuanStrategis').trim(),
-        namaProgram: fd.get('namaProgram').trim(),
-        targetTahun1: fd.get('targetTahun1').trim(),
-        targetTahun2: fd.get('targetTahun2').trim(),
-        targetTahun3: fd.get('targetTahun3').trim(),
-        targetTahun4: fd.get('targetTahun4').trim(),
-        indikatorKeberhasilan: fd.get('indikatorKeberhasilan').trim(),
-        penanggungJawab: fd.get('penanggungJawab').trim(),
-        sumberPendanaan: fd.get('sumberPendanaan')
+        dimensi: ind ? ind.dimensi : "Mutu Pendidikan",
+        indikatorNama: ind ? `${ind.kode ? "[" + ind.kode + "] " : ""}${ind.nama}` : "Program Sekolah",
+        akarMasalah: data.rootCauses.find(r => r.indicatorId === indId)?.masalahUtama || "-",
+        tujuanStrategis: String(fd.get("tujuanStrategis") || "").trim(),
+        programPengembangan: String(fd.get("programPengembangan") || "").trim(),
+        targetTahun1: String(fd.get("targetTahun1") || "").trim(),
+        targetTahun2: String(fd.get("targetTahun2") || "").trim(),
+        targetTahun3: String(fd.get("targetTahun3") || "").trim(),
+        targetTahun4: String(fd.get("targetTahun4") || "").trim(),
+        indikatorKeberhasilan: "Tercapainya target peningkatan Rapor Pendidikan",
+        penanggungJawab: String(fd.get("penanggungJawab") || "").trim(),
+        sumberPendanaan: String(fd.get("sumberPendanaan") || "BOSP Reguler").trim()
       };
 
       if (rkjmId) {
-        const idx = data.rkjm.findIndex(p => p.id === rkjmId);
-        if (idx !== -1) data.rkjm[idx] = obj;
+        const idx = data.rkjm.findIndex(r => r.id === rkjmId);
+        if (idx >= 0) data.rkjm[idx] = { ...data.rkjm[idx], ...obj };
       } else {
         data.rkjm.push(obj);
       }
 
       closeCustomModal();
-      triggerAutoSave("RKJM", "Simpan Program RKJM", `Menyimpan program RKJM "${obj.namaProgram}".`);
+      triggerAutoSave("RKJM", rkjmId ? "Edit RKJM" : "Tambah RKJM", `Menyimpan program "${obj.programPengembangan}".`);
       renderAll();
       showToast("Program RKJM berhasil disimpan.", "success");
     }
 
     function deleteRkjm(rkjmId) {
-      showConfirmDialog({
-        title: "Hapus Program RKJM?",
-        message: "Menghapus program RKJM ini akan memutuskan tautannya dari kegiatan RKT terkait.",
-        confirmText: "Ya, Hapus",
-        danger: true,
-        onConfirm: () => {
-          const data = getCurrentData();
-          data.rkjm = data.rkjm.filter(p => p.id !== rkjmId);
-          triggerAutoSave("RKJM", "Hapus Program RKJM", "Menghapus program RKJM.");
-          renderAll();
-          showToast("Program RKJM dihapus.", "info");
-        }
-      });
+      const data = getCurrentData();
+      data.rkjm = data.rkjm.filter(r => r.id !== rkjmId);
+      triggerAutoSave("RKJM", "Hapus RKJM", "Menghapus program dari tabel RKJM.");
+      renderAll();
+      showToast("Program RKJM dihapus.", "info");
     }
 
     // =========================================================================
-    // MODULE I: PENYUSUNAN RKT (RENCANA KERJA TAHUNAN) & KALENDER KEGIATAN
+    // 15. MODULE 7: PENYUSUNAN RKT & KALENDER KEGIATAN TAHUNAN
     // =========================================================================
-    function syncRkjmToRkt() {
+    function generateRktFromRkjm() {
       const data = getCurrentData();
       if (data.rkjm.length === 0) {
-        showToast("Susun program RKJM terlebih dahulu sebelum menurunkan ke RKT.", "warning");
-        return;
+        generateRkjmFromRecommendations();
       }
 
-      let added = 0;
       data.rkjm.forEach(prog => {
-        const exists = data.rkt.some(k => k.rkjmId === prog.id);
-        if (!exists) {
-          const rec = data.recommendations.find(r => r.id === prog.recommendationId);
+        if (!data.rkt.some(k => k.rkjmId === prog.id)) {
+          const rec = data.recommendations.find(r => r.indicatorId === prog.indicatorId);
           data.rkt.push({
             id: uid(),
             rkjmId: prog.id,
             indicatorId: prog.indicatorId,
-            namaProgram: prog.namaProgram,
-            namaKegiatan: `Pelaksanaan ${prog.namaProgram}`,
-            latarBelakang: `Menindaklanjuti capaian ${prog.indikatorNama} (${prog.akarMasalah})`,
+            namaProgram: prog.programPengembangan,
+            namaKegiatan: rec ? rec.bentukKegiatan : `Pelaksanaan ${prog.programPengembangan}`,
+            latarBelakang: prog.akarMasalah,
             tujuan: prog.tujuanStrategis,
-            sasaran: rec?.sasaran || "Guru dan Peserta Didik",
+            sasaran: rec ? rec.sasaranProgram : "Pendidik dan Peserta Didik",
             indikatorKeberhasilan: prog.indikatorKeberhasilan,
-            target: prog.targetTahun1 || "Terlaksana 100%",
-            bulanPelaksanaan: [2, 3, 7, 8, 10], // Default Feb, Mar, Jul, Agu, Okt
+            target: prog.targetTahun1 || "100% Terlaksana",
+            bulanPelaksanaan: [7, 8, 9],
+            jadwalTeks: rec ? rec.waktuPelaksanaan : `Juli – September ${data.school.tahunPerencanaan}`,
             penanggungJawab: prog.penanggungJawab,
-            kebutuhanAnggaran: rec?.perkiraanAnggaran || 0,
+            kebutuhanAnggaran: rec ? Number(rec.perkiraanAnggaran) || 2500000 : 2500000,
             sumberDana: prog.sumberPendanaan || "BOSP Reguler",
-            buktiPelaksanaan: "Undangan, Daftar Hadir, Notulen, Foto Kegiatan, Laporan Hasil"
+            buktiPelaksanaan: "Daftar hadir, notulen, dokumentasi foto, dan laporan kegiatan."
           });
-          added++;
         }
       });
 
-      triggerAutoSave("RKT", "Turunkan RKJM ke RKT", `Menurunkan ${added} program RKJM menjadi kegiatan operasional RKT.`);
-      navigateTo('rkt');
-      showToast(added > 0 ? `${added} kegiatan RKT berhasil disusun dari program RKJM.` : "Seluruh program RKJM sudah memiliki kegiatan RKT.", "success");
+      triggerAutoSave("RKT", "Turunkan RKJM ke RKT", "Menyusun kegiatan RKT tahunan dari program RKJM.");
+      setActiveTab("rkt");
+      showToast("Rencana Kerja Tahunan (RKT) berhasil diturunkan dari RKJM!", "success");
     }
 
-    function renderRktModule(container) {
+    function renderRktModule() {
       const data = getCurrentData();
-      const tahun = data.school.tahunPerencanaan || window.appState.activeYear;
+      const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
-      container.innerHTML = `
+      return `
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">7. Penyusunan Rencana Kerja Tahunan (RKT) — Tahun ${escapeHtml(tahun)}</h2>
-            <p class="text-xs text-slate-500">Penjabaran operasional program RKJM menjadi kegiatan tahunan beserta kalender jadwal pelaksanaan.</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 7 • Operasional Tahunan</span>
+            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Rencana Kerja Tahunan (RKT ${escapeHtml(data.school.tahunPerencanaan)})</h2>
+            <p class="text-xs text-slate-600 mt-0.5">Penjabaran program RKJM ke dalam kegiatan tahunan, sasaran, target, serta kalender pelaksanaan 12 bulan.</p>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <button onclick="syncRkjmToRkt()" class="px-3.5 py-2 rounded-xl gold-gradient text-emerald-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-              <span>Tarik dari RKJM</span>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="exportWordDocument('rkjm')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-blue-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+              <span>Unduh Word</span>
             </button>
-            <button onclick="openEditRktModal()" class="px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1">
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Tambah Kegiatan RKT
+            <button onclick="exportExcelDocument('rkjm')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-emerald-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+              <span>Unduh Excel</span>
             </button>
-            ${data.rkt.length > 0 ? `
-              <button onclick="syncRktToArkas()" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
-                <span>Buat Rancangan ARKAS</span>
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
-              </button>` : ''}
+            <button onclick="openAddRkjmModal()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-slate-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="plus" class="w-4 h-4 text-emerald-700"></i>
+              <span>Tambah Program RKJM</span>
+            </button>
+            <button onclick="generateRktFromRkjm()" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
+              <span>Turunkan ke RKT</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
           </div>
         </div>
 
-        ${data.rkt.length > 0 ? `
-          <!-- Tabel RKT -->
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-            <div class="p-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 class="font-bold text-slate-900 text-sm">Matriks Rencana Kerja Tahunan (${data.rkt.length} Kegiatan)</h3>
-              <span class="text-xs text-slate-500">Total Kebutuhan Anggaran: <strong class="text-emerald-900">${formatRupiah(data.rkt.reduce((s, k) => s + getRktEffectiveBudget(k), 0))}</strong></span>
+        <!-- RKT ACTIVITIES TABLE -->
+        <section class="card-elevated overflow-hidden">
+          ${data.rkt.length === 0 ? `
+            <div class="p-10 text-center space-y-3">
+              <p class="text-xs text-slate-500">Belum ada kegiatan RKT. Klik tombol di bawah untuk menurunkan kegiatan dari program RKJM.</p>
+              <button onclick="generateRktFromRkjm()" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold">Susun RKT dari RKJM</button>
             </div>
+          ` : `
             <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
-                    <th class="py-3 px-3">Program (RKJM) &amp; Nama Kegiatan</th>
-                    <th class="py-3 px-3">Latar Belakang &amp; Tujuan</th>
-                    <th class="py-3 px-3">Sasaran</th>
-                    <th class="py-3 px-3">Indikator Keberhasilan &amp; Target</th>
-                    <th class="py-3 px-3">PJ &amp; Bukti Pelaksanaan</th>
-                    <th class="py-3 px-3 text-right">Anggaran &amp; Sumber</th>
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[10px]">
+                  <tr>
+                    <th class="py-3 px-3">Program RKJM &amp; Kegiatan RKT</th>
+                    <th class="py-3 px-3">Tujuan &amp; Sasaran</th>
+                    <th class="py-3 px-3">Indikator &amp; Target</th>
+                    <th class="py-3 px-3">Jadwal &amp; PJ</th>
+                    <th class="py-3 px-3 text-right">Kebutuhan Anggaran</th>
+                    <th class="py-3 px-3">Bukti Pelaksanaan</th>
                     <th class="py-3 px-3 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 align-top">
+                <tbody class="divide-y divide-slate-100">
                   ${data.rkt.map(k => {
-                    const effBudget = getRktEffectiveBudget(k);
+                    const ind = data.indicators.find(i => i.id === k.indicatorId);
                     return `
-                      <tr class="hover:bg-slate-50">
+                      <tr class="hover:bg-slate-50 align-top">
                         <td class="py-3 px-3 min-w-[200px]">
                           <div class="text-[10px] font-bold text-emerald-800 uppercase">${escapeHtml(k.namaProgram)}</div>
                           <div class="font-bold text-slate-900 mt-0.5">${escapeHtml(k.namaKegiatan)}</div>
+                          ${ind ? `<div class="text-[10px] font-mono text-slate-500 mt-1">Indikator: ${escapeHtml(ind.nama)} (Nilai: ${formatScore(ind.nilai)})</div>` : ""}
                         </td>
-                        <td class="py-3 px-3 min-w-[210px] text-slate-700">
-                          <div><span class="font-semibold">Latar Belakang:</span> ${escapeHtml(k.latarBelakang)}</div>
-                          <div class="mt-1"><span class="font-semibold">Tujuan:</span> ${escapeHtml(k.tujuan)}</div>
+                        <td class="py-3 px-3 min-w-[180px]">
+                          <div class="text-slate-700">${escapeHtml(k.tujuan)}</div>
+                          <div class="text-[11px] font-semibold text-slate-900 mt-1">Sasaran: ${escapeHtml(k.sasaran)}</div>
                         </td>
-                        <td class="py-3 px-3 min-w-[130px] text-slate-700">${escapeHtml(k.sasaran)}</td>
-                        <td class="py-3 px-3 min-w-[160px] text-slate-700">
-                          <div>${escapeHtml(k.indikatorKeberhasilan)}</div>
-                          <div class="mt-1 font-semibold text-emerald-800">Target: ${escapeHtml(k.target)}</div>
+                        <td class="py-3 px-3 min-w-[160px]">
+                          <div class="text-slate-700">${escapeHtml(k.indikatorKeberhasilan)}</div>
+                          <div class="text-[11px] font-bold text-emerald-800 mt-1">Target: ${escapeHtml(k.target)}</div>
                         </td>
-                        <td class="py-3 px-3 min-w-[160px] text-slate-700">
-                          <div class="font-semibold text-slate-900">${escapeHtml(k.penanggungJawab)}</div>
-                          <div class="text-[11px] text-slate-500 mt-1">Bukti: ${escapeHtml(k.buktiPelaksanaan)}</div>
-                        </td>
-                        <td class="py-3 px-3 text-right whitespace-nowrap">
-                          <div class="font-mono font-bold text-slate-900">${formatRupiah(effBudget)}</div>
-                          <span class="inline-block mt-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 text-[10px] font-semibold">${escapeHtml(k.sumberDana)}</span>
+                        <td class="py-3 px-3 min-w-[140px]">
+                          <div class="font-semibold text-slate-900">${escapeHtml(k.jadwalTeks)}</div>
+                          <div class="text-[11px] text-slate-500 mt-0.5">PJ: ${escapeHtml(k.penanggungJawab)}</div>
                         </td>
                         <td class="py-3 px-3 text-right whitespace-nowrap">
-                          <button onclick="openEditRktModal('${k.id}')" class="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-800" title="Edit Kegiatan"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
-                          <button onclick="deleteRkt('${k.id}')" class="p-1.5 rounded-lg hover:bg-rose-50 text-rose-700" title="Hapus"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                          <div class="font-mono font-extrabold text-slate-900">${formatRupiah(k.kebutuhanAnggaran)}</div>
+                          <div class="text-[10px] font-semibold text-amber-800">${escapeHtml(k.sumberDana)}</div>
+                        </td>
+                        <td class="py-3 px-3 min-w-[150px] text-slate-600">${escapeHtml(k.buktiPelaksanaan)}</td>
+                        <td class="py-3 px-3 text-right whitespace-nowrap">
+                          <button onclick="openEditRktModal('${k.id}')" class="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-800"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                          <button onclick="deleteRkt('${k.id}')" class="p-1.5 rounded-lg hover:bg-rose-50 text-rose-700"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                         </td>
                       </tr>
                     `;
-                  }).join('')}
+                  }).join("")}
                 </tbody>
               </table>
             </div>
-          </div>
+          `}
+        </section>
 
-          <!-- Kalender Kegiatan Tahunan (12 Bulan) -->
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-            <div class="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between">
-              <div>
-                <h3 class="font-bold text-slate-900 text-sm">Kalender Kegiatan Tahunan RKT (${escapeHtml(tahun)})</h3>
-                <p class="text-xs text-slate-500">Klik kotak bulan pada baris kegiatan untuk mengaktifkan/menonaktifkan jadwal pelaksanaan bulanan.</p>
-              </div>
+        <!-- ANNUAL 12-MONTH ACTIVITY CALENDAR -->
+        ${data.rkt.length > 0 ? `
+          <section class="card-elevated p-5 overflow-hidden">
+            <div class="pb-3 border-b border-slate-100">
+              <h3 class="font-bold text-slate-900 text-sm">Kalender Pelaksanaan Kegiatan Tahunan (${escapeHtml(data.school.tahunPerencanaan)})</h3>
+              <p class="text-xs text-slate-500">Klik kotak bulan untuk menandai atau mengubah jadwal pelaksanaan kegiatan.</p>
             </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse text-xs">
+            <div class="mt-3 overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr class="bg-emerald-950 text-white text-[11px]">
-                    <th class="py-2.5 px-4 min-w-[220px]">Nama Kegiatan RKT</th>
-                    ${BULAN_LIST.map((b, idx) => `<th class="py-2.5 px-2 text-center w-12">${b}</th>`).join('')}
+                  <tr class="bg-emerald-950 text-white text-[10px]">
+                    <th class="py-2.5 px-3">Nama Kegiatan RKT</th>
+                    ${months.map(m => `<th class="py-2.5 px-1.5 text-center w-10">${m}</th>`).join("")}
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-200">
                   ${data.rkt.map(k => `
-                    <tr class="hover:bg-slate-50">
-                      <td class="py-2.5 px-4 font-semibold text-slate-800">${escapeHtml(k.namaKegiatan)}</td>
-                      ${BULAN_LIST.map((_, idx) => {
-                        const monthNum = idx + 1;
-                        const active = (k.bulanPelaksanaan || []).includes(monthNum);
+                    <tr>
+                      <td class="py-2.5 px-3 font-semibold text-slate-800 min-w-[220px]">${escapeHtml(k.namaKegiatan)}</td>
+                      ${months.map((_, mIdx) => {
+                        const mNum = mIdx + 1;
+                        const active = (k.bulanPelaksanaan || []).includes(mNum);
                         return `
-                          <td class="py-2 px-1 text-center">
-                            <button onclick="toggleRktMonth('${k.id}', ${monthNum})" class="w-7 h-7 rounded-lg mx-auto flex items-center justify-center transition ${active ? 'bg-emerald-700 text-amber-300 font-bold shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-400'}" title="${BULAN_LIST[idx]}">
-                              ${active ? '✓' : '·'}
+                          <td class="p-1 text-center border-l border-slate-100">
+                            <button onclick="toggleRktMonth('${k.id}', ${mNum})"
+                              class="w-7 h-7 rounded-lg font-bold text-[10px] transition ${active ? 'emerald-gradient text-amber-300 shadow-xs' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}">
+                              ${active ? "✓" : ""}
                             </button>
                           </td>
                         `;
-                      }).join('')}
+                      }).join("")}
                     </tr>
-                  `).join('')}
+                  `).join("")}
                 </tbody>
               </table>
             </div>
-          </div>
-        ` : `
-          <div class="bg-white rounded-2xl border-2 border-dashed border-slate-300 p-10 text-center">
-            <i data-lucide="calendar-check-2" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-            <h3 class="font-bold text-slate-900 text-base">Belum Ada Kegiatan RKT</h3>
-            <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Tarik program dari RKJM untuk menurunkannya menjadi kegiatan tahunan, atau tambah kegiatan secara manual.</p>
-            <div class="mt-4 flex justify-center gap-2">
-              <button onclick="syncRkjmToRkt()" class="px-4 py-2 rounded-xl gold-gradient text-emerald-950 text-xs font-extrabold">Tarik dari RKJM</button>
-              <button onclick="openEditRktModal()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold">Tambah Manual</button>
-            </div>
-          </div>
-        `}
+          </section>
+        ` : ""}
       `;
-    }
-
-    function getRktEffectiveBudget(rktItem) {
-      const data = getCurrentData();
-      const linkedArkas = data.arkas.filter(a => a.rktId === rktItem.id);
-      if (linkedArkas.length > 0) {
-        return linkedArkas.reduce((s, a) => s + (Number(a.jumlahAnggaran) || 0), 0);
-      }
-      return Number(rktItem.kebutuhanAnggaran) || 0;
     }
 
     function toggleRktMonth(rktId, monthNum) {
@@ -3985,2273 +3550,1202 @@ Buat 1 rekomendasi program konkret untuk setiap indikator di atas (maksimal ${to
         k.bulanPelaksanaan.push(monthNum);
         k.bulanPelaksanaan.sort((a, b) => a - b);
       }
-      triggerAutoSave("RKT", "Ubah Jadwal Bulan", `Menyesuaikan jadwal bulan kegiatan "${k.namaKegiatan}".`);
-      renderActiveModule();
+      triggerAutoSave("RKT", "Ubah Jadwal Kalender", "Memperbarui bulan pelaksanaan kegiatan RKT.");
+      renderAll();
     }
 
-    function openEditRktModal(rktId = null) {
+    function openAddRktModal() {
       const data = getCurrentData();
-      const existing = rktId ? data.rkt.find(k => k.id === rktId) : null;
-
       openCustomModal(`
         <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <h3 class="font-bold text-slate-900 text-base">${existing ? 'Edit Kegiatan RKT' : 'Tambah Kegiatan RKT'}</h3>
+            <h3 class="font-bold text-slate-900 text-base">Tambah Kegiatan RKT</h3>
             <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
           </div>
-          <form onsubmit="saveRktModal(event, '${rktId || ''}')" class="mt-4 space-y-3 text-xs">
+          <form onsubmit="saveRktModalForm(event, null)" class="mt-4 space-y-3 text-xs">
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Program RKJM Induk <span class="text-rose-600">*</span></label>
-              <select name="rkjmId" required class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                ${data.rkjm.length > 0
-                  ? data.rkjm.map(p => `<option value="${p.id}" ${existing?.rkjmId === p.id ? 'selected' : ''}>${escapeHtml(p.namaProgram)} (${escapeHtml(p.indikatorNama)})</option>`).join('')
-                  : `<option value="">-- Susun Program RKJM Terlebih Dahulu --</option>`}
+              <label class="block font-bold mb-1">Program RKJM Induk</label>
+              <select name="rkjmId" class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                <option value="">-- Pilih Program RKJM --</option>
+                ${data.rkjm.map(p => `<option value="${p.id}">${escapeHtml(p.programPengembangan)} (${escapeHtml(p.indikatorNama)})</option>`).join("")}
               </select>
             </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Nama Kegiatan Tahunan (RKT) <span class="text-rose-600">*</span></label>
-              <input type="text" name="namaKegiatan" value="${escapeHtml(existing?.namaKegiatan || '')}" required class="w-full rounded-xl border border-slate-300 px-3 py-2" />
+            <div><label class="block font-bold mb-1">Nama Kegiatan Tahunan *</label><input type="text" name="namaKegiatan" required class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            <div><label class="block font-bold mb-1">Latar Belakang</label><textarea name="latarBelakang" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2"></textarea></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="block font-bold mb-1">Tujuan Kegiatan</label><input type="text" name="tujuan" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Sasaran</label><input type="text" name="sasaran" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="block font-bold mb-1">Indikator Keberhasilan</label><input type="text" name="indikatorKeberhasilan" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Target Capaian</label><input type="text" name="target" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div><label class="block font-bold mb-1">Jadwal Pelaksanaan</label><input type="text" name="jadwalTeks" placeholder="Juli - Sept 2026" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Penanggung Jawab</label><input type="text" name="penanggungJawab" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Kebutuhan Anggaran (Rp)</label><input type="number" name="kebutuhanAnggaran" value="0" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" /></div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block font-bold text-slate-700 mb-1">Latar Belakang</label>
-                <textarea name="latarBelakang" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(existing?.latarBelakang || '')}</textarea>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Tujuan Kegiatan</label>
-                <textarea name="tujuan" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(existing?.tujuan || '')}</textarea>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Sasaran</label>
-                <input type="text" name="sasaran" value="${escapeHtml(existing?.sasaran || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Indikator Keberhasilan</label>
-                <input type="text" name="indikatorKeberhasilan" value="${escapeHtml(existing?.indikatorKeberhasilan || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Target</label>
-                <input type="text" name="target" value="${escapeHtml(existing?.target || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Penanggung Jawab</label>
-                <input type="text" name="penanggungJawab" value="${escapeHtml(existing?.penanggungJawab || '')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Perkiraan Anggaran (Rp)</label>
-                <input type="number" min="0" name="kebutuhanAnggaran" value="${existing?.kebutuhanAnggaran || 0}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Sumber Dana</label>
+                <label class="block font-bold mb-1">Sumber Dana</label>
                 <select name="sumberDana" class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                  ${["BOSP Reguler", "BOSP Kinerja", "APBD / Daerah", "Komite / Swadaya", "Lainnya"].map(sd => `<option value="${sd}" ${existing?.sumberDana === sd ? 'selected' : ''}>${sd}</option>`).join('')}
+                  ${SUMBER_DANA_STANDAR.map(sd => `<option value="${sd}">${sd}</option>`).join("")}
                 </select>
               </div>
+              <div><label class="block font-bold mb-1">Bukti Pelaksanaan</label><input type="text" name="buktiPelaksanaan" value="Daftar hadir, notulen, foto kegiatan" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
             </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Bukti Pelaksanaan (Output)</label>
-              <input type="text" name="buktiPelaksanaan" value="${escapeHtml(existing?.buktiPelaksanaan || 'Daftar Hadir, Notulen, Foto Dokumentasi, Laporan Kegiatan')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-            </div>
-            <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
+            <div class="flex justify-end gap-2 pt-2">
               <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan RKT</button>
-            </div>
-          </form>
-        </div>
-      `, 'max-w-3xl');
-    }
-
-    function saveRktModal(e, rktId) {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const data = getCurrentData();
-      const rkjmId = fd.get('rkjmId');
-      const prog = data.rkjm.find(p => p.id === rkjmId);
-
-      const obj = {
-        id: rktId || uid(),
-        rkjmId,
-        indicatorId: prog?.indicatorId || null,
-        namaProgram: prog?.namaProgram || 'Program Pengembangan Sekolah',
-        namaKegiatan: fd.get('namaKegiatan').trim(),
-        latarBelakang: fd.get('latarBelakang').trim(),
-        tujuan: fd.get('tujuan').trim(),
-        sasaran: fd.get('sasaran').trim(),
-        indikatorKeberhasilan: fd.get('indikatorKeberhasilan').trim(),
-        target: fd.get('target').trim(),
-        bulanPelaksanaan: rktId ? (data.rkt.find(k => k.id === rktId)?.bulanPelaksanaan || [3, 8]) : [3, 8],
-        penanggungJawab: fd.get('penanggungJawab').trim(),
-        kebutuhanAnggaran: Number(fd.get('kebutuhanAnggaran')) || 0,
-        sumberDana: fd.get('sumberDana'),
-        buktiPelaksanaan: fd.get('buktiPelaksanaan').trim()
-      };
-
-      if (rktId) {
-        const idx = data.rkt.findIndex(k => k.id === rktId);
-        if (idx !== -1) data.rkt[idx] = obj;
-      } else {
-        data.rkt.push(obj);
-      }
-
-      closeCustomModal();
-      triggerAutoSave("RKT", "Simpan Kegiatan RKT", `Menyimpan kegiatan "${obj.namaKegiatan}".`);
-      renderAll();
-      showToast("Kegiatan RKT berhasil disimpan.", "success");
-    }
-
-    function deleteRkt(rktId) {
-      showConfirmDialog({
-        title: "Hapus Kegiatan RKT?",
-        message: "Kegiatan RKT dan rincian anggaran ARKAS yang tertaut padanya akan dihapus.",
-        confirmText: "Ya, Hapus",
-        danger: true,
-        onConfirm: () => {
-          const data = getCurrentData();
-          data.rkt = data.rkt.filter(k => k.id !== rktId);
-          data.arkas = data.arkas.filter(a => a.rktId !== rktId);
-          delete data.monev[rktId];
-          triggerAutoSave("RKT", "Hapus Kegiatan RKT", "Menghapus kegiatan RKT beserta rincian anggaran terkait.");
-          renderAll();
-          showToast("Kegiatan RKT dihapus.", "info");
-        }
-      });
-    }
-
-    // =========================================================================
-    // MODULE J: RANCANGAN ARKAS (TERHUBUNG DENGAN RKT & BOSP)
-    // =========================================================================
-    function syncRktToArkas() {
-      const data = getCurrentData();
-      if (data.rkt.length === 0) {
-        showToast("Susun kegiatan RKT terlebih dahulu sebelum membuat Rancangan ARKAS.", "warning");
-        return;
-      }
-
-      let added = 0;
-      data.rkt.forEach(keg => {
-        const hasLines = data.arkas.some(a => a.rktId === keg.id);
-        if (!hasLines) {
-          const est = Number(keg.kebutuhanAnggaran) || 1500000;
-          data.arkas.push({
-            id: uid(),
-            rktId: keg.id,
-            rkjmId: keg.rkjmId,
-            indicatorId: keg.indicatorId,
-            namaProgram: keg.namaProgram,
-            namaKegiatan: keg.namaKegiatan,
-            komponenPembiayaan: "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
-            uraianBelanja: `Penggandaan Modul/Bahan Ajar & ATK Pelaksanaan ${keg.namaKegiatan}`,
-            volume: 1,
-            satuan: "Paket",
-            hargaSatuan: est,
-            jumlahAnggaran: est,
-            sumberDana: keg.sumberDana || "BOSP Reguler",
-            waktuPelaksanaan: "Triwulan II & III",
-            statusVerifikasi: "Perlu Verifikasi SSH/Kode Rekening"
-          });
-          added++;
-        }
-      });
-
-      triggerAutoSave("ARKAS", "Buat Rancangan ARKAS", `Menurunkan ${added} kegiatan RKT ke rincian Rancangan ARKAS.`);
-      navigateTo('arkas');
-      showToast(added > 0 ? `${added} rancangan belanja ARKAS dibuat. Silakan sesuaikan volume, satuan, dan harga satuan sesuai SSH daerah.` : "Seluruh kegiatan RKT sudah memiliki rincian di Rancangan ARKAS.", "success");
-    }
-
-    function renderArkasModule(container) {
-      const data = getCurrentData();
-      const tahun = data.school.tahunPerencanaan || window.appState.activeYear;
-      const totalAll = data.arkas.reduce((s, a) => s + (Number(a.jumlahAnggaran) || 0), 0);
-
-      // Compute 3 Recaps: Per Program, Per Kegiatan, Per Komponen Pembiayaan
-      const recapProgram = {};
-      const recapKegiatan = {};
-      const recapKomponen = {};
-
-      data.arkas.forEach(item => {
-        const amt = Number(item.jumlahAnggaran) || 0;
-        recapProgram[item.namaProgram] = (recapProgram[item.namaProgram] || 0) + amt;
-        recapKegiatan[item.namaKegiatan] = (recapKegiatan[item.namaKegiatan] || 0) + amt;
-        recapKomponen[item.komponenPembiayaan] = (recapKomponen[item.komponenPembiayaan] || 0) + amt;
-      });
-
-      container.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">8. Rancangan Anggaran ARKAS — Tahun Anggaran ${escapeHtml(tahun)}</h2>
-            <p class="text-xs text-slate-500">Perencanaan anggaran terhubung langsung dengan kegiatan RKT dan mengacu pada Komponen Penggunaan Dana BOSP.</p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <button onclick="syncRktToArkas()" class="px-3.5 py-2 rounded-xl gold-gradient text-emerald-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-              <span>Tarik dari RKT</span>
-            </button>
-            <button onclick="openEditArkasModal()" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
-              <i data-lucide="plus-circle" class="w-4 h-4"></i>
-              <span>Tambah Uraian Belanja</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Disclaimer Banner (Mandatory Guardrail) -->
-        <div class="bg-amber-50 border border-amber-300 rounded-2xl p-4 flex items-start gap-3 text-xs text-amber-950">
-          <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
-          <div>
-            <p class="font-bold">Catatan Kepatuhan ARKAS &amp; BOSP:</p>
-            <p class="mt-0.5 leading-relaxed">
-              Dokumen ini adalah <strong>Rancangan Kertas Kerja Anggaran</strong> berbasis Rapor Pendidikan sebagai bahan input manual ke aplikasi ARKAS resmi Kemendikdasmen. Aplikasi ini <strong>tidak membuat kode rekening secara sembarangan</strong> dan <strong>tidak terhubung/terkirim otomatis ke server ARKAS resmi</strong>. Bendahara BOS &amp; Kepala Sekolah wajib memverifikasi kecocokan kode rekening serta Standar Satuan Harga (SSH/SBU) Pemda setempat sebelum pengesahan.
-            </p>
-          </div>
-        </div>
-
-        <!-- Total & 3 Recap Cards -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-          <div class="emerald-gradient text-white rounded-2xl p-5 shadow-sm flex flex-col justify-between">
-            <div>
-              <div class="text-xs text-emerald-200 font-semibold">Rekap Total Rancangan Anggaran</div>
-              <div class="text-2xl font-extrabold text-amber-300 mt-1 font-mono">${formatRupiah(totalAll)}</div>
-            </div>
-            <div class="mt-4 pt-3 border-t border-white/15 text-[11px] text-emerald-100">
-              ${data.arkas.length} item belanja pada ${Object.keys(recapKegiatan).length} kegiatan RKT
-            </div>
-          </div>
-
-          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-            <div class="text-xs font-bold text-slate-800 mb-2 flex items-center justify-between">
-              <span>Rekap per Program</span>
-              <span class="text-[10px] text-slate-400">${Object.keys(recapProgram).length}</span>
-            </div>
-            <div class="space-y-1.5 max-h-28 overflow-y-auto text-[11px]">
-              ${Object.entries(recapProgram).map(([k, v]) => `
-                <div class="flex justify-between gap-2 border-b border-slate-100 pb-1">
-                  <span class="truncate text-slate-600" title="${escapeHtml(k)}">${escapeHtml(k)}</span>
-                  <span class="font-mono font-bold text-slate-900 shrink-0">${formatRupiah(v)}</span>
-                </div>
-              `).join('') || '<span class="text-slate-400">Belum ada data</span>'}
-            </div>
-          </div>
-
-          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-            <div class="text-xs font-bold text-slate-800 mb-2 flex items-center justify-between">
-              <span>Rekap per Kegiatan RKT</span>
-              <span class="text-[10px] text-slate-400">${Object.keys(recapKegiatan).length}</span>
-            </div>
-            <div class="space-y-1.5 max-h-28 overflow-y-auto text-[11px]">
-              ${Object.entries(recapKegiatan).map(([k, v]) => `
-                <div class="flex justify-between gap-2 border-b border-slate-100 pb-1">
-                  <span class="truncate text-slate-600" title="${escapeHtml(k)}">${escapeHtml(k)}</span>
-                  <span class="font-mono font-bold text-slate-900 shrink-0">${formatRupiah(v)}</span>
-                </div>
-              `).join('') || '<span class="text-slate-400">Belum ada data</span>'}
-            </div>
-          </div>
-
-          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-            <div class="text-xs font-bold text-slate-800 mb-2 flex items-center justify-between">
-              <span>Rekap Komponen BOSP</span>
-              <span class="text-[10px] text-slate-400">${Object.keys(recapKomponen).length}</span>
-            </div>
-            <div class="space-y-1.5 max-h-28 overflow-y-auto text-[11px]">
-              ${Object.entries(recapKomponen).map(([k, v]) => `
-                <div class="flex justify-between gap-2 border-b border-slate-100 pb-1">
-                  <span class="truncate text-slate-600" title="${escapeHtml(k)}">${escapeHtml(k)}</span>
-                  <span class="font-mono font-bold text-emerald-800 shrink-0">${formatRupiah(v)}</span>
-                </div>
-              `).join('') || '<span class="text-slate-400">Belum ada data</span>'}
-            </div>
-          </div>
-        </div>
-
-        <!-- Tabel Rincian ARKAS -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-          ${data.arkas.length > 0 ? `
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr class="bg-emerald-950 text-white font-bold uppercase text-[10px]">
-                    <th class="py-3 px-3">Program &amp; Kegiatan</th>
-                    <th class="py-3 px-3">Komponen Pembiayaan BOSP</th>
-                    <th class="py-3 px-3">Uraian Belanja</th>
-                    <th class="py-3 px-3 text-center">Vol</th>
-                    <th class="py-3 px-3 text-center">Satuan</th>
-                    <th class="py-3 px-3 text-right">Harga Satuan</th>
-                    <th class="py-3 px-3 text-right">Jumlah (Vol × Harga)</th>
-                    <th class="py-3 px-3">Sumber &amp; Waktu</th>
-                    <th class="py-3 px-3">Verifikasi Standar</th>
-                    <th class="py-3 px-3 text-right">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-200 align-top">
-                  ${data.arkas.map(item => {
-                    const isVerified = item.statusVerifikasi === 'Terverifikasi SSH & Juknis BOSP';
-                    return `
-                      <tr class="hover:bg-slate-50">
-                        <td class="py-3 px-3 min-w-[170px]">
-                          <div class="text-[10px] font-bold text-emerald-800">${escapeHtml(item.namaProgram)}</div>
-                          <div class="font-semibold text-slate-900 mt-0.5">${escapeHtml(item.namaKegiatan)}</div>
-                        </td>
-                        <td class="py-3 px-3 min-w-[170px] text-slate-700">${escapeHtml(item.komponenPembiayaan)}</td>
-                        <td class="py-3 px-3 min-w-[180px] font-medium text-slate-900">${escapeHtml(item.uraianBelanja)}</td>
-                        <td class="py-3 px-3 text-center font-mono font-bold">${item.volume}</td>
-                        <td class="py-3 px-3 text-center text-slate-600">${escapeHtml(item.satuan)}</td>
-                        <td class="py-3 px-3 text-right font-mono">${formatRupiah(item.hargaSatuan)}</td>
-                        <td class="py-3 px-3 text-right font-mono font-extrabold text-emerald-900">${formatRupiah(item.jumlahAnggaran)}</td>
-                        <td class="py-3 px-3 whitespace-nowrap">
-                          <span class="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">${escapeHtml(item.sumberDana)}</span>
-                          <div class="text-[11px] text-slate-500 mt-1">${escapeHtml(item.waktuPelaksanaan)}</div>
-                        </td>
-                        <td class="py-3 px-3">
-                          <button onclick="toggleArkasVerify('${item.id}')" class="text-[10px] font-bold px-2 py-1 rounded-lg border transition ${isVerified ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-900 border-amber-300'}">
-                            ${isVerified ? '✓ Terverifikasi SSH' : '⚠ Perlu Verifikasi'}
-                          </button>
-                        </td>
-                        <td class="py-3 px-3 text-right whitespace-nowrap">
-                          <button onclick="openEditArkasModal('${item.id}')" class="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-800" title="Edit Belanja"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
-                          <button onclick="deleteArkas('${item.id}')" class="p-1.5 rounded-lg hover:bg-rose-50 text-rose-700" title="Hapus"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                        </td>
-                      </tr>
-                    `;
-                  }).join('')}
-                </tbody>
-                <tfoot>
-                  <tr class="bg-slate-100 font-extrabold text-slate-900">
-                    <td colspan="6" class="py-3 px-4 text-right uppercase text-xs">Total Rancangan Anggaran ARKAS:</td>
-                    <td class="py-3 px-3 text-right font-mono text-sm text-emerald-900">${formatRupiah(totalAll)}</td>
-                    <td colspan="3"></td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          ` : `
-            <div class="p-10 text-center">
-              <i data-lucide="wallet" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-              <h3 class="font-bold text-slate-900 text-base">Belum Ada Rincian Anggaran ARKAS</h3>
-              <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Tarik daftar kegiatan dari Modul RKT atau tambahkan uraian belanja baru.</p>
-              <div class="mt-4 flex justify-center gap-2">
-                <button onclick="syncRktToArkas()" class="px-4 py-2 rounded-xl gold-gradient text-emerald-950 text-xs font-extrabold">Tarik dari RKT</button>
-                <button onclick="openEditArkasModal()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold">Tambah Manual</button>
-              </div>
-            </div>
-          `}
-        </div>
-      `;
-    }
-
-    function toggleArkasVerify(arkasId) {
-      const data = getCurrentData();
-      const item = data.arkas.find(a => a.id === arkasId);
-      if (item) {
-        item.statusVerifikasi = item.statusVerifikasi === 'Terverifikasi SSH & Juknis BOSP'
-          ? 'Perlu Verifikasi SSH/Kode Rekening'
-          : 'Terverifikasi SSH & Juknis BOSP';
-        triggerAutoSave("ARKAS", "Verifikasi Belanja", `Status verifikasi "${item.uraianBelanja}" diperbarui.`);
-        renderAll();
-      }
-    }
-
-    function openEditArkasModal(arkasId = null) {
-      const data = getCurrentData();
-      const existing = arkasId ? data.arkas.find(a => a.id === arkasId) : null;
-
-      openCustomModal(`
-        <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <h3 class="font-bold text-slate-900 text-base">${existing ? 'Edit Rincian Belanja ARKAS' : 'Tambah Uraian Belanja ARKAS'}</h3>
-            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
-          </div>
-          <form onsubmit="saveArkasModal(event, '${arkasId || ''}')" class="mt-4 space-y-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Kegiatan RKT Induk <span class="text-rose-600">*</span></label>
-              <select name="rktId" required class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                ${data.rkt.length > 0
-                  ? data.rkt.map(k => `<option value="${k.id}" ${existing?.rktId === k.id ? 'selected' : ''}>${escapeHtml(k.namaKegiatan)} — [${escapeHtml(k.namaProgram)}]</option>`).join('')
-                  : `<option value="">-- Susun Kegiatan RKT Terlebih Dahulu --</option>`}
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Komponen Pembiayaan BOSP (Juknis Kemendikdasmen) <span class="text-rose-600">*</span></label>
-              <select name="komponenPembiayaan" required class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                ${KOMPONEN_BOSP_STANDAR.map(c => `<option value="${c}" ${existing?.komponenPembiayaan === c ? 'selected' : ''}>${c}</option>`).join('')}
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Uraian Belanja Barang / Jasa <span class="text-rose-600">*</span></label>
-              <input type="text" name="uraianBelanja" value="${escapeHtml(existing?.uraianBelanja || '')}" required placeholder="Contoh: Konsumsi Rapat Kombel Guru (Snack & Makan Siang)" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Volume <span class="text-rose-600">*</span></label>
-                <input type="number" step="0.01" min="0.01" id="arkasVolInput" oninput="recalcArkasPreview()" name="volume" value="${existing?.volume || 1}" required class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Satuan <span class="text-rose-600">*</span></label>
-                <input type="text" name="satuan" value="${escapeHtml(existing?.satuan || 'Paket')}" required placeholder="OK / Paket / Rim / Buah" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Harga Satuan (Rp) <span class="text-rose-600">*</span></label>
-                <input type="number" min="0" id="arkasPriceInput" oninput="recalcArkasPreview()" name="hargaSatuan" value="${existing?.hargaSatuan || 0}" required class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
-              </div>
-            </div>
-            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between">
-              <span class="font-semibold text-emerald-900">Jumlah Anggaran Otomatis (Volume × Harga Satuan):</span>
-              <span id="arkasTotalPreview" class="font-mono font-extrabold text-sm text-emerald-950">${formatRupiah((existing?.volume || 1) * (existing?.hargaSatuan || 0))}</span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Sumber Dana</label>
-                <select name="sumberDana" class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                  ${["BOSP Reguler", "BOSP Kinerja", "APBD / Daerah", "Komite / Swadaya", "Lainnya"].map(sd => `<option value="${sd}" ${existing?.sumberDana === sd ? 'selected' : ''}>${sd}</option>`).join('')}
-                </select>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Waktu Pelaksanaan</label>
-                <input type="text" name="waktuPelaksanaan" value="${escapeHtml(existing?.waktuPelaksanaan || 'Triwulan II')}" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Status Verifikasi Standar</label>
-                <select name="statusVerifikasi" class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                  <option value="Perlu Verifikasi SSH/Kode Rekening" ${existing?.statusVerifikasi !== 'Terverifikasi SSH & Juknis BOSP' ? 'selected' : ''}>Perlu Verifikasi SSH/Kode Rekening</option>
-                  <option value="Terverifikasi SSH & Juknis BOSP" ${existing?.statusVerifikasi === 'Terverifikasi SSH & Juknis BOSP' ? 'selected' : ''}>Terverifikasi SSH & Juknis BOSP</option>
-                </select>
-              </div>
-            </div>
-            <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
-              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Rincian ARKAS</button>
-            </div>
-          </form>
-        </div>
-      `, 'max-w-2xl');
-    }
-
-    function recalcArkasPreview() {
-      const v = parseFloat(document.getElementById('arkasVolInput')?.value) || 0;
-      const p = parseFloat(document.getElementById('arkasPriceInput')?.value) || 0;
-      const el = document.getElementById('arkasTotalPreview');
-      if (el) el.textContent = formatRupiah(v * p);
-    }
-
-    function saveArkasModal(e, arkasId) {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const data = getCurrentData();
-      const rktId = fd.get('rktId');
-      const keg = data.rkt.find(k => k.id === rktId);
-      const vol = parseFloat(fd.get('volume')) || 0;
-      const harga = parseFloat(fd.get('hargaSatuan')) || 0;
-      const jumlah = Math.round(vol * harga);
-
-      const obj = {
-        id: arkasId || uid(),
-        rktId,
-        rkjmId: keg?.rkjmId || null,
-        indicatorId: keg?.indicatorId || null,
-        namaProgram: keg?.namaProgram || 'Program Pengembangan Sekolah',
-        namaKegiatan: keg?.namaKegiatan || 'Kegiatan RKT',
-        komponenPembiayaan: fd.get('komponenPembiayaan'),
-        uraianBelanja: fd.get('uraianBelanja').trim(),
-        volume: vol,
-        satuan: fd.get('satuan').trim(),
-        hargaSatuan: harga,
-        jumlahAnggaran: jumlah,
-        sumberDana: fd.get('sumberDana'),
-        waktuPelaksanaan: fd.get('waktuPelaksanaan').trim(),
-        statusVerifikasi: fd.get('statusVerifikasi')
-      };
-
-      if (arkasId) {
-        const idx = data.arkas.findIndex(a => a.id === arkasId);
-        if (idx !== -1) data.arkas[idx] = obj;
-      } else {
-        data.arkas.push(obj);
-      }
-
-      // Sync RKT effective budget
-      if (keg) {
-        keg.kebutuhanAnggaran = getRktEffectiveBudget(keg);
-      }
-
-      closeCustomModal();
-      triggerAutoSave("ARKAS", "Simpan Uraian Belanja", `Menyimpan belanja "${obj.uraianBelanja}" sebesar ${formatRupiah(jumlah)}.`);
-      renderAll();
-      showToast("Rincian belanja ARKAS berhasil disimpan.", "success");
-    }
-
-    function deleteArkas(arkasId) {
-      showConfirmDialog({
-        title: "Hapus Uraian Belanja ARKAS?",
-        message: "Baris uraian belanja ini akan dihapus dari Rancangan ARKAS.",
-        confirmText: "Ya, Hapus",
-        danger: true,
-        onConfirm: () => {
-          const data = getCurrentData();
-          data.arkas = data.arkas.filter(a => a.id !== arkasId);
-          triggerAutoSave("ARKAS", "Hapus Belanja", "Menghapus baris uraian belanja ARKAS.");
-          renderAll();
-          showToast("Uraian belanja dihapus.", "info");
-        }
-      });
-    }
-
-    // =========================================================================
-    // MODULE K: HUBUNGAN ANTARDOKUMEN (BENANG MERAH PENELUSURAN END-TO-END)
-    // =========================================================================
-    function renderKeterhubunganModule(container) {
-      const data = getCurrentData();
-      const inds = data.indicators;
-
-      if (inds.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white rounded-2xl border border-slate-200 p-10 text-center">
-            <i data-lucide="network" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-            <h3 class="font-bold text-slate-900 text-base">Peta Keterhubungan Belum Tersedia</h3>
-            <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Masukkan data Rapor Pendidikan terlebih dahulu untuk menelusuri keterhubungan antar dokumen.</p>
-            <button onclick="navigateTo('input')" class="mt-4 px-5 py-2.5 rounded-xl emerald-gradient text-white text-xs font-bold">Ke Modul 1: Input Data</button>
-          </div>
-        `;
-        return;
-      }
-
-      if (!window.appState.selectedTraceIndicatorId || !inds.some(i => i.id === window.appState.selectedTraceIndicatorId)) {
-        const prioFirst = inds.find(needsImprovement);
-        window.appState.selectedTraceIndicatorId = prioFirst ? prioFirst.id : inds[0].id;
-      }
-
-      const activeInd = inds.find(i => i.id === window.appState.selectedTraceIndicatorId);
-      const rc = data.rootCauses[activeInd.id];
-      const ranked = getRankedPriorities();
-      const rankEntry = ranked.findIndex(r => r.ind.id === activeInd.id);
-      const prioData = data.priorities[activeInd.id];
-      const linkedRecs = data.recommendations.filter(r => r.indicatorId === activeInd.id);
-      const linkedRkjm = data.rkjm.filter(p => p.indicatorId === activeInd.id);
-      const linkedRkt = data.rkt.filter(k => k.indicatorId === activeInd.id || linkedRkjm.some(p => p.id === k.rkjmId));
-      const linkedArkas = data.arkas.filter(a => a.indicatorId === activeInd.id || linkedRkt.some(k => k.id === a.rktId));
-      const totalLinkedBudget = linkedArkas.reduce((s, a) => s + (Number(a.jumlahAnggaran) || 0), 0);
-
-      container.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">9. Hubungan Antardokumen (Benang Merah Perencanaan)</h2>
-            <p class="text-xs text-slate-500">Penelusuran utuh: Rapor Pendidikan → Analisis → Akar Masalah → Prioritas → Rekomendasi → RKJM → RKT → ARKAS.</p>
-          </div>
-        </div>
-
-        <!-- Visual Flowchart Banner -->
-        <div class="bg-emerald-950 text-white rounded-2xl p-4 overflow-x-auto">
-          <div class="flex items-center justify-between min-w-[740px] gap-2 text-[11px] font-bold">
-            <div class="px-3 py-2 rounded-xl bg-white/10 border border-amber-400/40 text-amber-300 text-center flex-1">1. Rapor Pendidikan</div>
-            <i data-lucide="arrow-right" class="w-4 h-4 text-amber-400 shrink-0"></i>
-            <div class="px-3 py-2 rounded-xl bg-white/10 text-center flex-1">2. Analisis Masalah</div>
-            <i data-lucide="arrow-right" class="w-4 h-4 text-amber-400 shrink-0"></i>
-            <div class="px-3 py-2 rounded-xl bg-white/10 text-center flex-1">3. Akar Masalah</div>
-            <i data-lucide="arrow-right" class="w-4 h-4 text-amber-400 shrink-0"></i>
-            <div class="px-3 py-2 rounded-xl bg-white/10 text-center flex-1">4. Prioritas</div>
-            <i data-lucide="arrow-right" class="w-4 h-4 text-amber-400 shrink-0"></i>
-            <div class="px-3 py-2 rounded-xl bg-white/10 text-center flex-1">5. Rekomendasi</div>
-            <i data-lucide="arrow-right" class="w-4 h-4 text-amber-400 shrink-0"></i>
-            <div class="px-3 py-2 rounded-xl bg-white/10 text-center flex-1">6. RKJM</div>
-            <i data-lucide="arrow-right" class="w-4 h-4 text-amber-400 shrink-0"></i>
-            <div class="px-3 py-2 rounded-xl bg-white/10 text-center flex-1">7. RKT</div>
-            <i data-lucide="arrow-right" class="w-4 h-4 text-amber-400 shrink-0"></i>
-            <div class="px-3 py-2 rounded-xl gold-gradient text-emerald-950 font-extrabold text-center flex-1">8. ARKAS</div>
-          </div>
-        </div>
-
-        <!-- Selector Indikator untuk Ditelusuri -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-          <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Indikator Rapor Pendidikan untuk Menelusuri Keterhubungannya:</label>
-          <select onchange="window.appState.selectedTraceIndicatorId=this.value; renderActiveModule(); if(window.lucide) window.lucide.createIcons();" class="w-full sm:max-w-xl rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs font-bold text-slate-900">
-            ${inds.map(i => `<option value="${i.id}" ${i.id === activeInd.id ? 'selected' : ''}>${i.kode ? '[' + i.kode + '] ' : ''}${escapeHtml(i.nama)} — Nilai: ${i.nilai || '-'} (${classifyCategory(i.nilai, i.kategori)})</option>`).join('')}
-          </select>
-        </div>
-
-        <!-- Vertical Traceability Tree -->
-        <div class="space-y-4">
-          <!-- Node 1 & 2: Rapor & Analisis -->
-          <div class="bg-white rounded-2xl border-l-4 border-emerald-700 border border-slate-200 p-5 shadow-xs">
-            <div class="text-[11px] font-extrabold uppercase text-emerald-800">Tahap 1 &amp; 2 — Capaian Rapor Pendidikan &amp; Status Analisis</div>
-            <div class="mt-1 flex flex-wrap items-center justify-between gap-2">
-              <h3 class="font-extrabold text-slate-900 text-base">${activeInd.kode ? `[${escapeHtml(activeInd.kode)}] ` : ''}${escapeHtml(activeInd.nama)}</h3>
-              <div class="flex items-center gap-2">
-                <span class="font-mono font-bold text-sm">Nilai: ${activeInd.nilai || '-'}</span>
-                ${getCategoryBadgeHtml(classifyCategory(activeInd.nilai, activeInd.kategori))}
-                ${getDeltaBadgeHtml(activeInd.perubahan)}
-              </div>
-            </div>
-            <p class="text-xs text-slate-500 mt-1">${escapeHtml(activeInd.dimensi)}</p>
-          </div>
-
-          <!-- Node 3 & 4: Akar Masalah & Prioritas -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white rounded-2xl border-l-4 border-amber-500 border border-slate-200 p-5 shadow-xs">
-              <div class="text-[11px] font-extrabold uppercase text-amber-800">Tahap 3 — Akar Masalah Teridentifikasi</div>
-              ${rc ? `
-                <p class="text-xs font-semibold text-slate-900 mt-1.5">${escapeHtml(rc.masalahUtama)}</p>
-                <ul class="mt-2 space-y-1 text-xs text-slate-600 list-disc pl-4">
-                  ${(rc.akarPenyebab || []).map(a => `<li>${escapeHtml(a.teks)} <span class="text-[10px] font-bold">(${a.status === 'fakta_sekolah' ? 'Fakta Sekolah' : 'Hipotesis AI'})</span></li>`).join('')}
-                </ul>
-              ` : `<p class="text-xs text-rose-600 mt-1.5 italic">Belum dilakukan analisis akar masalah untuk indikator ini.</p>`}
-            </div>
-
-            <div class="bg-white rounded-2xl border-l-4 border-amber-600 border border-slate-200 p-5 shadow-xs">
-              <div class="text-[11px] font-extrabold uppercase text-amber-800">Tahap 4 — Peringkat Prioritas Pembenahan</div>
-              ${rankEntry !== -1 && prioData ? `
-                <div class="mt-1.5 flex items-center gap-3">
-                  <span class="px-3 py-1 rounded-xl bg-amber-100 text-amber-950 font-extrabold text-sm">Peringkat #${rankEntry + 1}</span>
-                  <span class="text-xs font-bold text-slate-700">Skor Multi-Kriteria: ${prioData.totalSkor} / 25</span>
-                </div>
-                <p class="text-xs text-slate-600 mt-2">${escapeHtml(prioData.alasanPrioritas)}</p>
-              ` : `<p class="text-xs text-slate-500 mt-1.5">Indikator ini berada pada kategori Baik / tidak masuk daftar prioritas pembenahan.</p>`}
-            </div>
-          </div>
-
-          <!-- Node 5 & 6: Rekomendasi & RKJM -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white rounded-2xl border-l-4 border-emerald-600 border border-slate-200 p-5 shadow-xs">
-              <div class="text-[11px] font-extrabold uppercase text-emerald-800">Tahap 5 — Rekomendasi Program (${linkedRecs.length})</div>
-              ${linkedRecs.length > 0 ? linkedRecs.map(r => `
-                <div class="mt-2 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                  <div class="font-bold text-slate-900">${escapeHtml(r.bentukKegiatan)}</div>
-                  <div class="text-slate-600 mt-0.5">Target: ${escapeHtml(r.targetCapaian)}</div>
-                </div>
-              `).join('') : `<p class="text-xs text-rose-600 mt-1.5 italic">Belum ada rekomendasi program tertaut.</p>`}
-            </div>
-
-            <div class="bg-white rounded-2xl border-l-4 border-emerald-700 border border-slate-200 p-5 shadow-xs">
-              <div class="text-[11px] font-extrabold uppercase text-emerald-800">Tahap 6 — Program RKJM (${linkedRkjm.length})</div>
-              ${linkedRkjm.length > 0 ? linkedRkjm.map(p => `
-                <div class="mt-2 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                  <div class="font-bold text-slate-900">${escapeHtml(p.namaProgram)}</div>
-                  <div class="text-slate-600 mt-0.5">Tujuan Strategis: ${escapeHtml(p.tujuanStrategis)}</div>
-                </div>
-              `).join('') : `<p class="text-xs text-rose-600 mt-1.5 italic">Belum diturunkan ke RKJM.</p>`}
-            </div>
-          </div>
-
-          <!-- Node 7 & 8: RKT & ARKAS -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white rounded-2xl border-l-4 border-emerald-800 border border-slate-200 p-5 shadow-xs">
-              <div class="text-[11px] font-extrabold uppercase text-emerald-900">Tahap 7 — Kegiatan Tahunan RKT (${linkedRkt.length})</div>
-              ${linkedRkt.length > 0 ? linkedRkt.map(k => `
-                <div class="mt-2 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                  <div class="font-bold text-slate-900">${escapeHtml(k.namaKegiatan)}</div>
-                  <div class="text-slate-600 mt-0.5">PJ: ${escapeHtml(k.penanggungJawab)} • Sumber: ${escapeHtml(k.sumberDana)}</div>
-                </div>
-              `).join('') : `<p class="text-xs text-rose-600 mt-1.5 italic">Belum diturunkan ke kegiatan RKT.</p>`}
-            </div>
-
-            <div class="bg-white rounded-2xl border-l-4 border-amber-500 border border-slate-200 p-5 shadow-xs">
-              <div class="flex items-center justify-between">
-                <div class="text-[11px] font-extrabold uppercase text-amber-800">Tahap 8 — Rancangan Belanja ARKAS (${linkedArkas.length} item)</div>
-                <span class="font-mono font-extrabold text-xs text-emerald-900">${formatRupiah(totalLinkedBudget)}</span>
-              </div>
-              ${linkedArkas.length > 0 ? linkedArkas.map(a => `
-                <div class="mt-2 p-3 rounded-xl bg-amber-50/50 border border-amber-200/70 text-xs flex justify-between gap-2">
-                  <div>
-                    <div class="font-bold text-slate-900">${escapeHtml(a.uraianBelanja)}</div>
-                    <div class="text-[11px] text-slate-500">${a.volume} ${escapeHtml(a.satuan)} × ${formatRupiah(a.hargaSatuan)}</div>
-                  </div>
-                  <div class="font-mono font-bold text-emerald-900 shrink-0">${formatRupiah(a.jumlahAnggaran)}</div>
-                </div>
-              `).join('') : `<p class="text-xs text-rose-600 mt-1.5 italic">Belum memiliki rincian anggaran di ARKAS.</p>`}
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    // =========================================================================
-    // MODULE L: MONITORING DAN EVALUASI (MONEV)
-    // =========================================================================
-    function renderMonevModule(container) {
-      const data = getCurrentData();
-      const rkList = data.rkt;
-
-      if (rkList.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white rounded-2xl border border-slate-200 p-10 text-center">
-            <i data-lucide="activity" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-            <h3 class="font-bold text-slate-900 text-base">Belum Ada Kegiatan RKT untuk Dipantau</h3>
-            <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Susun kegiatan RKT terlebih dahulu agar Tim Pengembang Sekolah dapat memantau progres pelaksanaan dan serapan anggarannya.</p>
-            <button onclick="navigateTo('rkt')" class="mt-4 px-5 py-2.5 rounded-xl emerald-gradient text-white text-xs font-bold">Ke Modul 7: Penyusunan RKT</button>
-          </div>
-        `;
-        return;
-      }
-
-      // Ensure monev entries exist
-      rkList.forEach(k => {
-        if (!data.monev[k.id]) {
-          data.monev[k.id] = {
-            rktId: k.id,
-            statusPelaksanaan: 'belum',
-            persentaseKegiatan: 0,
-            realisasiAnggaran: 0,
-            hambatan: '',
-            buktiKegiatan: '',
-            evaluasiHasil: '',
-            tindakLanjut: ''
-          };
-        }
-      });
-
-      const belumCount = rkList.filter(k => data.monev[k.id].statusPelaksanaan === 'belum').length;
-      const berjalanCount = rkList.filter(k => data.monev[k.id].statusPelaksanaan === 'berjalan').length;
-      const selesaiCount = rkList.filter(k => data.monev[k.id].statusPelaksanaan === 'selesai').length;
-      const avgProgress = Math.round(rkList.reduce((s, k) => s + (Number(data.monev[k.id].persentaseKegiatan) || 0), 0) / rkList.length);
-      const totalPagu = rkList.reduce((s, k) => s + getRktEffectiveBudget(k), 0);
-      const totalRealisasi = rkList.reduce((s, k) => s + (Number(data.monev[k.id].realisasiAnggaran) || 0), 0);
-      const pctSerapan = totalPagu > 0 ? Math.round((totalRealisasi / totalPagu) * 100) : 0;
-
-      container.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">10. Monitoring dan Evaluasi (Monev) Program</h2>
-            <p class="text-xs text-slate-500">Pemantauan keterlaksanaan kegiatan RKT, serapan anggaran ARKAS, hambatan, dan tindak lanjut perbaikan.</p>
-          </div>
-          <button onclick="exportMonevPdf()" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
-            <i data-lucide="file-down" class="w-4 h-4"></i>
-            <span>Unduh Laporan Monev (PDF)</span>
-          </button>
-        </div>
-
-        <!-- Status Summary Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
-          <div class="bg-white rounded-2xl p-4 border border-slate-200">
-            <div class="text-[11px] font-semibold text-slate-500">Belum Dilaksanakan</div>
-            <div class="text-2xl font-extrabold text-slate-700 mt-1">${belumCount}</div>
-          </div>
-          <div class="bg-white rounded-2xl p-4 border border-amber-200 bg-amber-50/40">
-            <div class="text-[11px] font-semibold text-amber-800">Sedang Berjalan</div>
-            <div class="text-2xl font-extrabold text-amber-700 mt-1">${berjalanCount}</div>
-          </div>
-          <div class="bg-white rounded-2xl p-4 border border-emerald-200 bg-emerald-50/40">
-            <div class="text-[11px] font-semibold text-emerald-800">Program Selesai</div>
-            <div class="text-2xl font-extrabold text-emerald-800 mt-1">${selesaiCount}</div>
-          </div>
-          <div class="bg-white rounded-2xl p-4 border border-slate-200">
-            <div class="text-[11px] font-semibold text-slate-500">Rata-rata Realisasi Fisik</div>
-            <div class="text-2xl font-extrabold text-emerald-900 mt-1">${avgProgress}%</div>
-          </div>
-          <div class="col-span-2 lg:col-span-1 bg-emerald-950 text-white rounded-2xl p-4">
-            <div class="text-[11px] font-semibold text-emerald-200">Realisasi Anggaran</div>
-            <div class="text-xl font-extrabold text-amber-300 mt-1">${pctSerapan}%</div>
-            <div class="text-[10px] text-emerald-200 truncate">${formatRupiah(totalRealisasi)} / ${formatRupiah(totalPagu)}</div>
-          </div>
-        </div>
-
-        <!-- Grafik Perkembangan Program -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
-          <h3 class="font-bold text-slate-900 text-sm mb-3">Grafik Perkembangan Realisasi Kegiatan vs Serapan Anggaran (%)</h3>
-          <div class="relative h-64">
-            <canvas id="monevProgressChart"></canvas>
-          </div>
-        </div>
-
-        <!-- Tabel Monitoring & Evaluasi Interaktif -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
-                  <th class="py-3 px-4">Kegiatan RKT</th>
-                  <th class="py-3 px-3 text-center">Status</th>
-                  <th class="py-3 px-3 text-center">Realisasi Kegiatan</th>
-                  <th class="py-3 px-3 text-right">Realisasi Anggaran</th>
-                  <th class="py-3 px-3">Hambatan &amp; Bukti</th>
-                  <th class="py-3 px-3">Evaluasi &amp; Tindak Lanjut</th>
-                  <th class="py-3 px-4 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 align-top">
-                ${rkList.map(k => {
-                  const m = data.monev[k.id];
-                  const pagu = getRktEffectiveBudget(k);
-                  const pctAng = pagu > 0 ? Math.round(((Number(m.realisasiAnggaran) || 0) / pagu) * 100) : 0;
-                  const statusBadges = {
-                    belum: `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">Belum Dilaksanakan</span>`,
-                    berjalan: `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Sedang Berjalan</span>`,
-                    selesai: `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Selesai</span>`
-                  };
-                  return `
-                    <tr class="hover:bg-slate-50">
-                      <td class="py-3 px-4 min-w-[180px]">
-                        <div class="font-bold text-slate-900">${escapeHtml(k.namaKegiatan)}</div>
-                        <div class="text-[11px] text-slate-500 mt-0.5">PJ: ${escapeHtml(k.penanggungJawab)}</div>
-                      </td>
-                      <td class="py-3 px-3 text-center whitespace-nowrap">${statusBadges[m.statusPelaksanaan] || statusBadges.belum}</td>
-                      <td class="py-3 px-3 text-center min-w-[120px]">
-                        <div class="font-mono font-bold text-slate-900">${m.persentaseKegiatan}%</div>
-                        <div class="w-full h-1.5 bg-slate-200 rounded-full mt-1 overflow-hidden">
-                          <div class="h-full bg-emerald-700 rounded-full" style="width:${Math.min(100, m.persentaseKegiatan)}%"></div>
-                        </div>
-                      </td>
-                      <td class="py-3 px-3 text-right whitespace-nowrap">
-                        <div class="font-mono font-bold text-slate-900">${formatRupiah(m.realisasiAnggaran)}</div>
-                        <div class="text-[10px] text-slate-500">${pctAng}% dari ${formatRupiah(pagu)}</div>
-                      </td>
-                      <td class="py-3 px-3 min-w-[180px] text-slate-700">
-                        <div><span class="font-semibold">Hambatan:</span> ${escapeHtml(m.hambatan || '-')}</div>
-                        <div class="mt-1"><span class="font-semibold">Bukti:</span> ${escapeHtml(m.buktiKegiatan || '-')}</div>
-                      </td>
-                      <td class="py-3 px-3 min-w-[180px] text-slate-700">
-                        <div><span class="font-semibold">Evaluasi:</span> ${escapeHtml(m.evaluasiHasil || '-')}</div>
-                        <div class="mt-1 text-emerald-800"><span class="font-semibold">Tindak Lanjut:</span> ${escapeHtml(m.tindakLanjut || '-')}</div>
-                      </td>
-                      <td class="py-3 px-4 text-right whitespace-nowrap">
-                        <button onclick="openEditMonevModal('${k.id}')" class="px-3 py-1.5 rounded-xl emerald-gradient text-white text-[11px] font-bold">
-                          Update Monev
-                        </button>
-                      </td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
-
-      // Render Monev Chart
-      const ctx = document.getElementById('monevProgressChart');
-      if (ctx && window.Chart) {
-        const labels = rkList.map(k => k.namaKegiatan.length > 24 ? k.namaKegiatan.slice(0, 24) + '…' : k.namaKegiatan);
-        const fisikData = rkList.map(k => Number(data.monev[k.id].persentaseKegiatan) || 0);
-        const angData = rkList.map(k => {
-          const pagu = getRktEffectiveBudget(k);
-          return pagu > 0 ? Math.min(100, Math.round(((Number(data.monev[k.id].realisasiAnggaran) || 0) / pagu) * 100)) : 0;
-        });
-
-        chartInstances.monevBar = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels,
-            datasets: [
-              { label: 'Realisasi Kegiatan (%)', data: fisikData, backgroundColor: '#047857', borderRadius: 5 },
-              { label: 'Realisasi Anggaran (%)', data: angData, backgroundColor: '#f59e0b', borderRadius: 5 }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: { beginAtZero: true, max: 100 }
-            }
-          }
-        });
-      }
-    }
-
-    function openEditMonevModal(rktId) {
-      const data = getCurrentData();
-      const keg = data.rkt.find(k => k.id === rktId);
-      const m = data.monev[rktId];
-      const pagu = getRktEffectiveBudget(keg);
-
-      openCustomModal(`
-        <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <h3 class="font-bold text-slate-900 text-base">Update Monitoring &amp; Evaluasi</h3>
-            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
-          </div>
-          <p class="text-xs font-bold text-emerald-800 mt-2">${escapeHtml(keg.namaKegiatan)} (Pagu Anggaran: ${formatRupiah(pagu)})</p>
-          <form onsubmit="saveMonevModal(event, '${rktId}')" class="mt-4 space-y-3 text-xs">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Status Pelaksanaan</label>
-                <select name="statusPelaksanaan" class="w-full rounded-xl border border-slate-300 px-3 py-2">
-                  <option value="belum" ${m.statusPelaksanaan === 'belum' ? 'selected' : ''}>Belum Dilaksanakan</option>
-                  <option value="berjalan" ${m.statusPelaksanaan === 'berjalan' ? 'selected' : ''}>Sedang Berjalan</option>
-                  <option value="selesai" ${m.statusPelaksanaan === 'selesai' ? 'selected' : ''}>Selesai</option>
-                </select>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Realisasi Kegiatan (%)</label>
-                <input type="number" min="0" max="100" name="persentaseKegiatan" value="${m.persentaseKegiatan}" required class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Realisasi Anggaran (Rp)</label>
-                <input type="number" min="0" name="realisasiAnggaran" value="${m.realisasiAnggaran}" required class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
-              </div>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Hambatan Pelaksanaan</label>
-              <textarea name="hambatan" rows="2" placeholder="Catat kendala waktu, teknis, atau partisipasi..." class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(m.hambatan)}</textarea>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Bukti Kegiatan (Nomor SPJ / Tautan / Dokumen Fisik)</label>
-              <input type="text" name="buktiKegiatan" value="${escapeHtml(m.buktiKegiatan)}" placeholder="Contoh: Laporan Kegiatan No. 04/2026 & SPJ BOSP Tw 2" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Evaluasi Hasil (Dampak terhadap Mutu Pembelajaran)</label>
-              <textarea name="evaluasiHasil" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(m.evaluasiHasil)}</textarea>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Rekomendasi Tindak Lanjut</label>
-              <textarea name="tindakLanjut" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(m.tindakLanjut)}</textarea>
-            </div>
-            <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
-              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Laporan Monev</button>
+              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Kegiatan</button>
             </div>
           </form>
         </div>
       `);
     }
 
-    function saveMonevModal(e, rktId) {
+    function openEditRktModal(rktId) {
+      const data = getCurrentData();
+      const k = data.rkt.find(item => item.id === rktId);
+      if (!k) return;
+
+      openCustomModal(`
+        <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h3 class="font-bold text-slate-900 text-base">Edit Kegiatan RKT</h3>
+            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+          <form onsubmit="saveRktModalForm(event, '${k.id}')" class="mt-4 space-y-3 text-xs">
+            <input type="hidden" name="rkjmId" value="${escapeHtml(k.rkjmId)}" />
+            <div><label class="block font-bold mb-1">Nama Kegiatan Tahunan *</label><input type="text" name="namaKegiatan" required value="${escapeHtml(k.namaKegiatan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            <div><label class="block font-bold mb-1">Latar Belakang</label><textarea name="latarBelakang" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(k.latarBelakang)}</textarea></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="block font-bold mb-1">Tujuan Kegiatan</label><input type="text" name="tujuan" value="${escapeHtml(k.tujuan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Sasaran</label><input type="text" name="sasaran" value="${escapeHtml(k.sasaran)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="block font-bold mb-1">Indikator Keberhasilan</label><input type="text" name="indikatorKeberhasilan" value="${escapeHtml(k.indikatorKeberhasilan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Target Capaian</label><input type="text" name="target" value="${escapeHtml(k.target)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div><label class="block font-bold mb-1">Jadwal Pelaksanaan</label><input type="text" name="jadwalTeks" value="${escapeHtml(k.jadwalTeks)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Penanggung Jawab</label><input type="text" name="penanggungJawab" value="${escapeHtml(k.penanggungJawab)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Kebutuhan Anggaran (Rp)</label><input type="number" name="kebutuhanAnggaran" value="${Number(k.kebutuhanAnggaran) || 0}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" /></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Sumber Dana</label>
+                <select name="sumberDana" class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                  ${SUMBER_DANA_STANDAR.map(sd => `<option value="${sd}" ${k.sumberDana === sd ? "selected" : ""}>${sd}</option>`).join("")}
+                </select>
+              </div>
+              <div><label class="block font-bold mb-1">Bukti Pelaksanaan</label><input type="text" name="buktiPelaksanaan" value="${escapeHtml(k.buktiPelaksanaan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Perubahan</button>
+            </div>
+          </form>
+        </div>
+      `);
+    }
+
+    function saveRktModalForm(e, rktId) {
       e.preventDefault();
       const fd = new FormData(e.target);
       const data = getCurrentData();
-      data.monev[rktId] = {
-        rktId,
-        statusPelaksanaan: fd.get('statusPelaksanaan'),
-        persentaseKegiatan: Number(fd.get('persentaseKegiatan')) || 0,
-        realisasiAnggaran: Number(fd.get('realisasiAnggaran')) || 0,
-        hambatan: fd.get('hambatan').trim(),
-        buktiKegiatan: fd.get('buktiKegiatan').trim(),
-        evaluasiHasil: fd.get('evaluasiHasil').trim(),
-        tindakLanjut: fd.get('tindakLanjut').trim()
+      const rkjmId = String(fd.get("rkjmId") || "");
+      const prog = data.rkjm.find(p => p.id === rkjmId);
+
+      const existing = rktId ? data.rkt.find(k => k.id === rktId) : null;
+      const obj = {
+        id: rktId || uid(),
+        rkjmId,
+        indicatorId: prog ? prog.indicatorId : (existing?.indicatorId || ""),
+        namaProgram: prog ? prog.programPengembangan : (existing?.namaProgram || "Program Pengembangan Sekolah"),
+        namaKegiatan: String(fd.get("namaKegiatan") || "").trim(),
+        latarBelakang: String(fd.get("latarBelakang") || "").trim(),
+        tujuan: String(fd.get("tujuan") || "").trim(),
+        sasaran: String(fd.get("sasaran") || "").trim(),
+        indikatorKeberhasilan: String(fd.get("indikatorKeberhasilan") || "").trim(),
+        target: String(fd.get("target") || "").trim(),
+        bulanPelaksanaan: existing?.bulanPelaksanaan || [7, 8],
+        jadwalTeks: String(fd.get("jadwalTeks") || "").trim(),
+        penanggungJawab: String(fd.get("penanggungJawab") || "").trim(),
+        kebutuhanAnggaran: Number(fd.get("kebutuhanAnggaran")) || 0,
+        sumberDana: String(fd.get("sumberDana") || "BOSP Reguler").trim(),
+        buktiPelaksanaan: String(fd.get("buktiPelaksanaan") || "").trim()
       };
+
+      if (rktId) {
+        const idx = data.rkt.findIndex(k => k.id === rktId);
+        if (idx >= 0) data.rkt[idx] = obj;
+      } else {
+        data.rkt.push(obj);
+      }
+
       closeCustomModal();
-      triggerAutoSave("Monitoring & Evaluasi", "Update Progres", "Memperbarui realisasi kegiatan dan anggaran Monev.");
+      triggerAutoSave("RKT", rktId ? "Edit Kegiatan RKT" : "Tambah Kegiatan RKT", `Menyimpan kegiatan "${obj.namaKegiatan}".`);
       renderAll();
-      showToast("Data Monitoring & Evaluasi berhasil disimpan.", "success");
+      showToast("Kegiatan RKT berhasil disimpan.", "success");
+    }
+
+    function deleteRkt(rktId) {
+      const data = getCurrentData();
+      data.rkt = data.rkt.filter(k => k.id !== rktId);
+      triggerAutoSave("RKT", "Hapus Kegiatan RKT", "Menghapus kegiatan dari tabel RKT.");
+      renderAll();
+      showToast("Kegiatan RKT dihapus.", "info");
     }
 
     // =========================================================================
-    // MODULE M: LAPORAN DAN EKSPOR (PDF, WORD .DOC, EXCEL .XLSX)
+    // 16. MODULE 8: RANCANGAN ANGGARAN ARKAS (Volume x Harga Satuan + Rekap)
     // =========================================================================
-    function renderEksporModule(container) {
+    function generateArkasFromRkt() {
       const data = getCurrentData();
-      const s = data.school;
+      if (data.rkt.length === 0) {
+        generateRktFromRkjm();
+      }
 
-      const exportCards = [
-        {
-          no: 1,
-          title: "Hasil Analisis Rapor Pendidikan",
-          format: "PDF (.pdf)",
-          badgeClass: "bg-rose-100 text-rose-800",
-          desc: "Laporan lengkap capaian seluruh indikator, kategori, tren perubahan tahun lalu, dan status prioritas.",
-          btnLabel: "Unduh PDF Analisis",
-          action: "exportAnalisisPdf()"
-        },
-        {
-          no: 2,
-          title: "Dokumen Analisis Akar Masalah",
-          format: "Word (.doc)",
-          badgeClass: "bg-blue-100 text-blue-800",
-          desc: "Dokumen naratif & tabel bedah 5-Why, hipotesis vs fakta sekolah, pertanyaan refleksi guru, dan solusi.",
-          btnLabel: "Unduh Word Akar Masalah",
-          action: "exportAkarMasalahWord()"
-        },
-        {
-          no: 3,
-          title: "Daftar Prioritas Pembenahan",
-          format: "Excel (.xlsx)",
-          badgeClass: "bg-emerald-100 text-emerald-800",
-          desc: "Tabel pemeringkatan 5 kriteria prioritas beserta skor total dan alasan penetapan prioritas.",
-          btnLabel: "Unduh Excel Prioritas",
-          action: "exportPrioritasExcel()"
-        },
-        {
-          no: 4,
-          title: "Dokumen Rencana Kerja Jangka Menengah (RKJM)",
-          format: "Word & Excel",
-          badgeClass: "bg-amber-100 text-amber-900",
-          desc: "Matriks 4 tahunan yang menghubungkan Dimensi Rapor, Akar Masalah, Tujuan Strategis, dan Target Tahunan.",
-          dual: true,
-          wordAction: "exportRkjmWord()",
-          excelAction: "exportRkjmExcel()"
-        },
-        {
-          no: 5,
-          title: "Dokumen Rencana Kerja Tahunan (RKT)",
-          format: "Word & Excel",
-          badgeClass: "bg-amber-100 text-amber-900",
-          desc: "Rincian kegiatan tahunan, tujuan, sasaran, jadwal bulanan, penanggung jawab, dan sumber dana.",
-          dual: true,
-          wordAction: "exportRktWord()",
-          excelAction: "exportRktExcel()"
-        },
-        {
-          no: 6,
-          title: "Rancangan Anggaran ARKAS (Kertas Kerja)",
-          format: "Excel (.xlsx)",
-          badgeClass: "bg-emerald-100 text-emerald-800",
-          desc: "Rincian belanja per program, kegiatan, komponen BOSP, volume, satuan, harga satuan, dan rekapitulasi.",
-          btnLabel: "Unduh Excel ARKAS",
-          action: "exportArkasExcel()"
-        },
-        {
-          no: 7,
-          title: "Laporan Monitoring dan Evaluasi (Monev)",
-          format: "PDF (.pdf)",
-          badgeClass: "bg-rose-100 text-rose-800",
-          desc: "Laporan capaian fisik kegiatan, realisasi serapan anggaran, hambatan, evaluasi hasil, dan tindak lanjut.",
-          btnLabel: "Unduh PDF Monev",
-          action: "exportMonevPdf()"
+      data.rkt.forEach(keg => {
+        if (!data.arkas.some(a => a.rktId === keg.id)) {
+          data.arkas.push({
+            id: uid(),
+            rktId: keg.id,
+            rkjmId: keg.rkjmId,
+            indicatorId: keg.indicatorId,
+            program: keg.namaProgram,
+            kegiatan: keg.namaKegiatan,
+            komponen: "06. Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
+            uraianBelanja: `Konsumsi & Bahan Pelaksanaan ${keg.namaKegiatan} (Perlu Verifikasi Rincian)`,
+            volume: 20,
+            satuan: "Paket",
+            hargaSatuan: Math.max(25000, Math.round((Number(keg.kebutuhanAnggaran) || 1000000) / 20)),
+            sumberDana: keg.sumberDana || "BOSP Reguler",
+            waktuPelaksanaan: keg.jadwalTeks || `Tahun ${data.school.tahunPerencanaan}`,
+            statusVerifikasi: "Perlu Verifikasi Komponen & Harga Satuan"
+          });
         }
-      ];
+      });
 
-      container.innerHTML = `
+      triggerAutoSave("ARKAS", "Susun Rancangan ARKAS", "Menyusun draf rincian belanja ARKAS dari kegiatan RKT.");
+      setActiveTab("arkas");
+      showToast("Rancangan anggaran ARKAS berhasil disusun. Silakan verifikasi rincian belanja.", "success");
+    }
+
+    function renderArkasModule() {
+      const data = getCurrentData();
+      const totalAll = data.arkas.reduce((s, a) => s + ((Number(a.volume) || 0) * (Number(a.hargaSatuan) || 0)), 0);
+
+      // Recap Maps
+      const byProgram = {};
+      const byKegiatan = {};
+      const byKomponen = {};
+
+      data.arkas.forEach(a => {
+        const sub = (Number(a.volume) || 0) * (Number(a.hargaSatuan) || 0);
+        byProgram[a.program] = (byProgram[a.program] || 0) + sub;
+        byKegiatan[a.kegiatan] = (byKegiatan[a.kegiatan] || 0) + sub;
+        byKomponen[a.komponen] = (byKomponen[a.komponen] || 0) + sub;
+      });
+
+      return `
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">11. Pusat Laporan &amp; Ekspor Dokumen Resmi</h2>
-            <p class="text-xs text-slate-500">Seluruh dokumen dilengkapi kop identitas sekolah, tahun perencanaan, tabel rapi, dan penomoran halaman.</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 8 • Rencana Kerja &amp; Anggaran Sekolah</span>
+            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Rancangan Anggaran ARKAS (${escapeHtml(data.school.tahunPerencanaan)})</h2>
+            <p class="text-xs text-slate-600 mt-0.5">Terhubung langsung dengan kegiatan RKT. Rumus otomatis: <strong>Jumlah = Volume × Harga Satuan</strong>.</p>
           </div>
-          <button onclick="window.print()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5">
-            <i data-lucide="printer" class="w-4 h-4"></i>
-            <span>Cetak Layar</span>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="exportWordDocument('rkt')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-blue-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+              <span>Unduh Word</span>
+            </button>
+            <button onclick="exportExcelDocument('rkt')" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-emerald-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+              <span>Unduh Excel</span>
+            </button>
+            <button onclick="openAddRktModal()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-slate-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="plus" class="w-4 h-4 text-emerald-700"></i>
+              <span>Tambah Kegiatan RKT</span>
+            </button>
+            <button onclick="generateArkasFromRkt()" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
+              <span>Buat Rancangan ARKAS</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="exportExcelDocument('arkas')" class="px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-emerald-800 font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+              <span>Unduh Excel ARKAS</span>
+            </button>
+            <button onclick="openAddArkasModal()" class="px-4 py-2.5 rounded-xl emerald-gradient text-white font-bold text-xs flex items-center gap-1.5 shadow">
+              <i data-lucide="plus" class="w-4 h-4 text-amber-300"></i>
+              <span>Tambah Uraian Belanja</span>
+            </button>
+          </div>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 10 • Pengendalian &amp; Evaluasi</span>
+            <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Monitoring dan Evaluasi Program (Monev)</h2>
+            <p class="text-xs text-slate-600 mt-0.5">Pantau keterlaksanaan kegiatan RKT, serapan anggaran, hambatan lapangan, serta tindak lanjut perbaikan.</p>
+          </div>
+          <button onclick="exportPrintReport('monev')" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-rose-700 font-bold text-xs flex items-center gap-1.5 self-start sm:self-auto">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Unduh Laporan Monev</span>
           </button>
         </div>
 
-        ${(!s.nama || !s.npsn) ? `
-          <div class="bg-amber-50 border border-amber-300 rounded-2xl p-4 text-xs text-amber-950 flex items-center justify-between gap-3">
-            <span><strong>Perhatian:</strong> Nama Sekolah dan NPSN belum dilengkapi. Lengkapi terlebih dahulu agar tercetak rapi pada header dokumen ekspor.</span>
-            <button onclick="navigateTo('input')" class="shrink-0 px-3 py-1.5 rounded-lg bg-amber-600 text-white font-bold">Lengkapi Identitas</button>
-          </div>
-        ` : ''}
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          ${exportCards.map(c => `
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between">
-              <div>
-                <div class="flex items-center justify-between mb-3">
-                  <span class="w-7 h-7 rounded-lg bg-emerald-900 text-amber-300 font-bold text-xs flex items-center justify-center">${c.no}</span>
-                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${c.badgeClass}">${c.format}</span>
+        <!-- REKAPITULASI CARDS -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 text-xs">
+          <div class="card-elevated p-4">
+            <h3 class="font-bold text-slate-900 pb-2 border-b border-slate-100">Rekap per Program RKJM</h3>
+            <div class="mt-2 space-y-2 max-h-40 overflow-y-auto">
+              ${Object.keys(byProgram).length === 0 ? `<p class="text-slate-400">Belum ada anggaran.</p>` : Object.entries(byProgram).map(([k, v]) => `
+                <div class="flex justify-between gap-2">
+                  <span class="text-slate-700 truncate">${escapeHtml(k)}</span>
+                  <span class="font-mono font-bold text-slate-900 shrink-0">${formatRupiah(v)}</span>
                 </div>
-                <h3 class="font-bold text-slate-900 text-sm">${c.title}</h3>
-                <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">${c.desc}</p>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="card-elevated p-4">
+            <h3 class="font-bold text-slate-900 pb-2 border-b border-slate-100">Rekap per Kegiatan RKT</h3>
+            <div class="mt-2 space-y-2 max-h-40 overflow-y-auto">
+              ${Object.keys(byKegiatan).length === 0 ? `<p class="text-slate-400">Belum ada anggaran.</p>` : Object.entries(byKegiatan).map(([k, v]) => `
+                <div class="flex justify-between gap-2">
+                  <span class="text-slate-700 truncate">${escapeHtml(k)}</span>
+                  <span class="font-mono font-bold text-slate-900 shrink-0">${formatRupiah(v)}</span>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="card-elevated p-4">
+            <h3 class="font-bold text-slate-900 pb-2 border-b border-slate-100">Rekap per Komponen Pembiayaan BOSP</h3>
+            <div class="mt-2 space-y-2 max-h-40 overflow-y-auto">
+              ${Object.keys(byKomponen).length === 0 ? `<p class="text-slate-400">Belum ada anggaran.</p>` : Object.entries(byKomponen).map(([k, v]) => `
+                <div class="flex justify-between gap-2">
+                  <span class="text-slate-700 truncate">${escapeHtml(k)}</span>
+                  <span class="font-mono font-bold text-emerald-900 shrink-0">${formatRupiah(v)}</span>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </section>
+
+        <!-- ARKAS ITEMS TABLE -->
+        <section class="card-elevated overflow-hidden">
+          <div class="p-4 bg-emerald-950 text-white flex flex-wrap items-center justify-between gap-2">
+            <span class="font-bold text-xs sm:text-sm">Rincian Kertas Kerja Belanja (${data.arkas.length} Item)</span>
+            <div class="text-xs sm:text-sm">
+              Total Rancangan Anggaran: <span class="font-mono font-extrabold text-amber-300 text-base ml-1">${formatRupiah(totalAll)}</span>
+            </div>
+          </div>
+
+          ${data.arkas.length === 0 ? `
+            <div class="p-10 text-center space-y-3">
+              <p class="text-xs text-slate-500">Belum ada rincian belanja ARKAS.</p>
+              <button onclick="generateArkasFromRkt()" class="px-4 py-2 rounded-xl emerald-gradient text-white text-xs font-bold">Susun Rancangan dari RKT</button>
+            </div>
+          ` : `
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[10px]">
+                  <tr>
+                    <th class="py-3 px-3">Program &amp; Kegiatan RKT</th>
+                    <th class="py-3 px-3">Komponen Pembiayaan &amp; Uraian Belanja</th>
+                    <th class="py-3 px-2 text-center">Vol</th>
+                    <th class="py-3 px-2 text-center">Satuan</th>
+                    <th class="py-3 px-3 text-right">Harga Satuan</th>
+                    <th class="py-3 px-3 text-right">Jumlah Anggaran</th>
+                    <th class="py-3 px-3">Sumber &amp; Waktu</th>
+                    <th class="py-3 px-3 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${data.arkas.map(a => {
+                    const subtotal = (Number(a.volume) || 0) * (Number(a.hargaSatuan) || 0);
+                    return `
+                      <tr class="hover:bg-slate-50 align-top">
+                        <td class="py-3 px-3 min-w-[180px]">
+                          <div class="text-[10px] font-bold text-emerald-800">${escapeHtml(a.program)}</div>
+                          <div class="font-semibold text-slate-900 mt-0.5">${escapeHtml(a.kegiatan)}</div>
+                        </td>
+                        <td class="py-3 px-3 min-w-[210px]">
+                          <div class="text-[10px] font-semibold text-amber-800">${escapeHtml(a.komponen)}</div>
+                          <div class="font-bold text-slate-900 mt-0.5">${escapeHtml(a.uraianBelanja)}</div>
+                          <div class="text-[10px] text-slate-500 mt-0.5">Status: ${escapeHtml(a.statusVerifikasi || "Perlu Verifikasi")}</div>
+                        </td>
+                        <td class="py-3 px-2 text-center font-mono font-bold">${Number(a.volume) || 0}</td>
+                        <td class="py-3 px-2 text-center">${escapeHtml(a.satuan)}</td>
+                        <td class="py-3 px-3 text-right font-mono">${formatRupiah(a.hargaSatuan)}</td>
+                        <td class="py-3 px-3 text-right font-mono font-extrabold text-emerald-950 whitespace-nowrap">${formatRupiah(subtotal)}</td>
+                        <td class="py-3 px-3 min-w-[130px]">
+                          <div class="font-semibold text-slate-800">${escapeHtml(a.sumberDana)}</div>
+                          <div class="text-[11px] text-slate-500">${escapeHtml(a.waktuPelaksanaan)}</div>
+                        </td>
+                        <td class="py-3 px-3 text-right whitespace-nowrap">
+                          <button onclick="openEditArkasModal('${a.id}')" class="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-800"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                          <button onclick="deleteArkas('${a.id}')" class="p-1.5 rounded-lg hover:bg-rose-50 text-rose-700"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </section>
+      `;
+    }
+
+    function openAddArkasModal() {
+      const data = getCurrentData();
+      openCustomModal(`
+        <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h3 class="font-bold text-slate-900 text-base">Tambah Uraian Belanja ARKAS</h3>
+            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+          <form onsubmit="saveArkasModalForm(event, null)" class="mt-4 space-y-3 text-xs">
+            <div>
+              <label class="block font-bold mb-1">Kegiatan RKT Terkait *</label>
+              <select name="rktId" required class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                ${data.rkt.length === 0 ? `<option value="">(Buat kegiatan RKT terlebih dahulu atau isi manual)</option>` : ""}
+                ${data.rkt.map(k => `<option value="${k.id}">${escapeHtml(k.namaKegiatan)} — [${escapeHtml(k.namaProgram)}]</option>`).join("")}
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold mb-1">Komponen Pembiayaan Standar BOSP</label>
+              <select name="komponen" class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                ${KOMPONEN_BOSP_STANDAR.map(c => `<option value="${c}">${c}</option>`).join("")}
+              </select>
+            </div>
+            <div><label class="block font-bold mb-1">Uraian Belanja *</label><input type="text" name="uraianBelanja" required placeholder="Contoh: Pengadaan Buku Pengayaan Literasi Nonteks" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            <div class="grid grid-cols-3 gap-3">
+              <div><label class="block font-bold mb-1">Volume *</label><input type="number" step="0.01" name="volume" required value="1" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" /></div>
+              <div><label class="block font-bold mb-1">Satuan *</label><input type="text" name="satuan" required placeholder="Paket / Eks / OJ" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Harga Satuan (Rp) *</label><input type="number" name="hargaSatuan" required value="0" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" /></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Sumber Dana</label>
+                <select name="sumberDana" class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                  ${SUMBER_DANA_STANDAR.map(sd => `<option value="${sd}">${sd}</option>`).join("")}
+                </select>
               </div>
-              <div class="mt-5 pt-3 border-t border-slate-100">
-                ${c.dual ? `
+              <div><label class="block font-bold mb-1">Waktu Pelaksanaan</label><input type="text" name="waktuPelaksanaan" placeholder="Agustus 2026" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Belanja</button>
+            </div>
+          </form>
+        </div>
+      `);
+    }
+
+    function openEditArkasModal(arkasId) {
+      const data = getCurrentData();
+      const a = data.arkas.find(item => item.id === arkasId);
+      if (!a) return;
+
+      openCustomModal(`
+        <div class="p-5 sm:p-6 max-h-[88vh] overflow-y-auto">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h3 class="font-bold text-slate-900 text-base">Edit Uraian Belanja ARKAS</h3>
+            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+          <form onsubmit="saveArkasModalForm(event, '${a.id}')" class="mt-4 space-y-3 text-xs">
+            <input type="hidden" name="rktId" value="${escapeHtml(a.rktId)}" />
+            <div>
+              <label class="block font-bold mb-1">Komponen Pembiayaan Standar BOSP</label>
+              <select name="komponen" class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                ${KOMPONEN_BOSP_STANDAR.map(c => `<option value="${c}" ${a.komponen === c ? "selected" : ""}>${c}</option>`).join("")}
+              </select>
+            </div>
+            <div><label class="block font-bold mb-1">Uraian Belanja *</label><input type="text" name="uraianBelanja" required value="${escapeHtml(a.uraianBelanja)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            <div class="grid grid-cols-3 gap-3">
+              <div><label class="block font-bold mb-1">Volume *</label><input type="number" step="0.01" name="volume" required value="${Number(a.volume) || 0}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" /></div>
+              <div><label class="block font-bold mb-1">Satuan *</label><input type="text" name="satuan" required value="${escapeHtml(a.satuan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+              <div><label class="block font-bold mb-1">Harga Satuan (Rp) *</label><input type="number" name="hargaSatuan" required value="${Number(a.hargaSatuan) || 0}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" /></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Sumber Dana</label>
+                <select name="sumberDana" class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                  ${SUMBER_DANA_STANDAR.map(sd => `<option value="${sd}" ${a.sumberDana === sd ? "selected" : ""}>${sd}</option>`).join("")}
+                </select>
+              </div>
+              <div><label class="block font-bold mb-1">Waktu Pelaksanaan</label><input type="text" name="waktuPelaksanaan" value="${escapeHtml(a.waktuPelaksanaan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Perubahan</button>
+            </div>
+          </form>
+        </div>
+      `);
+    }
+
+    function saveArkasModalForm(e, arkasId) {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const data = getCurrentData();
+      const rktId = String(fd.get("rktId") || "");
+      const keg = data.rkt.find(k => k.id === rktId);
+      const existing = arkasId ? data.arkas.find(a => a.id === arkasId) : null;
+
+      const obj = {
+        id: arkasId || uid(),
+        rktId,
+        rkjmId: keg ? keg.rkjmId : (existing?.rkjmId || ""),
+        indicatorId: keg ? keg.indicatorId : (existing?.indicatorId || ""),
+        program: keg ? keg.namaProgram : (existing?.program || "Program Pengembangan Sekolah"),
+        kegiatan: keg ? keg.namaKegiatan : (existing?.kegiatan || "Kegiatan Sekolah"),
+        komponen: String(fd.get("komponen") || "").trim(),
+        uraianBelanja: String(fd.get("uraianBelanja") || "").trim(),
+        volume: Number(fd.get("volume")) || 0,
+        satuan: String(fd.get("satuan") || "").trim(),
+        hargaSatuan: Number(fd.get("hargaSatuan")) || 0,
+        sumberDana: String(fd.get("sumberDana") || "BOSP Reguler").trim(),
+        waktuPelaksanaan: String(fd.get("waktuPelaksanaan") || "").trim(),
+        statusVerifikasi: "Terverifikasi Tim BOS Sekolah"
+      };
+
+      if (arkasId) {
+        const idx = data.arkas.findIndex(a => a.id === arkasId);
+        if (idx >= 0) data.arkas[idx] = obj;
+      } else {
+        data.arkas.push(obj);
+      }
+
+      closeCustomModal();
+      triggerAutoSave("ARKAS", arkasId ? "Edit Belanja ARKAS" : "Tambah Belanja ARKAS", `Menyimpan belanja "${obj.uraianBelanja}".`);
+      renderAll();
+      showToast("Rincian anggaran ARKAS berhasil disimpan.", "success");
+    }
+
+    function deleteArkas(arkasId) {
+      const data = getCurrentData();
+      data.arkas = data.arkas.filter(a => a.id !== arkasId);
+      triggerAutoSave("ARKAS", "Hapus Belanja ARKAS", "Menghapus 1 item belanja ARKAS.");
+      renderAll();
+      showToast("Item belanja ARKAS dihapus.", "info");
+    }
+
+    // =========================================================================
+    // 17. MODULE 9: BENANG MERAH ANTARDOCUMEN (END-TO-END TRACEABILITY)
+    // =========================================================================
+    function renderKoneksiModule() {
+      const data = getCurrentData();
+
+      return `
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 9 • Audit Keterhubungan PBD</span>
+          <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Benang Merah Antardokumen</h2>
+          <p class="text-xs text-slate-600 mt-0.5">Penelusuran utuh dari <strong>Nilai Capaian Rapor Pendidikan → Akar Masalah → Prioritas → Rekomendasi → RKJM → RKT → Anggaran ARKAS</strong>.</p>
+        </div>
+
+        ${data.indicators.length === 0 ? `
+          <div class="card-elevated p-10 text-center text-xs text-slate-500">
+            Belum ada indikator Rapor Pendidikan untuk ditelusuri keterhubungannya.
+          </div>
+        ` : `
+          <div class="space-y-4">
+            ${data.indicators.map(ind => {
+              const rc = data.rootCauses.find(r => r.indicatorId === ind.id);
+              const prio = data.priorities.find(p => p.indicatorId === ind.id);
+              const rec = data.recommendations.find(r => r.indicatorId === ind.id);
+              const progs = data.rkjm.filter(p => p.indicatorId === ind.id);
+              const kegs = data.rkt.filter(k => k.indicatorId === ind.id);
+              const budgets = data.arkas.filter(a => a.indicatorId === ind.id);
+              const totalBudget = budgets.reduce((s, b) => s + ((Number(b.volume) || 0) * (Number(b.hargaSatuan) || 0)), 0);
+
+              return `
+                <div class="card-elevated p-5 space-y-3">
+                  <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="font-bold text-slate-900 text-sm">${ind.kode ? `[${escapeHtml(ind.kode)}] ` : ""}${escapeHtml(ind.nama)}</span>
+                      <span class="px-2.5 py-0.5 rounded-full bg-slate-100 font-mono text-xs font-bold text-slate-800">Nilai Capaian: ${formatScore(ind.nilai)}</span>
+                      ${getCategoryBadgeHtml(classifyCategory(ind.nilai, ind.kategori))}
+                    </div>
+                    <span class="font-mono text-xs font-extrabold text-emerald-900">Alokasi ARKAS: ${formatRupiah(totalBudget)}</span>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 text-[11px]">
+                    <div class="p-2.5 rounded-xl border ${rc ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200 text-slate-400'}">
+                      <div class="font-bold text-slate-900">1. Akar Masalah</div>
+                      <div class="mt-1 line-clamp-2">${rc ? escapeHtml(rc.masalahUtama) : "Belum dianalisis"}</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl border ${prio ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200 text-slate-400'}">
+                      <div class="font-bold text-slate-900">2. Prioritas</div>
+                      <div class="mt-1">${prio ? `Peringkat #${prio.peringkatManual} (Skor ${prio.totalSkor}/25)` : "Belum diperingkat"}</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl border ${rec ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200 text-slate-400'}">
+                      <div class="font-bold text-slate-900">3. Rekomendasi</div>
+                      <div class="mt-1 line-clamp-2">${rec ? escapeHtml(rec.bentukKegiatan) : "Belum disusun"}</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl border ${progs.length > 0 ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200 text-slate-400'}">
+                      <div class="font-bold text-slate-900">4. RKJM (${progs.length})</div>
+                      <div class="mt-1 line-clamp-2">${progs.length > 0 ? progs.map(p => escapeHtml(p.programPengembangan)).join("; ") : "Belum masuk RKJM"}</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl border ${kegs.length > 0 ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200 text-slate-400'}">
+                      <div class="font-bold text-slate-900">5. RKT (${kegs.length})</div>
+                      <div class="mt-1 line-clamp-2">${kegs.length > 0 ? kegs.map(k => escapeHtml(k.namaKegiatan)).join("; ") : "Belum masuk RKT"}</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl border ${budgets.length > 0 ? 'bg-amber-50 border-amber-300' : 'bg-slate-50 border-slate-200 text-slate-400'}">
+                      <div class="font-bold text-slate-900">6. ARKAS (${budgets.length} Item)</div>
+                      <div class="mt-1 font-mono font-bold text-emerald-950">${formatRupiah(totalBudget)}</div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `}
+      `;
+    }
+
+    // =========================================================================
+    // 18. MODULE 10: MONITORING & EVALUASI (MONEV)
+    // =========================================================================
+    function renderMonevModule() {
+      const data = getCurrentData();
+
+      // Sync monev entries with RKT activities
+      data.rkt.forEach(keg => {
+        if (!data.monev.some(m => m.rktId === keg.id)) {
+          data.monev.push({
+            id: uid(),
+            rktId: keg.id,
+            status: "Belum Dilaksanakan",
+            realisasiFisik: 0,
+            realisasiAnggaran: 0,
+            hambatan: "-",
+            buktiKegiatan: "-",
+            evaluasiHasil: "-",
+            tindakLanjut: "-"
+          });
+        }
+      });
+
+      const selesai = data.monev.filter(m => m.status === "Selesai").length;
+      const berjalan = data.monev.filter(m => m.status === "Sedang Berjalan").length;
+      const belum = data.monev.filter(m => m.status === "Belum Dilaksanakan").length;
+
+      return `
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 10 • Pengendalian &amp; Evaluasi</span>
+          <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Monitoring dan Evaluasi Program (Monev)</h2>
+          <p class="text-xs text-slate-600 mt-0.5">Pantau keterlaksanaan kegiatan RKT, serapan anggaran, hambatan lapangan, serta tindak lanjut perbaikan.</p>
+        </div>
+
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div class="card-elevated p-4 border-l-4 border-l-emerald-600">
+            <div class="font-bold text-emerald-800">Program Selesai</div>
+            <div class="font-mono text-2xl font-extrabold text-slate-900 mt-1">${selesai}</div>
+          </div>
+          <div class="card-elevated p-4 border-l-4 border-l-amber-500">
+            <div class="font-bold text-amber-800">Sedang Berjalan</div>
+            <div class="font-mono text-2xl font-extrabold text-slate-900 mt-1">${berjalan}</div>
+          </div>
+          <div class="card-elevated p-4 border-l-4 border-l-slate-400">
+            <div class="font-bold text-slate-600">Belum Dilaksanakan</div>
+            <div class="font-mono text-2xl font-extrabold text-slate-900 mt-1">${belum}</div>
+          </div>
+        </section>
+
+        ${data.monev.length === 0 ? `
+          <div class="card-elevated p-10 text-center text-xs text-slate-500">
+            Belum ada kegiatan RKT yang dapat dimonitor. Susun RKT terlebih dahulu.
+          </div>
+        ` : `
+          <div class="space-y-4">
+            ${data.monev.map(m => {
+              const keg = data.rkt.find(k => k.id === m.rktId);
+              if (!keg) return "";
+              const pagu = Number(keg.kebutuhanAnggaran) || 0;
+              const pctAnggaran = pagu > 0 ? Math.min(100, Math.round(((Number(m.realisasiAnggaran) || 0) / pagu) * 100)) : 0;
+
+              return `
+                <div class="card-elevated p-5 space-y-3 text-xs">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+                    <div>
+                      <div class="text-[10px] font-bold text-emerald-800 uppercase">${escapeHtml(keg.namaProgram)}</div>
+                      <h3 class="font-bold text-slate-900 text-sm">${escapeHtml(keg.namaKegiatan)}</h3>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="px-2.5 py-1 rounded-full font-bold text-[11px] ${m.status === 'Selesai' ? 'bg-emerald-100 text-emerald-900' : m.status === 'Sedang Berjalan' ? 'bg-amber-100 text-amber-900' : 'bg-slate-100 text-slate-700'}">
+                        ${escapeHtml(m.status)}
+                      </span>
+                      <button onclick="openEditMonevModal('${m.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-900 text-white font-bold">Update Monev</button>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <div class="flex justify-between mb-1">
+                        <span class="font-semibold text-slate-700">Realisasi Kegiatan Fisik</span>
+                        <span class="font-mono font-bold text-emerald-900">${m.realisasiFisik}%</span>
+                      </div>
+                      <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-emerald-600 rounded-full" style="width: ${m.realisasiFisik}%"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex justify-between mb-1">
+                        <span class="font-semibold text-slate-700">Realisasi Anggaran (${formatRupiah(m.realisasiAnggaran)} / ${formatRupiah(pagu)})</span>
+                        <span class="font-mono font-bold text-amber-800">${pctAnggaran}%</span>
+                      </div>
+                      <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-amber-500 rounded-full" style="width: ${pctAnggaran}%"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+                    <div class="p-2.5 rounded-xl bg-slate-50"><strong>Hambatan:</strong> ${escapeHtml(m.hambatan)}</div>
+                    <div class="p-2.5 rounded-xl bg-slate-50"><strong>Bukti Kegiatan:</strong> ${escapeHtml(m.buktiKegiatan)}</div>
+                    <div class="p-2.5 rounded-xl bg-slate-50"><strong>Evaluasi Hasil:</strong> ${escapeHtml(m.evaluasiHasil)}</div>
+                    <div class="p-2.5 rounded-xl bg-emerald-50/70"><strong>Tindak Lanjut:</strong> ${escapeHtml(m.tindakLanjut)}</div>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `}
+      `;
+    }
+
+    function openEditMonevModal(monevId) {
+      const data = getCurrentData();
+      const m = data.monev.find(item => item.id === monevId);
+      if (!m) return;
+
+      openCustomModal(`
+        <div class="p-5 sm:p-6">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h3 class="font-bold text-slate-900 text-base">Perbarui Capaian Monitoring &amp; Evaluasi</h3>
+            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+          <form onsubmit="saveMonevEdit(event, '${m.id}')" class="mt-4 space-y-3 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold mb-1">Status Pelaksanaan</label>
+                <select name="status" class="w-full rounded-xl border border-slate-300 px-3 py-2">
+                  ${["Belum Dilaksanakan", "Sedang Berjalan", "Selesai"].map(st => `<option value="${st}" ${m.status === st ? "selected" : ""}>${st}</option>`).join("")}
+                </select>
+              </div>
+              <div><label class="block font-bold mb-1">Realisasi Fisik (%)</label><input type="number" min="0" max="100" name="realisasiFisik" value="${m.realisasiFisik}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" /></div>
+              <div><label class="block font-bold mb-1">Realisasi Anggaran (Rp)</label><input type="number" min="0" name="realisasiAnggaran" value="${m.realisasiAnggaran}" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" /></div>
+            </div>
+            <div><label class="block font-bold mb-1">Hambatan Pelaksanaan</label><textarea name="hambatan" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(m.hambatan)}</textarea></div>
+            <div><label class="block font-bold mb-1">Bukti Kegiatan</label><input type="text" name="buktiKegiatan" value="${escapeHtml(m.buktiKegiatan)}" class="w-full rounded-xl border border-slate-300 px-3 py-2" /></div>
+            <div><label class="block font-bold mb-1">Evaluasi Hasil</label><textarea name="evaluasiHasil" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(m.evaluasiHasil)}</textarea></div>
+            <div><label class="block font-bold mb-1">Rekomendasi Tindak Lanjut</label><textarea name="tindakLanjut" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2">${escapeHtml(m.tindakLanjut)}</textarea></div>
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
+              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Simpan Monev</button>
+            </div>
+          </form>
+        </div>
+      `);
+    }
+
+    function saveMonevEdit(e, monevId) {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const data = getCurrentData();
+      const m = data.monev.find(item => item.id === monevId);
+      if (!m) return;
+
+      m.status = String(fd.get("status") || "Belum Dilaksanakan");
+      m.realisasiFisik = Number(fd.get("realisasiFisik")) || 0;
+      m.realisasiAnggaran = Number(fd.get("realisasiAnggaran")) || 0;
+      m.hambatan = String(fd.get("hambatan") || "-").trim();
+      m.buktiKegiatan = String(fd.get("buktiKegiatan") || "-").trim();
+      m.evaluasiHasil = String(fd.get("evaluasiHasil") || "-").trim();
+      m.tindakLanjut = String(fd.get("tindakLanjut") || "-").trim();
+
+      closeCustomModal();
+      triggerAutoSave("Monev", "Update Monev", "Memperbarui laporan monitoring dan evaluasi kegiatan.");
+      renderAll();
+      showToast("Data monitoring dan evaluasi berhasil disimpan.", "success");
+    }
+
+    // =========================================================================
+    // 19. MODULE 11: LAPORAN & EKSPOR DOKUMEN (PDF, WORD .DOC, EXCEL .XLSX)
+    // =========================================================================
+    function renderEksporModule() {
+      const data = getCurrentData();
+      const exportsList = [
+        { title: "1. Hasil Analisis Rapor Pendidikan & Nilai Capaian", desc: "Laporan lengkap skor capaian, kategori, tren, dan indikator prioritas.", format: "PDF / Cetak", action: "exportPrintReport('analisis')", btnClass: "bg-rose-700 text-white" },
+        { title: "2. Dokumen Analisis Akar Masalah (5-Why)", desc: "Masalah utama, dugaan AI vs fakta terkonfirmasi sekolah, dan refleksi guru.", format: "Word (.doc)", action: "exportWordDocument('akar')", btnClass: "bg-blue-700 text-white" },
+        { title: "3. Daftar Prioritas Pembenahan", desc: "Tabel pembobotan 5 kriteria dan urutan prioritas pembenahan sekolah.", format: "Excel (.xlsx)", action: "exportExcelDocument('prioritas')", btnClass: "bg-emerald-800 text-white" },
+        { title: "4. Dokumen RKJM (4 Tahunan)", desc: "Rencana Kerja Jangka Menengah lengkap dengan capaian awal dan target tahunan.", format: "Word & Excel", dual: true, wordAction: "exportWordDocument('rkjm')", excelAction: "exportExcelDocument('rkjm')" },
+        { title: "5. Dokumen RKT (Tahunan)", desc: "Rencana Kerja Tahunan lengkap dengan sasaran, jadwal, dan kebutuhan anggaran.", format: "Word & Excel", dual: true, wordAction: "exportWordDocument('rkt')", excelAction: "exportExcelDocument('rkt')" },
+        { title: "6. Rancangan Anggaran ARKAS", desc: "Kertas kerja rincian belanja Volume x Harga Satuan & rekap komponen BOSP.", format: "Excel (.xlsx)", action: "exportExcelDocument('arkas')", btnClass: "bg-emerald-800 text-white" },
+        { title: "7. Laporan Monitoring & Evaluasi", desc: "Realisasi fisik, serapan anggaran, hambatan, dan tindak lanjut program.", format: "PDF / Cetak", action: "exportPrintReport('monev')", btnClass: "bg-rose-700 text-white" }
+      ];
+
+      return `
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Tahap 11 • Dokumentasi Resmi Sekolah</span>
+          <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-slate-900">Laporan &amp; Unduh Dokumen Perencanaan</h2>
+          <p class="text-xs text-slate-600 mt-0.5">Seluruh dokumen dilengkapi kop identitas satuan pendidikan, tahun perencanaan, dan kolom pengesahan Kepala Sekolah.</p>
+        </div>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+          ${exportsList.map(item => `
+            <div class="card-elevated p-5 flex flex-col justify-between">
+              <div>
+                <span class="inline-block px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-950 font-bold text-[10px] mb-2">${item.format}</span>
+                <h3 class="font-bold text-slate-900 text-sm">${item.title}</h3>
+                <p class="text-slate-600 mt-1 leading-relaxed">${item.desc}</p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100">
+                ${item.dual ? `
                   <div class="grid grid-cols-2 gap-2">
-                    <button onclick="${c.wordAction}" class="py-2 px-3 rounded-xl bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition">
-                      <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Word
+                    <button onclick="${item.wordAction}" class="py-2 px-3 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold flex items-center justify-center gap-1.5">
+                      <i data-lucide="file-text" class="w-3.5 h-3.5"></i><span>Unduh Word</span>
                     </button>
-                    <button onclick="${c.excelAction}" class="py-2 px-3 rounded-xl emerald-gradient hover:opacity-95 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition">
-                      <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Excel
+                    <button onclick="${item.excelAction}" class="py-2 px-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold flex items-center justify-center gap-1.5">
+                      <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i><span>Unduh Excel</span>
                     </button>
                   </div>
                 ` : `
-                  <button onclick="${c.action}" class="w-full py-2.5 px-4 rounded-xl emerald-gradient hover:opacity-95 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition">
-                    <i data-lucide="download" class="w-4 h-4 text-amber-300"></i>
-                    <span>${c.btnLabel}</span>
+                  <button onclick="${item.action}" class="w-full py-2 px-4 rounded-xl ${item.btnClass} hover:opacity-95 font-bold flex items-center justify-center gap-1.5">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i><span>Unduh ${item.format}</span>
                   </button>
                 `}
               </div>
             </div>
-          `).join('')}
-        </div>
-      `;
-    }
+          `).join("")}
+        </section>
 
-    // Helper: Official School Header HTML for Word & PDF Exports
-    function buildOfficialDocumentHeader(docTitle) {
-      const data = getCurrentData();
-      const s = data.school;
-      const demoNote = window.appState.isDemoMode
-        ? `<div style="background:#fef3c7;border:1px solid #f59e0b;padding:6px 10px;font-size:10pt;font-weight:bold;color:#78350f;margin-bottom:10px;">CATATAN: DOKUMEN INI MENGGUNAKAN DATA SIMULASI / CONTOH PELATIHAN</div>`
-        : '';
-      return `
-        ${demoNote}
-        <div style="border-bottom:3px solid #064e3b;padding-bottom:10px;margin-bottom:14px;font-family:Arial,sans-serif;">
-          <div style="font-size:14pt;font-weight:bold;color:#064e3b;text-transform:uppercase;">${escapeHtml(s.nama || 'SATUAN PENDIDIKAN (NAMA SEKOLAH BELUM DIISI)')}</div>
-          <div style="font-size:9.5pt;color:#334155;margin-top:2px;">
-            NPSN: <strong>${escapeHtml(s.npsn || '-')}</strong> | Jenjang: <strong>${escapeHtml(s.jenjang || '-')}</strong> | Alamat: ${escapeHtml(s.alamat || '-')}${s.kecamatan ? ', Kec. ' + escapeHtml(s.kecamatan) : ''}${s.kabupaten ? ', ' + escapeHtml(s.kabupaten) : ''}
-          </div>
-          <div style="font-size:9.5pt;color:#334155;margin-top:2px;">
-            Tahun Rapor Pendidikan: <strong>${escapeHtml(s.tahunRapor || '-')}</strong> | Tahun Perencanaan / Anggaran: <strong>${escapeHtml(s.tahunPerencanaan || window.appState.activeYear)}</strong>
-          </div>
-        </div>
-        <h2 style="font-family:Arial,sans-serif;font-size:13pt;color:#0f172a;text-align:center;margin:10px 0 14px 0;text-transform:uppercase;">${escapeHtml(docTitle)}</h2>
-      `;
-    }
-
-    function downloadWordHtml(filename, innerHtml) {
-      const fullDoc = `
-        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-        <head>
-          <meta charset='utf-8'>
-          <title>${escapeHtml(filename)}</title>
-          <style>
-            @page { size: A4 landscape; margin: 1.5cm; }
-            body { font-family: Arial, sans-serif; font-size: 10pt; color: #1e293b; }
-            table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-            th { background-color: #064e3b; color: #ffffff; font-weight: bold; padding: 6px 8px; border: 1px solid #cbd5e1; font-size: 9pt; text-align: left; }
-            td { padding: 6px 8px; border: 1px solid #cbd5e1; font-size: 9pt; vertical-align: top; }
-          </style>
-        </head>
-        <body>
-          ${innerHtml}
-          <div style="margin-top:18px;font-size:8.5pt;color:#64748b;text-align:right;">
-            Dicetak melalui RAPOR SMART AI • Tanggal: ${new Date().toLocaleDateString('id-ID')} • Halaman 1
-          </div>
-        </body>
-        </html>
-      `;
-      const blob = new Blob(['\ufeff', fullDoc], { type: 'application/msword' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast(`Dokumen Word "${filename}" berhasil diunduh.`, "success");
-    }
-
-    function downloadPdfFromHtml(filename, innerHtml) {
-      if (!window.html2pdf) {
-        showToast("Pustaka PDF sedang dimuat, silakan coba sesaat lagi.", "warning");
-        return;
-      }
-      const wrapper = document.createElement('div');
-      wrapper.style.padding = '16px';
-      wrapper.style.fontFamily = 'Arial, sans-serif';
-      wrapper.style.color = '#0f172a';
-      wrapper.innerHTML = `
-        <style>
-          table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 8.5pt; }
-          th { background-color: #064e3b; color: #ffffff; padding: 6px; border: 1px solid #94a3b8; text-align: left; }
-          td { padding: 6px; border: 1px solid #cbd5e1; vertical-align: top; }
-        </style>
-        ${innerHtml}
-      `;
-
-      const opt = {
-        margin: [10, 10, 14, 10],
-        filename: filename,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-
-      html2pdf().set(opt).from(wrapper).toPdf().get('pdf').then(function (pdf) {
-        const totalPages = pdf.internal.getNumberOfPages();
-        for (let i = 1; i <= totalPages; i++) {
-          pdf.setPage(i);
-          pdf.setFontSize(8);
-          pdf.setTextColor(100);
-          pdf.text(`RAPOR SMART AI — Halaman ${i} dari ${totalPages}`, pdf.internal.pageSize.getWidth() - 65, pdf.internal.pageSize.getHeight() - 6);
-        }
-      }).save().then(() => {
-        showToast(`Dokumen PDF "${filename}" berhasil diunduh.`, "success");
-      });
-    }
-
-    // 1. Hasil Analisis Rapor Pendidikan (PDF)
-    function exportAnalisisPdf() {
-      const data = getCurrentData();
-      const rows = data.indicators.map((ind, idx) => `
-        <tr>
-          <td>${idx + 1}</td>
-          <td>${escapeHtml(ind.kode)} ${escapeHtml(ind.nama)}</td>
-          <td>${escapeHtml(ind.dimensi)}</td>
-          <td style="text-align:center;font-weight:bold;">${ind.nilai !== '' ? ind.nilai : '-'}</td>
-          <td style="text-align:center;">${classifyCategory(ind.nilai, ind.kategori)}</td>
-          <td style="text-align:center;">${ind.perubahan !== '' ? ind.perubahan : '-'}</td>
-          <td>${needsImprovement(ind) ? 'Prioritas Pembenahan' : 'Pertahankan Mutu'}</td>
-        </tr>
-      `).join('');
-
-      const html = `
-        ${buildOfficialDocumentHeader('LAPORAN HASIL ANALISIS RAPOR PENDIDIKAN')}
-        <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Nama Indikator</th>
-              <th>Dimensi</th>
-              <th>Nilai</th>
-              <th>Kategori</th>
-              <th>Perubahan</th>
-              <th>Status Prioritas</th>
-            </tr>
-          </thead>
-          <tbody>${rows || '<tr><td colspan="7">Belum ada data indikator.</td></tr>'}</tbody>
-        </table>
-      `;
-      downloadPdfFromHtml(`Hasil_Analisis_Rapor_Pendidikan_${data.school.tahunPerencanaan || window.appState.activeYear}.pdf`, html);
-    }
-
-    // 2. Dokumen Analisis Akar Masalah (Word)
-    function exportAkarMasalahWord() {
-      const data = getCurrentData();
-      const entries = Object.values(data.rootCauses);
-      const bodyHtml = entries.map((rc, idx) => {
-        const ind = data.indicators.find(i => i.id === rc.indicatorId);
-        return `
-          <div style="margin-bottom:16px;border:1px solid #cbd5e1;padding:10px;">
-            <div style="font-weight:bold;font-size:11pt;color:#064e3b;">${idx + 1}. Indikator: ${escapeHtml(ind ? `${ind.kode} ${ind.nama}` : rc.indicatorId)}</div>
-            <p><strong>Masalah Utama:</strong> ${escapeHtml(rc.masalahUtama)}</p>
-            <p><strong>Akar Penyebab:</strong></p>
-            <ul>${(rc.akarPenyebab || []).map(a => `<li>[${a.status === 'fakta_sekolah' ? 'FAKTA TERKONFIRMASI SEKOLAH' : 'HIPOTESIS AI'}] ${escapeHtml(a.teks)}</li>`).join('')}</ul>
-            <p><strong>Analisis 5 Why:</strong> ${(rc.fiveWhys || []).map((w, i) => `(${i + 1}) ${escapeHtml(w)}`).join(' → ')}</p>
-            <p><strong>Bukti Pendukung:</strong> ${escapeHtml(rc.buktiPendukung)}</p>
-            <p><strong>Pertanyaan Refleksi Guru:</strong> ${(rc.pertanyaanRefleksi || []).map(q => escapeHtml(q)).join('; ')}</p>
-            <p><strong>Dampak ke Peserta Didik:</strong> ${escapeHtml(rc.dampakSiswa)}</p>
-            <p><strong>Alternatif Solusi:</strong> ${(rc.alternatifSolusi || []).map(s => escapeHtml(s)).join('; ')}</p>
-          </div>
-        `;
-      }).join('');
-
-      const html = `
-        ${buildOfficialDocumentHeader('DOKUMEN ANALISIS AKAR MASALAH (METODE 5-WHY & SEBAB-AKIBAT)')}
-        ${bodyHtml || '<p>Belum ada data analisis akar masalah.</p>'}
-      `;
-      downloadWordHtml(`Analisis_Akar_Masalah_${data.school.tahunPerencanaan || window.appState.activeYear}.doc`, html);
-    }
-
-    // 3. Daftar Prioritas Pembenahan (Excel)
-    function exportPrioritasExcel() {
-      const data = getCurrentData();
-      const s = data.school;
-      const ranked = getRankedPriorities();
-      const aoa = [
-        ["DAFTAR PRIORITAS PEMBENAHAN RAPOR PENDIDIKAN"],
-        [`Sekolah: ${s.nama || '-'} | NPSN: ${s.npsn || '-'} | Tahun Perencanaan: ${s.tahunPerencanaan || window.appState.activeYear}`],
-        [],
-        ["Peringkat", "Kode", "Nama Indikator", "Nilai", "Kategori", "Skor Capaian", "Skor Tren", "Skor Dampak", "Skor Urgensi", "Skor Kemampuan", "Total Skor", "Alasan Prioritas"]
-      ];
-      ranked.forEach(({ ind, prio }, idx) => {
-        aoa.push([
-          idx + 1,
-          ind.kode,
-          ind.nama,
-          ind.nilai,
-          classifyCategory(ind.nilai, ind.kategori),
-          prio.skorCapaian,
-          prio.skorTren,
-          prio.skorDampak,
-          prio.skorUrgensi,
-          prio.skorKemampuan,
-          prio.totalSkor,
-          prio.alasanPrioritas
-        ]);
-      });
-      const ws = XLSX.utils.aoa_to_sheet(aoa);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Prioritas_Pembenahan");
-      XLSX.writeFile(wb, `Daftar_Prioritas_Pembenahan_${s.tahunPerencanaan || window.appState.activeYear}.xlsx`);
-      showToast("Daftar Prioritas Pembenahan (Excel) berhasil diunduh.", "success");
-    }
-
-    // 4a. Dokumen RKJM (Word)
-    function exportRkjmWord() {
-      const data = getCurrentData();
-      const s = data.school;
-      const yStart = parseInt(s.periodeRkjmMulai || window.appState.activeYear, 10) || 2026;
-      const rows = data.rkjm.map((p, idx) => `
-        <tr>
-          <td>${idx + 1}</td>
-          <td>${escapeHtml(p.dimensi)}<br/><strong>${escapeHtml(p.indikatorNama)}</strong></td>
-          <td>${escapeHtml(p.akarMasalah)}</td>
-          <td><strong>${escapeHtml(p.namaProgram)}</strong><br/>Tujuan: ${escapeHtml(p.tujuanStrategis)}</td>
-          <td>${escapeHtml(p.targetTahun1)}</td>
-          <td>${escapeHtml(p.targetTahun2)}</td>
-          <td>${escapeHtml(p.targetTahun3)}</td>
-          <td>${escapeHtml(p.targetTahun4)}</td>
-          <td>${escapeHtml(p.indikatorKeberhasilan)}</td>
-          <td>${escapeHtml(p.penanggungJawab)} (${escapeHtml(p.sumberPendanaan)})</td>
-        </tr>
-      `).join('');
-
-      const html = `
-        ${buildOfficialDocumentHeader(`RENCANA KERJA JANGKA MENENGAH (RKJM) PERIODE ${yStart}–${yStart + 3}`)}
-        <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Dimensi &amp; Indikator</th>
-              <th>Akar Masalah</th>
-              <th>Program &amp; Tujuan Strategis</th>
-              <th>Target ${yStart}</th>
-              <th>Target ${yStart + 1}</th>
-              <th>Target ${yStart + 2}</th>
-              <th>Target ${yStart + 3}</th>
-              <th>Indikator Keberhasilan</th>
-              <th>PJ &amp; Sumber Dana</th>
-            </tr>
-          </thead>
-          <tbody>${rows || '<tr><td colspan="10">Belum ada data RKJM.</td></tr>'}</tbody>
-        </table>
-      `;
-      downloadWordHtml(`Dokumen_RKJM_${yStart}_${yStart + 3}.doc`, html);
-    }
-
-    // 4b. Dokumen RKJM (Excel)
-    function exportRkjmExcel() {
-      const data = getCurrentData();
-      const s = data.school;
-      const yStart = parseInt(s.periodeRkjmMulai || window.appState.activeYear, 10) || 2026;
-      const aoa = [
-        [`RENCANA KERJA JANGKA MENENGAH (RKJM) PERIODE ${yStart}-${yStart + 3}`],
-        [`Sekolah: ${s.nama || '-'} | NPSN: ${s.npsn || '-'} | Jenjang: ${s.jenjang || '-'}`],
-        [],
-        ["No", "Dimensi Rapor Pendidikan", "Indikator Dibenahi", "Akar Masalah", "Tujuan Strategis", "Program Pengembangan Sekolah", `Target ${yStart}`, `Target ${yStart + 1}`, `Target ${yStart + 2}`, `Target ${yStart + 3}`, "Indikator Keberhasilan", "Penanggung Jawab", "Sumber Pendanaan"]
-      ];
-      data.rkjm.forEach((p, idx) => {
-        aoa.push([idx + 1, p.dimensi, p.indikatorNama, p.akarMasalah, p.tujuanStrategis, p.namaProgram, p.targetTahun1, p.targetTahun2, p.targetTahun3, p.targetTahun4, p.indikatorKeberhasilan, p.penanggungJawab, p.sumberPendanaan]);
-      });
-      const ws = XLSX.utils.aoa_to_sheet(aoa);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Matriks_RKJM");
-      XLSX.writeFile(wb, `Dokumen_RKJM_${yStart}_${yStart + 3}.xlsx`);
-      showToast("Dokumen RKJM (Excel) berhasil diunduh.", "success");
-    }
-
-    // 5a. Dokumen RKT (Word)
-    function exportRktWord() {
-      const data = getCurrentData();
-      const s = data.school;
-      const tahun = s.tahunPerencanaan || window.appState.activeYear;
-      const rows = data.rkt.map((k, idx) => {
-        const jadwalStr = (k.bulanPelaksanaan || []).map(m => BULAN_LIST[m - 1]).join(', ');
-        return `
-          <tr>
-            <td>${idx + 1}</td>
-            <td>${escapeHtml(k.namaProgram)}</td>
-            <td><strong>${escapeHtml(k.namaKegiatan)}</strong><br/>Latar Belakang: ${escapeHtml(k.latarBelakang)}</td>
-            <td>${escapeHtml(k.tujuan)}</td>
-            <td>${escapeHtml(k.sasaran)}</td>
-            <td>${escapeHtml(k.indikatorKeberhasilan)}<br/>Target: ${escapeHtml(k.target)}</td>
-            <td>${escapeHtml(jadwalStr || '-')}</td>
-            <td>${escapeHtml(k.penanggungJawab)}</td>
-            <td style="text-align:right;">${formatRupiah(getRktEffectiveBudget(k))}<br/>(${escapeHtml(k.sumberDana)})</td>
-            <td>${escapeHtml(k.buktiPelaksanaan)}</td>
-          </tr>
-        `;
-      }).join('');
-
-      const html = `
-        ${buildOfficialDocumentHeader(`RENCANA KERJA TAHUNAN (RKT) TAHUN ${tahun}`)}
-        <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Nama Program</th>
-              <th>Nama Kegiatan &amp; Latar Belakang</th>
-              <th>Tujuan</th>
-              <th>Sasaran</th>
-              <th>Indikator &amp; Target</th>
-              <th>Jadwal</th>
-              <th>PJ</th>
-              <th>Kebutuhan Anggaran</th>
-              <th>Bukti Pelaksanaan</th>
-            </tr>
-          </thead>
-          <tbody>${rows || '<tr><td colspan="10">Belum ada data RKT.</td></tr>'}</tbody>
-        </table>
-      `;
-      downloadWordHtml(`Dokumen_RKT_Tahun_${tahun}.doc`, html);
-    }
-
-    // 5b. Dokumen RKT (Excel)
-    function exportRktExcel() {
-      const data = getCurrentData();
-      const s = data.school;
-      const tahun = s.tahunPerencanaan || window.appState.activeYear;
-      const aoa = [
-        [`RENCANA KERJA TAHUNAN (RKT) TAHUN ${tahun}`],
-        [`Sekolah: ${s.nama || '-'} | NPSN: ${s.npsn || '-'} | Tahun Ajaran: ${s.tahunAjaran || '-'}`],
-        [],
-        ["No", "Nama Program (RKJM)", "Nama Kegiatan", "Latar Belakang", "Tujuan", "Sasaran", "Indikator Keberhasilan", "Target", "Jadwal Pelaksanaan", "Penanggung Jawab", "Kebutuhan Anggaran (Rp)", "Sumber Dana", "Bukti Pelaksanaan"]
-      ];
-      data.rkt.forEach((k, idx) => {
-        const jadwalStr = (k.bulanPelaksanaan || []).map(m => BULAN_LIST[m - 1]).join(', ');
-        aoa.push([idx + 1, k.namaProgram, k.namaKegiatan, k.latarBelakang, k.tujuan, k.sasaran, k.indikatorKeberhasilan, k.target, jadwalStr, k.penanggungJawab, getRktEffectiveBudget(k), k.sumberDana, k.buktiPelaksanaan]);
-      });
-      const ws = XLSX.utils.aoa_to_sheet(aoa);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Matriks_RKT");
-      XLSX.writeFile(wb, `Dokumen_RKT_Tahun_${tahun}.xlsx`);
-      showToast("Dokumen RKT (Excel) berhasil diunduh.", "success");
-    }
-
-    // 6. Rancangan Anggaran ARKAS (Excel)
-    function exportArkasExcel() {
-      const data = getCurrentData();
-      const s = data.school;
-      const tahun = s.tahunPerencanaan || window.appState.activeYear;
-      const totalAll = data.arkas.reduce((sum, a) => sum + (Number(a.jumlahAnggaran) || 0), 0);
-
-      const aoa = [
-        [`RANCANGAN KERTAS KERJA ANGGARAN (BAHAN INPUT ARKAS) TAHUN ANGGARAN ${tahun}`],
-        [`Sekolah: ${s.nama || '-'} | NPSN: ${s.npsn || '-'} | Jenjang: ${s.jenjang || '-'}`],
-        ["CATATAN: Dokumen ini adalah rancangan perencanaan berbasis Rapor Pendidikan sebagai bahan input ke aplikasi ARKAS resmi. Wajib verifikasi kode rekening & SSH daerah."],
-        [],
-        ["No", "Program", "Kegiatan (RKT)", "Komponen Pembiayaan BOSP", "Uraian Belanja", "Volume", "Satuan", "Harga Satuan (Rp)", "Jumlah Anggaran (Rp)", "Sumber Dana", "Waktu Pelaksanaan", "Status Verifikasi"]
-      ];
-      data.arkas.forEach((a, idx) => {
-        aoa.push([idx + 1, a.namaProgram, a.namaKegiatan, a.komponenPembiayaan, a.uraianBelanja, a.volume, a.satuan, a.hargaSatuan, a.jumlahAnggaran, a.sumberDana, a.waktuPelaksanaan, a.statusVerifikasi]);
-      });
-      aoa.push(["", "", "", "", "", "", "", "TOTAL ANGGARAN", totalAll, "", "", ""]);
-
-      const ws = XLSX.utils.aoa_to_sheet(aoa);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Rancangan_ARKAS");
-      XLSX.writeFile(wb, `Rancangan_Anggaran_ARKAS_${tahun}.xlsx`);
-      showToast("Rancangan Anggaran ARKAS (Excel) berhasil diunduh.", "success");
-    }
-
-    // 7. Laporan Monitoring & Evaluasi (PDF)
-    function exportMonevPdf() {
-      const data = getCurrentData();
-      const s = data.school;
-      const tahun = s.tahunPerencanaan || window.appState.activeYear;
-      const statusLabel = { belum: "Belum Dilaksanakan", berjalan: "Sedang Berjalan", selesai: "Selesai" };
-
-      const rows = data.rkt.map((k, idx) => {
-        const m = data.monev[k.id] || { statusPelaksanaan: 'belum', persentaseKegiatan: 0, realisasiAnggaran: 0, hambatan: '-', buktiKegiatan: '-', evaluasiHasil: '-', tindakLanjut: '-' };
-        const pagu = getRktEffectiveBudget(k);
-        return `
-          <tr>
-            <td>${idx + 1}</td>
-            <td><strong>${escapeHtml(k.namaKegiatan)}</strong><br/>PJ: ${escapeHtml(k.penanggungJawab)}</td>
-            <td>${statusLabel[m.statusPelaksanaan] || 'Belum'}</td>
-            <td style="text-align:center;">${m.persentaseKegiatan}%</td>
-            <td style="text-align:right;">${formatRupiah(m.realisasiAnggaran)}<br/><small>Pagu: ${formatRupiah(pagu)}</small></td>
-            <td>${escapeHtml(m.hambatan || '-')}</td>
-            <td>${escapeHtml(m.buktiKegiatan || '-')}</td>
-            <td>${escapeHtml(m.evaluasiHasil || '-')}</td>
-            <td>${escapeHtml(m.tindakLanjut || '-')}</td>
-          </tr>
-        `;
-      }).join('');
-
-      const html = `
-        ${buildOfficialDocumentHeader(`LAPORAN MONITORING DAN EVALUASI PROGRAM TAHUN ${tahun}`)}
-        <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Kegiatan RKT</th>
-              <th>Status</th>
-              <th>Realisasi Fisik</th>
-              <th>Realisasi Anggaran</th>
-              <th>Hambatan</th>
-              <th>Bukti Kegiatan</th>
-              <th>Evaluasi Hasil</th>
-              <th>Rekomendasi Tindak Lanjut</th>
-            </tr>
-          </thead>
-          <tbody>${rows || '<tr><td colspan="9">Belum ada data Monitoring & Evaluasi.</td></tr>'}</tbody>
-        </table>
-      `;
-      downloadPdfFromHtml(`Laporan_Monev_Program_${tahun}.pdf`, html);
-    }
-
-    // =========================================================================
-    // MODULE O: MANAJEMEN DATA, MULTI-TAHUN, DUPLIKASI & RIWAYAT PERUBAHAN
-    // =========================================================================
-    function renderManajemenModule(container) {
-      const data = getCurrentData();
-      const years = Object.keys(window.appState.yearsData).sort();
-
-      container.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">12. Manajemen Data, Multi-Tahun &amp; Riwayat Perubahan</h2>
-            <p class="text-xs text-slate-500">Kelola beberapa tahun perencanaan, duplikasi program tahun sebelumnya, impor/ekspor proyek, dan audit log.</p>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <!-- Multi-Tahun & Duplikasi -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <i data-lucide="copy-plus" class="w-4 h-4 text-emerald-800"></i>
-              <span>Tahun Perencanaan &amp; Duplikasi</span>
-            </h3>
-            <p class="text-xs text-slate-500 leading-relaxed">
-              Simpan beberapa tahun perencanaan secara terpisah atau salin struktur program RKJM/RKT dari tahun sebelumnya ke tahun aktif (${window.appState.activeYear}).
-            </p>
-            <div class="space-y-2">
-              <button onclick="openNewYearModal()" class="w-full py-2.5 px-4 rounded-xl emerald-gradient text-white text-xs font-bold flex items-center justify-center gap-1.5">
-                <i data-lucide="calendar-plus" class="w-4 h-4"></i> Buat Tahun Perencanaan Baru
-              </button>
-              <button onclick="openDuplicateYearModal()" class="w-full py-2.5 px-4 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5">
-                <i data-lucide="copy" class="w-4 h-4 text-amber-600"></i> Duplikasi Program Tahun Lain
-              </button>
-            </div>
-            <div class="pt-2 border-t border-slate-100 text-xs">
-              <span class="font-semibold text-slate-600">Tahun Tersedia:</span>
-              <div class="flex flex-wrap gap-1.5 mt-1.5">
-                ${years.map(y => `
-                  <button onclick="switchPlanningYear('${y}')" class="px-2.5 py-1 rounded-lg font-mono font-bold text-xs ${y === window.appState.activeYear ? 'bg-emerald-900 text-amber-300' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">${y}</button>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-
-          <!-- Ekspor / Impor Cadangan File Proyek (.json) -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <i data-lucide="hard-drive-download" class="w-4 h-4 text-emerald-800"></i>
-              <span>Simpan &amp; Buka Kembali Proyek (.JSON)</span>
-            </h3>
-            <p class="text-xs text-slate-500 leading-relaxed">
-              Unduh seluruh data identitas sekolah, analisis, RKJM, RKT, ARKAS, dan Monev dalam satu file cadangan agar dapat dibuka kembali kapan saja di perangkat lain.
-            </p>
-            <div class="space-y-2">
-              <button onclick="exportFullWorkspaceJSON()" class="w-full py-2.5 px-4 rounded-xl gold-gradient text-emerald-950 text-xs font-extrabold flex items-center justify-center gap-1.5 shadow-xs">
-                <i data-lucide="download" class="w-4 h-4"></i> Unduh File Proyek (.JSON)
-              </button>
-              <label class="block w-full cursor-pointer py-2.5 px-4 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold text-center transition">
-                <span class="flex items-center justify-center gap-1.5">
-                  <i data-lucide="folder-up" class="w-4 h-4 text-emerald-700"></i> Buka / Impor File Proyek (.JSON)
-                </span>
-                <input type="file" accept=".json" onchange="importFullWorkspaceJSON(event)" class="hidden" />
-              </label>
-            </div>
-          </div>
-
-          <!-- Reset & Mode Demo -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <i data-lucide="shield" class="w-4 h-4 text-rose-700"></i>
-              <span>Mode Simulasi &amp; Reset Data</span>
-            </h3>
-            <p class="text-xs text-slate-500 leading-relaxed">
-              Gunakan Mode Simulasi untuk latihan tim sekolah, atau kosongkan seluruh data pada tahun aktif untuk memulai input data sekolah asli dari awal.
-            </p>
-            <div class="space-y-2">
-              <button onclick="toggleDemoSimulation()" class="w-full py-2.5 px-4 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-950 text-xs font-bold flex items-center justify-center gap-1.5">
-                <i data-lucide="flask-conical" class="w-4 h-4 text-amber-600"></i>
-                <span>${window.appState.isDemoMode ? 'Keluar & Kosongkan Data Demo' : 'Aktifkan Mode Simulasi / Demo'}</span>
-              </button>
-              <button onclick="promptResetToCleanState()" class="w-full py-2.5 px-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-xs font-bold flex items-center justify-center gap-1.5">
-                <i data-lucide="trash-2" class="w-4 h-4"></i> Reset Bersih Data Tahun ${window.appState.activeYear}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Riwayat Perubahan (Audit Trail) -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-          <div class="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between">
-            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <i data-lucide="history" class="w-4 h-4 text-emerald-800"></i>
-              <span>Riwayat Perubahan &amp; Aktivitas Tim (${data.history.length})</span>
-            </h3>
-          </div>
-          <div class="max-h-80 overflow-y-auto divide-y divide-slate-100 text-xs">
+        <!-- AUDIT HISTORY LOG -->
+        <section class="card-elevated p-5">
+          <h3 class="font-bold text-slate-900 text-sm pb-2 border-b border-slate-100">Riwayat Perubahan Data (${data.history.length})</h3>
+          <div class="mt-3 max-h-52 overflow-y-auto space-y-2 text-xs">
             ${data.history.map(h => `
-              <div class="px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1 hover:bg-slate-50">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 py-1.5 border-b border-slate-50">
                 <div>
                   <span class="font-bold text-emerald-900">[${escapeHtml(h.modul)}]</span>
-                  <span class="font-semibold text-slate-800 ml-1">${escapeHtml(h.aksi)}</span>
-                  <span class="text-slate-500 ml-1">— ${escapeHtml(h.keterangan)}</span>
+                  <span class="font-semibold text-slate-800">${escapeHtml(h.aksi)}:</span>
+                  <span class="text-slate-600">${escapeHtml(h.detail)}</span>
                 </div>
-                <span class="text-[11px] font-mono text-slate-400 shrink-0">${escapeHtml(h.timestamp)}</span>
+                <span class="font-mono text-[11px] text-slate-400 shrink-0">${escapeHtml(h.waktu)}</span>
               </div>
-            `).join('')}
+            `).join("")}
           </div>
+        </section>
+      `;
+    }
+
+    function buildFormalReportHeaderHtml(docTitle) {
+      const s = getCurrentData().school;
+      return `
+        <div style="text-align:center; border-bottom: 2px solid #064e3b; padding-bottom: 10px; margin-bottom: 16px;">
+          <h2 style="margin:0; font-size:16px; color:#064e3b; text-transform:uppercase;">${escapeHtml(docTitle)}</h2>
+          <h3 style="margin:4px 0 0; font-size:14px;">${escapeHtml(s.nama || "SATUAN PENDIDIKAN")} (NPSN: ${escapeHtml(s.npsn || "-")})</h3>
+          <p style="margin:3px 0 0; font-size:11px; color:#475569;">${escapeHtml([s.alamat, s.kecamatan, s.kabupaten, s.provinsi].filter(Boolean).join(", "))} • Tahun Perencanaan: ${escapeHtml(s.tahunPerencanaan)}</p>
         </div>
       `;
     }
 
-    function openNewYearModal() {
-      const nextY = String((parseInt(window.appState.activeYear, 10) || 2026) + 1);
-      openCustomModal(`
-        <div class="p-6">
-          <h3 class="font-bold text-slate-900 text-base mb-2">Tambah Tahun Perencanaan Baru</h3>
-          <p class="text-xs text-slate-500 mb-4">Buat ruang kerja perencanaan terpisah untuk tahun anggaran berikutnya.</p>
-          <form onsubmit="createNewPlanningYear(event)" class="space-y-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Tahun Perencanaan / Anggaran</label>
-              <input type="number" min="2023" max="2035" name="newYear" value="${nextY}" required class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono" />
-            </div>
-            <label class="flex items-center gap-2 text-slate-700 cursor-pointer">
-              <input type="checkbox" name="copySchool" checked class="rounded text-emerald-700" />
-              <span>Salin Identitas Sekolah dari tahun ${window.appState.activeYear}</span>
-            </label>
-            <div class="flex justify-end gap-2 pt-3">
-              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Buat Tahun Baru</button>
-            </div>
-          </form>
-        </div>
-      `, 'max-w-md');
-    }
-
-    function createNewPlanningYear(e) {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const y = String(fd.get('newYear')).trim();
-      const copySchool = fd.get('copySchool') === 'on';
-
-      if (!window.appState.yearsData[y]) {
-        const fresh = createEmptyYearData(y);
-        if (copySchool) {
-          const curSchool = getCurrentData().school;
-          fresh.school = {
-            ...curSchool,
-            tahunRapor: String(parseInt(y, 10) - 1),
-            tahunPerencanaan: y,
-            tahunAjaran: `${y}/${parseInt(y, 10) + 1}`
-          };
-        }
-        window.appState.yearsData[y] = fresh;
-      }
-      window.appState.activeYear = y;
-      closeCustomModal();
-      triggerAutoSave("Manajemen Data", "Tambah Tahun Perencanaan", `Membuat dan beralih ke tahun perencanaan ${y}.`);
-      renderAll();
-      showToast(`Tahun perencanaan ${y} aktif.`, "success");
-    }
-
-    function openDuplicateYearModal() {
-      const years = Object.keys(window.appState.yearsData).filter(y => y !== window.appState.activeYear);
-      if (years.length === 0) {
-        showToast("Belum ada tahun perencanaan lain untuk diduplikasi. Buat tahun baru terlebih dahulu.", "warning");
-        return;
-      }
-      openCustomModal(`
-        <div class="p-6">
-          <h3 class="font-bold text-slate-900 text-base mb-2">Duplikasi Program dari Tahun Sebelumnya</h3>
-          <p class="text-xs text-slate-500 mb-4">Menyalin program RKJM dan kegiatan RKT dari tahun sumber ke tahun aktif <strong>${window.appState.activeYear}</strong>.</p>
-          <form onsubmit="executeDuplicateYear(event)" class="space-y-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Pilih Tahun Sumber</label>
-              <select name="sourceYear" class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono">
-                ${years.map(y => `<option value="${y}">Tahun ${y}</option>`).join('')}
-              </select>
-            </div>
-            <div class="flex justify-end gap-2 pt-3">
-              <button type="button" onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Duplikasi Sekarang</button>
-            </div>
-          </form>
-        </div>
-      `, 'max-w-md');
-    }
-
-    function executeDuplicateYear(e) {
-      e.preventDefault();
-      const srcYear = new FormData(e.target).get('sourceYear');
-      const src = window.appState.yearsData[srcYear];
-      const dst = getCurrentData();
-      if (!src) return;
-
-      src.rkjm.forEach(p => dst.rkjm.push({ ...JSON.parse(JSON.stringify(p)), id: uid() }));
-      src.rkt.forEach(k => dst.rkt.push({ ...JSON.parse(JSON.stringify(k)), id: uid() }));
-
-      closeCustomModal();
-      triggerAutoSave("Manajemen Data", "Duplikasi Program", `Menduplikasi RKJM & RKT dari tahun ${srcYear} ke ${window.appState.activeYear}.`);
-      renderAll();
-      showToast(`Berhasil menduplikasi program dari tahun ${srcYear}.`, "success");
-    }
-
-    function exportFullWorkspaceJSON() {
-      const dataStr = JSON.stringify(window.appState, null, 2);
-      const blob = new Blob([dataStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const schoolSlug = (getCurrentData().school.nama || 'Sekolah').replace(/[^a-zA-Z0-9]/g, '_');
-      a.href = url;
-      a.download = `Proyek_RAPOR_SMART_AI_${schoolSlug}_${window.appState.activeYear}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast("File proyek (.json) berhasil disimpan ke perangkat Anda.", "success");
-    }
-
-    function importFullWorkspaceJSON(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          if (!parsed || !parsed.yearsData) {
-            throw new Error("Format file tidak valid");
-          }
-          window.appState = parsed;
-          triggerAutoSave("Manajemen Data", "Impor File Proyek", `Memulihkan ruang kerja dari file ${file.name}`);
-          renderAll();
-          showToast("Proyek RAPOR SMART AI berhasil dibuka kembali.", "success");
-        } catch (err) {
-          showToast("File JSON tidak valid atau bukan cadangan RAPOR SMART AI.", "error");
-        }
-        event.target.value = "";
-      };
-      reader.readAsText(file);
-    }
-
-    // =========================================================================
-    // DEMO SIMULATION MODE (STRICTLY SEPARATE & CLEARLY LABELED)
-    // =========================================================================
-    function toggleDemoSimulation() {
-      if (window.appState.isDemoMode) {
-        promptResetToCleanState();
-        return;
-      }
-      showConfirmDialog({
-        title: "Aktifkan Mode Simulasi / Data Contoh?",
-        message: "Mode ini memuat data contoh simulasi pelatihan (bukan data resmi sekolah) agar Tim Pengembang Sekolah dapat mencoba seluruh alur dari Rapor Pendidikan hingga ARKAS.",
-        confirmText: "Ya, Muat Simulasi",
-        onConfirm: () => {
-          loadSimulationDataset();
-        }
-      });
-    }
-
-    function promptResetToCleanState() {
-      showConfirmDialog({
-        title: "Kosongkan & Reset Data Tahun Ini?",
-        message: "Seluruh data pada tahun perencanaan aktif akan dikosongkan sehingga Anda dapat menginput data resmi sekolah Anda dari awal.",
-        confirmText: "Ya, Kosongkan Data",
-        danger: true,
-        onConfirm: () => {
-          window.appState.isDemoMode = false;
-          window.appState.yearsData[window.appState.activeYear] = createEmptyYearData(window.appState.activeYear);
-          window.appState.selectedAkarIndicatorId = null;
-          window.appState.selectedTraceIndicatorId = null;
-          triggerAutoSave("Sistem", "Reset Data Bersih", "Mengosongkan data untuk input satuan pendidikan asli.");
-          renderAll();
-          showToast("Ruang kerja dikosongkan dan siap diisi data sekolah Anda.", "success");
-        }
-      });
-    }
-
-    function loadSimulationDataset() {
-      const y = window.appState.activeYear;
-      const indLit = uid(), indNum = uid(), indKar = uid(), indPemb = uid(), indAman = uid(), indBineka = uid();
-      const rec1 = uid(), rec2 = uid(), rec3 = uid();
-      const rkjm1 = uid(), rkjm2 = uid(), rkjm3 = uid();
-      const rkt1 = uid(), rkt2 = uid(), rkt3 = uid();
-
-      window.appState.isDemoMode = true;
-      window.appState.yearsData[y] = {
-        school: {
-          nama: "SMP NEGERI CONTOH NUSANTARA (DATA SIMULASI)",
-          npsn: "00000000",
-          alamat: "Jl. Pendidikan Merdeka No. 45 (Simulasi)",
-          kecamatan: "Cilacap Tengah",
-          kabupaten: "Kabupaten Cilacap",
-          provinsi: "Jawa Tengah",
-          jenjang: "SMP / MTs",
-          tahunRapor: String(parseInt(y, 10) - 1),
-          tahunPerencanaan: y,
-          tahunAjaran: `${y}/${parseInt(y, 10) + 1}`,
-          periodeRkjmMulai: y,
-          periodeRkjmAkhir: String(parseInt(y, 10) + 3)
-        },
-        indicators: [
-          {
-            id: indLit,
-            kode: "A.1",
-            nama: "Kemampuan Literasi",
-            dimensi: "Dimensi A: Mutu dan Relevansi Hasil Belajar Peserta Didik",
-            nilai: 62.50,
-            kategori: "Sedang",
-            perubahan: -4.20,
-            peringkat: "Peringkat Menengah (41-60%) Kab/Kota",
-            rekomendasiRapor: "Peningkatan kompetensi guru dalam pembelajaran literasi lintas mata pelajaran dan pemanfaatan buku bacaan bermutu.",
-            terverifikasi: true
-          },
-          {
-            id: indNum,
-            kode: "A.2",
-            nama: "Kemampuan Numerasi",
-            dimensi: "Dimensi A: Mutu dan Relevansi Hasil Belajar Peserta Didik",
-            nilai: 48.00,
-            kategori: "Kurang",
-            perubahan: -6.50,
-            peringkat: "Peringkat Bawah (61-80%) Kab/Kota",
-            rekomendasiRapor: "Penguatan pembelajaran numerasi kontekstual dan asesmen diagnostik berkala melalui Komunitas Belajar.",
-            terverifikasi: true
-          },
-          {
-            id: indKar,
-            kode: "A.3",
-            nama: "Karakter",
-            dimensi: "Dimensi A: Mutu dan Relevansi Hasil Belajar Peserta Didik",
-            nilai: 74.80,
-            kategori: "Baik",
-            perubahan: 2.15,
-            peringkat: "Peringkat Atas (1-20%) Kab/Kota",
-            rekomendasiRapor: "Pertahankan pembiasaan Profil Pelajar Pancasila melalui kokurikuler.",
-            terverifikasi: true
-          },
-          {
-            id: indPemb,
-            kode: "D.1",
-            nama: "Kualitas Pembelajaran",
-            dimensi: "Dimensi D: Mutu dan Relevansi Pembelajaran",
-            nilai: 58.40,
-            kategori: "Sedang",
-            perubahan: -1.80,
-            peringkat: "Peringkat Menengah (41-60%) Kab/Kota",
-            rekomendasiRapor: "Penerapan pembelajaran interaktif dan umpan balik konstruktif di kelas.",
-            terverifikasi: true
-          },
-          {
-            id: indAman,
-            kode: "D.4",
-            nama: "Iklim Keamanan Satuan Pendidikan",
-            dimensi: "Dimensi D: Mutu dan Relevansi Pembelajaran",
-            nilai: 66.00,
-            kategori: "Sedang",
-            perubahan: 1.20,
-            peringkat: "Peringkat Menengah Atas (21-40%)",
-            rekomendasiRapor: "Penguatan Tim Pencegahan dan Penanganan Kekerasan (TPPK) sekolah.",
-            terverifikasi: true
-          },
-          {
-            id: indBineka,
-            kode: "D.8",
-            nama: "Iklim Kebinekaan",
-            dimensi: "Dimensi D: Mutu dan Relevansi Pembelajaran",
-            nilai: 78.20,
-            kategori: "Baik",
-            perubahan: 3.40,
-            peringkat: "Peringkat Atas (1-20%)",
-            rekomendasiRapor: "Pertahankan budaya toleransi dan penghargaan keberagaman.",
-            terverifikasi: true
-          }
-        ],
-        rootCauses: {
-          [indNum]: {
-            indicatorId: indNum,
-            masalahUtama: "Capaian Kemampuan Numerasi berada pada kategori Kurang (48.00) dan turun 6.50 poin dibanding tahun lalu, khususnya pada domain aljabar dan pemecahan masalah kontekstual.",
-            fiveWhys: [
-              "Why 1: Siswa kesulitan menyelesaikan soal penalaran numerasi berbasis konteks kehidupan sehari-hari.",
-              "Why 2: Pembelajaran matematika dan IPA masih dominan berfokus pada hafalan rumus prosedural.",
-              "Why 3: Guru belum rutin melakukan asesmen diagnostik awal untuk memetakan tingkat kesiapan numerasi siswa.",
-              "Why 4: Komunitas Belajar (Kombel) sekolah belum memiliki agenda bedah soal numerasi dan berbagi praktik pembelajaran aktif.",
-              "Why 5: Ketersediaan alat peraga matematika kontekstual dan modul penguatan numerasi lintas mapel masih terbatas."
-            ],
-            akarPenyebab: [
-              { kategori: "Pembelajaran", teks: "Pembelajaran di kelas masih berfokus pada latihan soal prosedural daripada penalaran kontekstual.", status: "fakta_sekolah" },
-              { kategori: "Kompetensi GTK", teks: "Belum optimalnya praktik berbagi ajar numerasi lintas mata pelajaran di Komunitas Belajar sekolah.", status: "fakta_sekolah" },
-              { kategori: "Sarpras & Media", teks: "Keterbatasan alat peraga numerasi dan bahan ajar kontekstual di kelas.", status: "dugaan_ai" }
-            ],
-            buktiPendukung: "Skor Rapor Pendidikan A.2 = 48.00 (Kurang, turun -6.50) serta rekap nilai PHB Matematika kelas VII & VIII semester ganjil.",
-            pertanyaanRefleksi: [
-              "Bagian kompetensi numerasi mana yang paling banyak belum dikuasai siswa berdasarkan hasil ulangan harian?",
-              "Bagaimana guru non-matematika (IPA, IPS, Bahasa) dapat mengintegrasikan pembacaan data/grafik dalam pembelajaran?",
-              "Alat peraga sederhana apa yang paling dibutuhkan guru untuk memvisualisasikan konsep abstrak?"
-            ],
-            dataTambahan: [
-              "Hasil asesmen diagnostik numerasi awal semester bagi seluruh peserta didik.",
-              "Instrumen observasi supervisi kelas terkait penggunaan masalah kontekstual."
-            ],
-            dampakSiswa: "Peserta didik mengalami kesulitan berpikir logis-kuantitatif dan rendahnya kepercayaan diri saat menghadapi soal pemecahan masalah.",
-            alternatifSolusi: [
-              "Lokakarya Kombel guru menyusun perangkat ajar & asesmen diagnostik numerasi kontekstual.",
-              "Klinik numerasi (pendampingan belajar terstruktur) bagi siswa dengan kemampuan dasar rendah.",
-              "Pengadaan alat peraga matematika dan modul penguatan numerasi."
-            ]
-          }
-        },
-        priorities: {},
-        recommendations: [
-          {
-            id: rec1,
-            indicatorId: indNum,
-            indicatorNama: "[A.2] Kemampuan Numerasi",
-            permasalahan: "Capaian Kemampuan Numerasi kategori Kurang (48.00, turun -6.50 poin) akibat pembelajaran yang masih prosedural dan belum meratanya asesmen diagnostik.",
-            tujuanPerbaikan: "Meningkatkan kemampuan penalaran numerasi peserta didik dan kompetensi guru dalam pembelajaran numerasi kontekstual.",
-            sasaran: "32 Guru Mata Pelajaran & 420 Peserta Didik Kelas VII–IX",
-            bentukKegiatan: "Lokakarya Kombel Pembelajaran Numerasi Kontekstual & Klinik Numerasi Siswa",
-            langkahPelaksanaan: "1. Pelaksanaan asesmen diagnostik numerasi awal.\n2. Lokakarya 2 hari di Kombel penyusunan modul ajar numerasi lintas mapel.\n3. Pelaksanaan Klinik Numerasi 2x seminggu bagi siswa yang membutuhkan.\n4. Evaluasi progres tengah dan akhir semester.",
-            penanggungJawab: "Waka Kurikulum & Koordinator Kombel",
-            indikatorKeberhasilan: "90% guru menerapkan soal penalaran kontekstual dan skor numerasi meningkat minimal +8 poin.",
-            targetCapaian: "Naik dari kategori Kurang (48.00) ke kategori Sedang (>56.00)",
-            waktuPelaksanaan: `Februari – November ${y}`,
-            sumberDaya: "Narasumber Pengawas/Fasilitator Daerah, ATK Lokakarya, Modul Numerasi, Alat Peraga Matematika",
-            perkiraanAnggaran: 6500000,
-            statusPersetujuan: "disetujui",
-            sumberAi: true
-          },
-          {
-            id: rec2,
-            indicatorId: indLit,
-            indicatorNama: "[A.1] Kemampuan Literasi",
-            permasalahan: "Kemampuan Literasi kategori Sedang (62.50, turun -4.20 poin) karena pemanfaatan buku bacaan non-teks pelajaran belum optimal.",
-            tujuanPerbaikan: "Menumbuhkan budaya baca dan meningkatkan kemampuan memahami teks informasi serta sastra.",
-            sasaran: "Seluruh Peserta Didik & Pengelola Perpustakaan Sekolah",
-            bentukKegiatan: "Revitalisasi Pojok Baca Kelas & Program 15 Menit Membaca Bermakna",
-            langkahPelaksanaan: "1. Pengadaan buku bacaan pengayaan fiksi & nonfiksi.\n2. Penataan pojok baca di setiap ruang kelas.\n3. Pembiasaan jurnal baca mingguan siswa.",
-            penanggungJawab: "Kepala Perpustakaan & Guru Bahasa Indonesia",
-            indikatorKeberhasilan: "100% kelas memiliki pojok baca aktif dan tingkat peminjaman buku naik 50%.",
-            targetCapaian: "Skor Literasi naik ke kategori Baik (>=70.00)",
-            waktuPelaksanaan: `Maret – Oktober ${y}`,
-            sumberDaya: "Koleksi buku bacaan bermutu, rak pojok baca, jurnal literasi siswa",
-            perkiraanAnggaran: 8000000,
-            statusPersetujuan: "disetujui",
-            sumberAi: true
-          },
-          {
-            id: rec3,
-            indicatorId: indPemb,
-            indicatorNama: "[D.1] Kualitas Pembelajaran",
-            permasalahan: "Kualitas Pembelajaran kategori Sedang (58.40, turun -1.80) memerlukan penguatan umpan balik konstruktif dan supervisi akademik.",
-            tujuanPerbaikan: "Meningkatkan kualitas interaksi kelas dan pembelajaran berdiferensiasi.",
-            sasaran: "Seluruh Pendidik Satuan Pendidikan",
-            bentukKegiatan: "Supervisi Akademik Klinis & Berbagi Praktik Baik Pembelajaran Interaktif",
-            langkahPelaksanaan: "1. Penyusunan jadwal supervisi pra-observasi, observasi, dan pasca-observasi.\n2. Refleksi bersama di Kombel bulanan.",
-            penanggungJawab: "Kepala Sekolah & Tim Supervisi",
-            indikatorKeberhasilan: "100% guru disupervisi dan menindaklanjuti umpan balik pembelajaran.",
-            targetCapaian: "Skor Kualitas Pembelajaran meningkat ke >=65.00",
-            waktuPelaksanaan: `Triwulan I – IV ${y}`,
-            sumberDaya: "Instrumen supervisi, ATK administrasi Kombel",
-            perkiraanAnggaran: 2500000,
-            statusPersetujuan: "menunggu",
-            sumberAi: true
-          }
-        ],
-        rkjm: [
-          {
-            id: rkjm1,
-            indicatorId: indNum,
-            recommendationId: rec1,
-            dimensi: "Dimensi A: Mutu dan Relevansi Hasil Belajar Peserta Didik",
-            indikatorNama: "[A.2] Kemampuan Numerasi",
-            akarMasalah: "Pembelajaran masih prosedural dan belum meratanya asesmen diagnostik numerasi.",
-            tujuanStrategis: "Mewujudkan pembelajaran numerasi kontekstual yang meningkatkan daya nalar kuantitatif siswa.",
-            namaProgram: "Penguatan Ekosistem Numerasi & Klinik Belajar Siswa",
-            targetTahun1: "Skor >56 (Sedang)",
-            targetTahun2: "Skor >63 (Sedang Tinggi)",
-            targetTahun3: "Skor >70 (Baik)",
-            targetTahun4: "Skor >75 (Baik Mantap)",
-            indikatorKeberhasilan: "Peningkatan skor Rapor Pendidikan A.2 setiap tahun",
-            penanggungJawab: "Waka Kurikulum",
-            sumberPendanaan: "BOSP Reguler"
-          },
-          {
-            id: rkjm2,
-            indicatorId: indLit,
-            recommendationId: rec2,
-            dimensi: "Dimensi A: Mutu dan Relevansi Hasil Belajar Peserta Didik",
-            indikatorNama: "[A.1] Kemampuan Literasi",
-            akarMasalah: "Terbatasnya bahan bacaan pengayaan di kelas dan pemanfaatan perpustakaan.",
-            tujuanStrategis: "Membangun budaya literasi sekolah dan kecakapan membaca pemahaman siswa.",
-            namaProgram: "Gerakan Literasi Sekolah & Revitalisasi Pojok Baca",
-            targetTahun1: "Skor >=70 (Baik)",
-            targetTahun2: "Skor >=74 (Baik)",
-            targetTahun3: "Skor >=78 (Baik)",
-            targetTahun4: "Skor >=82 (Baik)",
-            indikatorKeberhasilan: "Capaian A.1 masuk dan bertahan di kategori Baik",
-            penanggungJawab: "Kepala Perpustakaan",
-            sumberPendanaan: "BOSP Reguler"
-          }
-        ],
-        rkt: [
-          {
-            id: rkt1,
-            rkjmId: rkjm1,
-            indicatorId: indNum,
-            namaProgram: "Penguatan Ekosistem Numerasi & Klinik Belajar Siswa",
-            namaKegiatan: "Lokakarya Kombel Pembelajaran Numerasi Kontekstual & Klinik Numerasi",
-            latarBelakang: "Skor Kemampuan Numerasi turun -6.50 poin menjadi 48.00 (Kurang).",
-            tujuan: "Meningkatkan kompetensi guru merancang asesmen & pembelajaran numerasi kontekstual.",
-            sasaran: "32 Guru & 420 Peserta Didik",
-            indikatorKeberhasilan: "90% guru menerapkan pembelajaran kontekstual & skor numerasi naik",
-            target: "2 kali lokakarya guru & 24 sesi klinik numerasi",
-            bulanPelaksanaan: [2, 3, 4, 8, 9, 10],
-            penanggungJawab: "Waka Kurikulum",
-            kebutuhanAnggaran: 6500000,
-            sumberDana: "BOSP Reguler",
-            buktiPelaksanaan: "Daftar Hadir, Modul Ajar Numerasi, Foto Kegiatan, Laporan Hasil Klinik"
-          },
-          {
-            id: rkt2,
-            rkjmId: rkjm2,
-            indicatorId: indLit,
-            namaProgram: "Gerakan Literasi Sekolah & Revitalisasi Pojok Baca",
-            namaKegiatan: "Pengadaan Buku Bacaan Bermutu & Penataan Pojok Baca Kelas",
-            latarBelakang: "Skor Kemampuan Literasi turun -4.20 poin menjadi 62.50 (Sedang).",
-            tujuan: "Menyediakan akses buku bacaan non-teks pelajaran di setiap kelas.",
-            sasaran: "12 Rombongan Belajar (Kelas VII–IX)",
-            indikatorKeberhasilan: "12 kelas memiliki pojok baca aktif",
-            target: "200 eksemplar buku bacaan baru & 12 rak pojok baca",
-            bulanPelaksanaan: [3, 4, 7, 8],
-            penanggungJawab: "Kepala Perpustakaan",
-            kebutuhanAnggaran: 8000000,
-            sumberDana: "BOSP Reguler",
-            buktiPelaksanaan: "BAST Buku, Inventaris Perpustakaan, Foto Pojok Baca"
-          }
-        ],
-        arkas: [
-          {
-            id: uid(),
-            rktId: rkt1,
-            rkjmId: rkjm1,
-            indicatorId: indNum,
-            namaProgram: "Penguatan Ekosistem Numerasi & Klinik Belajar Siswa",
-            namaKegiatan: "Lokakarya Kombel Pembelajaran Numerasi Kontekstual & Klinik Numerasi",
-            komponenPembiayaan: "Pengembangan Profesi Pendidik dan Tenaga Kependidikan",
-            uraianBelanja: "Konsumsi Rapat/Lokakarya Kombel Guru (35 org x 2 hari)",
-            volume: 70,
-            satuan: "Orang/Hari",
-            hargaSatuan: 35000,
-            jumlahAnggaran: 2450000,
-            sumberDana: "BOSP Reguler",
-            waktuPelaksanaan: "Triwulan I & III",
-            statusVerifikasi: "Terverifikasi SSH & Juknis BOSP"
-          },
-          {
-            id: uid(),
-            rktId: rkt1,
-            rkjmId: rkjm1,
-            indicatorId: indNum,
-            namaProgram: "Penguatan Ekosistem Numerasi & Klinik Belajar Siswa",
-            namaKegiatan: "Lokakarya Kombel Pembelajaran Numerasi Kontekstual & Klinik Numerasi",
-            komponenPembiayaan: "Pelaksanaan Kegiatan Pembelajaran dan Ekstrakurikuler",
-            uraianBelanja: "Pengadaan Alat Peraga Matematika Kontekstual & Cetak Modul Klinik",
-            volume: 1,
-            satuan: "Paket",
-            hargaSatuan: 4050000,
-            jumlahAnggaran: 4050000,
-            sumberDana: "BOSP Reguler",
-            waktuPelaksanaan: "Triwulan II",
-            statusVerifikasi: "Perlu Verifikasi SSH/Kode Rekening"
-          },
-          {
-            id: uid(),
-            rktId: rkt2,
-            rkjmId: rkjm2,
-            indicatorId: indLit,
-            namaProgram: "Gerakan Literasi Sekolah & Revitalisasi Pojok Baca",
-            namaKegiatan: "Pengadaan Buku Bacaan Bermutu & Penataan Pojok Baca Kelas",
-            komponenPembiayaan: "Pengembangan Perpustakaan dan/atau Layanan Pojok Baca",
-            uraianBelanja: "Buku Bacaan Pengayaan Fiksi & Nonfiksi Bermutu (Perpusnas/Kemendikdasmen)",
-            volume: 160,
-            satuan: "Eksemplar",
-            hargaSatuan: 50000,
-            jumlahAnggaran: 8000000,
-            sumberDana: "BOSP Reguler",
-            waktuPelaksanaan: "Triwulan II",
-            statusVerifikasi: "Terverifikasi SSH & Juknis BOSP"
-          }
-        ],
-        monev: {
-          [rkt1]: {
-            rktId: rkt1,
-            statusPelaksanaan: "berjalan",
-            persentaseKegiatan: 60,
-            realisasiAnggaran: 2450000,
-            hambatan: "Penyesuaian jadwal klinik numerasi agar tidak berbenturan dengan latihan ekstrakurikuler sore.",
-            buktiKegiatan: "Laporan Lokakarya Kombel Tahap 1 & Daftar Hadir Guru",
-            evaluasiHasil: "Guru mulai menyusun soal pemantik numerasi di awal pembelajaran.",
-            tindakLanjut: "Menjadwalkan klinik numerasi pada jam literasi/numerasi pagi hari."
-          },
-          [rkt2]: {
-            rktId: rkt2,
-            statusPelaksanaan: "selesai",
-            persentaseKegiatan: 100,
-            realisasiAnggaran: 8000000,
-            hambatan: "Tidak ada hambatan berarti.",
-            buktiKegiatan: "BAST Pengadaan Buku & Foto Pojok Baca 12 Kelas",
-            evaluasiHasil: "Antusiasme membaca siswa meningkat signifikan pada jam istirahat.",
-            tindakLanjut: "Mengadakan lomba resensi buku antar kelas pada semester genap."
-          }
-        },
-        history: [
-          {
-            id: uid(),
-            timestamp: new Date().toLocaleString('id-ID'),
-            modul: "Mode Simulasi",
-            aksi: "Muat Data Contoh",
-            keterangan: "Memuat dataset simulasi lengkap untuk demonstrasi fitur RAPOR SMART AI."
-          }
-        ]
-      };
-
-      triggerAutoSave("Mode Simulasi", "Aktifkan Simulasi", "Data contoh simulasi berhasil dimuat.");
-      renderAll();
-      showToast("Mode Simulasi aktif! Anda dapat menjelajahi seluruh alur dari Dashboard hingga ARKAS & Monev.", "success");
-    }
-
-    // =========================================================================
-    // MODULE N: CHATBOT ASISTEN RAPOR SMART AI (STRICTLY DATA-GROUNDED)
-    // =========================================================================
-    function toggleAssistantDrawer() {
-      const drawer = document.getElementById('aiAssistantDrawer');
-      const backdrop = document.getElementById('aiAssistantBackdrop');
-      const isClosed = drawer.classList.contains('translate-x-full');
-      if (isClosed) {
-        drawer.classList.remove('translate-x-full');
-        backdrop.classList.remove('hidden');
-        renderChatMessages();
-      } else {
-        drawer.classList.add('translate-x-full');
-        backdrop.classList.add('hidden');
-      }
-    }
-
-    function renderChatMessages() {
-      const box = document.getElementById('aiChatMessages');
-      if (!box) return;
-      box.innerHTML = window.appState.chatMessages.map(msg => {
-        const isUser = msg.role === 'user';
-        // Basic bold & newline formatting
-        const formatted = escapeHtml(msg.text)
-          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-          .replace(/\n/g, '<br/>');
-        return `
-          <div class="flex ${isUser ? 'justify-end' : 'justify-start'}">
-            <div class="max-w-[88%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed shadow-2xs ${isUser ? 'emerald-gradient text-white rounded-br-sm' : 'bg-white border border-slate-200 text-slate-800 rounded-bl-sm'}">
-              ${!isUser ? `<div class="text-[10px] font-extrabold text-emerald-800 mb-1 flex items-center gap-1"><i data-lucide="sparkles" class="w-3 h-3 text-amber-500"></i> ASISTEN RAPOR SMART AI</div>` : ''}
-              <div>${formatted}</div>
-            </div>
-          </div>
-        `;
-      }).join('');
-      box.scrollTop = box.scrollHeight;
-      if (window.lucide) window.lucide.createIcons();
-    }
-
-    function sendQuickAiPrompt(text) {
-      const input = document.getElementById('aiChatInput');
-      if (input) {
-        input.value = text;
-        handleAiChatSubmit(new Event('submit'));
-      }
-    }
-
-    async function handleAiChatSubmit(e) {
-      e.preventDefault();
-      const input = document.getElementById('aiChatInput');
-      const userText = input.value.trim();
-      if (!userText) return;
-
-      input.value = "";
-      window.appState.chatMessages.push({ role: 'user', text: userText });
-      window.appState.chatMessages.push({ role: 'assistant', text: "⏳ Sedang memeriksa data Rapor Pendidikan & perencanaan sekolah Anda..." });
-      renderChatMessages();
-
+    function exportWordDocument(type) {
       const data = getCurrentData();
-      const totalBudget = data.arkas.reduce((s, a) => s + (Number(a.jumlahAnggaran) || 0), 0);
+      let title = "";
+      let bodyHtml = "";
 
-      // Build grounded snapshot of the user's current workspace
-      const groundedContext = {
-        modeSimulasi: window.appState.isDemoMode,
-        sekolah: data.school,
-        jumlahIndikator: data.indicators.length,
-        indikator: data.indicators.map(i => ({
-          kode: i.kode,
-          nama: i.nama,
-          dimensi: i.dimensi,
-          nilai: i.nilai,
-          kategori: classifyCategory(i.nilai, i.kategori),
-          perubahan: i.perubahan,
-          terverifikasi: i.terverifikasi
-        })),
-        akarMasalahTersedia: Object.keys(data.rootCauses).length,
-        jumlahRekomendasi: data.recommendations.length,
-        jumlahProgramRKJM: data.rkjm.length,
-        jumlahKegiatanRKT: data.rkt.length,
-        totalRancanganARKAS: totalBudget,
-        rincianARKAS: data.arkas.map(a => ({ kegiatan: a.namaKegiatan, komponen: a.komponenPembiayaan, uraian: a.uraianBelanja, jumlah: a.jumlahAnggaran })),
-        monev: data.monev
-      };
-
-      const systemPrompt = `Anda adalah ASISTEN RAPOR SMART AI, asisten cerdas perencanaan sekolah berbasis data (PBD) untuk Kepala Sekolah, Guru, Bendahara BOS, Operator, dan Tim Pengembang Sekolah di Indonesia.
-PRINSIP WAJIB:
-1. Gunakan HANYA data JSON konteks sekolah yang diberikan di bawah ini sebagai dasar fakta.
-2. JANGAN PERNAH mengarang angka indikator, nama sekolah, atau nominal anggaran yang tidak ada dalam data.
-3. Jika data sekolah masih kosong atau belum lengkap untuk menjawab pertanyaan, sampaikan secara sopan dan minta konfirmasi/input dari pengguna.
-4. Bedakan antara hipotesis/saran dengan data aktual sekolah.
-5. Gunakan Bahasa Indonesia yang jelas, ramah, terstruktur (poin-poin singkat), dan praktis.`;
-
-      const promptWithContext = `DATA AKTUAL SEKOLAH SAAT INI:\n${JSON.stringify(groundedContext, null, 2)}\n\nPERTANYAAN TIM SEKOLAH:\n${userText}`;
-
-      try {
-        const reply = await callGeminiAPI(promptWithContext, systemPrompt);
-        window.appState.chatMessages.pop(); // remove loading placeholder
-        window.appState.chatMessages.push({ role: 'assistant', text: reply });
-        renderChatMessages();
-      } catch (err) {
-        window.appState.chatMessages.pop();
-        // Grounded offline deterministic assistant response
-        let fallbackReply = "";
-        if (data.indicators.length === 0) {
-          fallbackReply = "Saat ini **data Identitas Sekolah dan Indikator Rapor Pendidikan masih kosong**.\n\nAgar saya dapat memberikan analisis yang akurat tanpa mengarang data, silakan:\n1. Buka menu **1. Input Data Rapor** untuk mengunggah PDF/Excel Rapor Pendidikan atau mengisi formulir manual.\n2. Atau klik **Muat Data Demo** di bagian atas jika ingin mencoba simulasi terlebih dahulu.";
-        } else {
-          const prio = data.indicators.filter(needsImprovement);
-          fallbackReply = `Berdasarkan data sekolah **${data.school.nama || '(Nama sekolah belum diisi)'}** (Tahun ${data.school.tahunPerencanaan || window.appState.activeYear}):\n\n` +
-            `• **Total Indikator Diinput:** ${data.indicators.length} indikator (${prio.length} indikator memerlukan pembenahan: ${prio.map(i => i.nama).join(', ') || 'tidak ada'}).\n` +
-            `• **Status Perencanaan:** ${Object.keys(data.rootCauses).length} analisis akar masalah, ${data.rkjm.length} program RKJM, ${data.rkt.length} kegiatan RKT, dan total Rancangan ARKAS **${formatRupiah(totalBudget)}**.\n\n` +
-            `*(Catatan: Layanan AI daring sedang tidak terhubung/offline, sehingga ringkasan ini disusun langsung dari basis data lokal Anda. Silakan lengkapi bagian yang masih kosong pada modul terkait.)*`;
-        }
-        window.appState.chatMessages.push({ role: 'assistant', text: fallbackReply });
-        renderChatMessages();
+      if (type === "akar") {
+        title = "DOKUMEN ANALISIS MASALAH DAN AKAR MASALAH (5-WHY)";
+        bodyHtml = data.rootCauses.map((rc, idx) => {
+          const ind = data.indicators.find(i => i.id === rc.indicatorId) || { nama: "Indikator", nilai: "" };
+          return `
+            <h4>${idx + 1}. ${escapeHtml(ind.nama)} (Nilai Capaian: ${formatScore(ind.nilai)})</h4>
+            <p><strong>Masalah Utama:</strong> ${escapeHtml(rc.masalahUtama)}</p>
+            <p><strong>Akar Penyebab:</strong></p>
+            <ul>${(rc.dugaanPenyebab || []).map(c => `<li>[${c.terkonfirmasi ? "Fakta Terkonfirmasi" : "Dugaan AI"}] ${escapeHtml(c.teks)}</li>`).join("")}</ul>
+            <p><strong>Dampak Peserta Didik:</strong> ${escapeHtml(rc.dampakPesertaDidik)}</p>
+            <p><strong>Alternatif Solusi:</strong> ${escapeHtml(rc.alternatifSolusi)}</p>
+          `;
+        }).join("");
+      } else if (type === "rkjm") {
+        title = `RENCANA KERJA JANGKA MENENGAH (RKJM) ${data.school.periodeRkjmAwal} - ${data.school.periodeRkjmAkhir}`;
+        bodyHtml = `
+          <table border="1" cellspacing="0" cellpadding="6" style="width:100%; border-collapse:collapse; font-size:11px;">
+            <tr style="background:#064e3b; color:#fff;">
+              <th>No</th><th>Indikator</th><th>Program Pengembangan</th><th>Tujuan Strategis</th><th>Target Th 1</th><th>Target Th 2</th><th>Target Th 3</th><th>Target Th 4</th><th>Sumber Dana</th>
+            </tr>
+            ${data.rkjm.map((p, i) => `
+              <tr>
+                <td>${i + 1}</td><td>${escapeHtml(p.indikatorNama)}</td><td>${escapeHtml(p.programPengembangan)}</td><td>${escapeHtml(p.tujuanStrategis)}</td>
+                <td>${escapeHtml(p.targetTahun1)}</td><td>${escapeHtml(p.targetTahun2)}</td><td>${escapeHtml(p.targetTahun3)}</td><td>${escapeHtml(p.targetTahun4)}</td><td>${escapeHtml(p.sumberPendanaan)}</td>
+              </tr>
+            `).join("")}
+          </table>
+        `;
+      } else if (type === "rkt") {
+        title = `RENCANA KERJA TAHUNAN (RKT) TAHUN ${data.school.tahunPerencanaan}`;
+        bodyHtml = `
+          <table border="1" cellspacing="0" cellpadding="6" style="width:100%; border-collapse:collapse; font-size:11px;">
+            <tr style="background:#064e3b; color:#fff;">
+              <th>No</th><th>Program</th><th>Kegiatan</th><th>Sasaran</th><th>Target</th><th>Jadwal</th><th>PJ</th><th>Anggaran</th>
+            </tr>
+            ${data.rkt.map((k, i) => `
+              <tr>
+                <td>${i + 1}</td><td>${escapeHtml(k.namaProgram)}</td><td>${escapeHtml(k.namaKegiatan)}</td><td>${escapeHtml(k.sasaran)}</td>
+                <td>${escapeHtml(k.target)}</td><td>${escapeHtml(k.jadwalTeks)}</td><td>${escapeHtml(k.penanggungJawab)}</td><td>${formatRupiah(k.kebutuhanAnggaran)}</td>
+              </tr>
+            `).join("")}
+          </table>
+        `;
       }
+
+      const fullHtml = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+        <head><meta charset='utf-8'><title>${title}</title></head>
+        <body style="font-family: Arial, sans-serif; font-size:12px;">
+          ${buildFormalReportHeaderHtml(title)}
+          ${bodyHtml || "<p>Data belum tersedia.</p>"}
+          <br/><br/>
+          <table style="width:100%; font-size:11px;">
+            <tr>
+              <td style="width:60%;"></td>
+              <td style="text-align:center;">Kepala Sekolah,<br/><br/><br/><br/><strong>${escapeHtml(data.school.kepalaSekolah || "______________________")}</strong></td>
+            </tr>
+          </table>
+        </body></html>
+      `;
+
+      const blob = new Blob(["\ufeff", fullHtml], { type: "application/msword" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${title.replace(/[^a-zA-Z0-9]+/g, "_")}.doc`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Dokumen Word (.doc) berhasil diunduh.", "success");
     }
 
-    // =========================================================================
-    // MODULE P: PANDUAN PENGGUNAAN UNTUK PENGGUNA BARU
-    // =========================================================================
-    function openUserGuideModal() {
+    function exportExcelDocument(type) {
+      if (!window.XLSX) {
+        showToast("Pustaka Excel belum siap.", "warning");
+        return;
+      }
+      const data = getCurrentData();
+      const s = data.school;
+      let sheetName = "Laporan";
+      let fileName = "Laporan_RAPOR_SMART_AI.xlsx";
+      let aoa = [];
+
+      if (type === "prioritas") {
+        sheetName = "Prioritas Pembenahan";
+        fileName = `Daftar_Prioritas_${s.tahunPerencanaan}.xlsx`;
+        aoa = [
+          ["DAFTAR PRIORITAS PEMBENAHAN RAPOR PENDIDIKAN"],
+          [`Sekolah: ${s.nama || "-"} | NPSN: ${s.npsn || "-"} | Tahun: ${s.tahunPerencanaan}`],
+          [],
+          ["Peringkat", "Kode", "Nama Indikator", "Nilai Capaian", "Kategori", "Total Skor Prioritas", "Alasan Prioritas"],
+          ...data.priorities.map((p, i) => {
+            const ind = data.indicators.find(x => x.id === p.indicatorId) || {};
+            return [i + 1, ind.kode || "-", ind.nama || "-", ind.nilai !== "" ? ind.nilai : "-", classifyCategory(ind.nilai, ind.kategori), p.totalSkor, p.alasanPrioritas];
+          })
+        ];
+      } else if (type === "rkjm") {
+        sheetName = "RKJM";
+        fileName = `RKJM_${s.periodeRkjmAwal}_${s.periodeRkjmAkhir}.xlsx`;
+        aoa = [
+          [`RENCANA KERJA JANGKA MENENGAH (RKJM) ${s.periodeRkjmAwal} - ${s.periodeRkjmAkhir}`],
+          [`Sekolah: ${s.nama || "-"} | NPSN: ${s.npsn || "-"}`],
+          [],
+          ["No", "Dimensi", "Indikator Rapor", "Akar Masalah", "Program Pengembangan", "Target Th 1", "Target Th 2", "Target Th 3", "Target Th 4", "Penanggung Jawab", "Sumber Dana"],
+          ...data.rkjm.map((p, i) => [i + 1, p.dimensi, p.indikatorNama, p.akarMasalah, p.programPengembangan, p.targetTahun1, p.targetTahun2, p.targetTahun3, p.targetTahun4, p.penanggungJawab, p.sumberPendanaan])
+        ];
+      } else if (type === "rkt") {
+        sheetName = "RKT";
+        fileName = `RKT_${s.tahunPerencanaan}.xlsx`;
+        aoa = [
+          [`RENCANA KERJA TAHUNAN (RKT) TAHUN ${s.tahunPerencanaan}`],
+          [`Sekolah: ${s.nama || "-"} | NPSN: ${s.npsn || "-"}`],
+          [],
+          ["No", "Program RKJM", "Kegiatan RKT", "Tujuan", "Sasaran", "Target", "Jadwal", "Penanggung Jawab", "Kebutuhan Anggaran", "Sumber Dana"],
+          ...data.rkt.map((k, i) => [i + 1, k.namaProgram, k.namaKegiatan, k.tujuan, k.sasaran, k.target, k.jadwalTeks, k.penanggungJawab, Number(k.kebutuhanAnggaran) || 0, k.sumberDana])
+        ];
+      } else if (type === "arkas") {
+        sheetName = "Rancangan ARKAS";
+        fileName = `Rancangan_ARKAS_${s.tahunPerencanaan}.xlsx`;
+        aoa = [
+          [`RANCANGAN ANGGARAN ARKAS (KERTAS KERJA INTERNAL) TAHUN ${s.tahunPerencanaan}`],
+          [`Sekolah: ${s.nama || "-"} | NPSN: ${s.npsn || "-"}`],
+          [],
+          ["No", "Program", "Kegiatan", "Komponen Pembiayaan", "Uraian Belanja", "Volume", "Satuan", "Harga Satuan", "Jumlah Anggaran", "Sumber Dana", "Waktu"],
+          ...data.arkas.map((a, i) => {
+            const jml = (Number(a.volume) || 0) * (Number(a.hargaSatuan) || 0);
+            return [i + 1, a.program, a.kegiatan, a.komponen, a.uraianBelanja, Number(a.volume) || 0, a.satuan, Number(a.hargaSatuan) || 0, jml, a.sumberDana, a.waktuPelaksanaan];
+          })
+        ];
+      }
+
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+      XLSX.writeFile(wb, fileName);
+      showToast(`File Excel "${fileName}" berhasil diunduh.`, "success");
+    }
+
+    function exportPrintReport(type) {
+      const data = getCurrentData();
+      let title = "";
+      let tableHtml = "";
+
+      if (type === "analisis") {
+        title = `LAPORAN HASIL ANALISIS RAPOR PENDIDIKAN & NILAI CAPAIAN (${data.school.tahunRapor})`;
+        tableHtml = `
+          <table border="1" cellspacing="0" cellpadding="6" style="width:100%; border-collapse:collapse; font-size:11px;">
+            <tr style="background:#064e3b; color:#fff;">
+              <th>No</th><th>Kode</th><th>Nama Indikator</th><th>Dimensi</th><th>Nilai Capaian</th><th>Kategori</th><th>Perubahan</th>
+            </tr>
+            ${data.indicators.map((ind, i) => `
+              <tr>
+                <td>${i + 1}</td><td>${escapeHtml(ind.kode || "-")}</td><td>${escapeHtml(ind.nama)}</td><td>${escapeHtml(ind.dimensi || "-")}</td>
+                <td style="text-align:center; font-weight:bold;">${formatScore(ind.nilai)}</td><td>${classifyCategory(ind.nilai, ind.kategori)}</td><td style="text-align:center;">${ind.perubahan !== "" ? ind.perubahan : "-"}</td>
+              </tr>
+            `).join("")}
+          </table>
+        `;
+      } else {
+        title = `LAPORAN MONITORING DAN EVALUASI PROGRAM (${data.school.tahunPerencanaan})`;
+        tableHtml = `
+          <table border="1" cellspacing="0" cellpadding="6" style="width:100%; border-collapse:collapse; font-size:11px;">
+            <tr style="background:#064e3b; color:#fff;">
+              <th>No</th><th>Kegiatan RKT</th><th>Status</th><th>Realisasi Fisik</th><th>Realisasi Anggaran</th><th>Hambatan</th><th>Tindak Lanjut</th>
+            </tr>
+            ${data.monev.map((m, i) => {
+              const keg = data.rkt.find(k => k.id === m.rktId) || {};
+              return `
+                <tr>
+                  <td>${i + 1}</td><td>${escapeHtml(keg.namaKegiatan || "-")}</td><td>${escapeHtml(m.status)}</td>
+                  <td>${m.realisasiFisik}%</td><td>${formatRupiah(m.realisasiAnggaran)}</td><td>${escapeHtml(m.hambatan)}</td><td>${escapeHtml(m.tindakLanjut)}</td>
+                </tr>
+              `;
+            }).join("")}
+          </table>
+        `;
+      }
+
+      const fullDocHtml = `
+        <html><head><meta charset="utf-8"><title>${title}</title></head>
+        <body style="font-family: Arial, sans-serif; padding: 24px;">
+          ${buildFormalReportHeaderHtml(title)}
+          ${tableHtml}
+          <br/><br/>
+          <div style="text-align:right; font-size:11px; margin-top:24px;">
+            Kepala Sekolah,<br/><br/><br/><br/>
+            <strong>${escapeHtml(data.school.kepalaSekolah || "______________________")}</strong>
+          </div>
+        </body></html>
+      `;
+
+      window._lastPrintableReport = { title, html: fullDocHtml };
+
       openCustomModal(`
-        <div class="p-6 max-h-[88vh] overflow-y-auto">
+        <div class="p-5 sm:p-6 max-h-[90vh] overflow-y-auto space-y-4">
           <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl emerald-gradient text-amber-300 flex items-center justify-center">
-                <i data-lucide="book-open-check" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h3 class="font-extrabold text-slate-900 text-base">Panduan Penggunaan RAPOR SMART AI</h3>
-                <p class="text-xs text-slate-500">Alur kerja praktis bagi Kepala Sekolah, Guru, Bendahara BOS, &amp; Operator</p>
-              </div>
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Pratinjau &amp; Unduh Laporan</h3>
+              <p class="text-xs text-slate-500">Pilih Cetak / Simpan PDF melalui dialog browser atau langsung unduh file dokumen siap buka.</p>
             </div>
             <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
           </div>
-
-          <div class="mt-4 space-y-3 text-xs text-slate-700 leading-relaxed">
-            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200">
-              <p class="font-bold text-emerald-950">Prinsip Utama Aplikasi:</p>
-              <p class="mt-1">Seluruh tahapan perencanaan saling terhubung dari hulu ke hilir. Perubahan pada Rapor Pendidikan dan RKJM akan terpantau hingga ke kegiatan RKT dan rincian belanja ARKAS.</p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="p-3 rounded-xl border border-slate-200">
-                <div class="font-bold text-emerald-900">Langkah 1 — Input Data Rapor</div>
-                <p class="mt-1">Isi identitas sekolah (Nama, NPSN, Jenjang) lalu unggah PDF/Excel Rapor Pendidikan atau isi formulir manual. Konfirmasi setiap angka yang diimpor.</p>
-              </div>
-              <div class="p-3 rounded-xl border border-slate-200">
-                <div class="font-bold text-emerald-900">Langkah 2 &amp; 3 — Analisis &amp; Akar Masalah</div>
-                <p class="mt-1">Tinjau indikator berkategori Sedang/Kurang/Turun. Gunakan analisis 5-Why lalu konfirmasi hipotesis AI menjadi Fakta Sekolah bersama dewan guru.</p>
-              </div>
-              <div class="p-3 rounded-xl border border-slate-200">
-                <div class="font-bold text-emerald-900">Langkah 4 &amp; 5 — Prioritas &amp; Rekomendasi</div>
-                <p class="mt-1">Sesuaikan bobot prioritas pembenahan, lalu hasilkan rekomendasi program kegiatan yang realistis dan setujui program terpilih.</p>
-              </div>
-              <div class="p-3 rounded-xl border border-slate-200">
-                <div class="font-bold text-emerald-900">Langkah 6, 7 &amp; 8 — RKJM, RKT &amp; ARKAS</div>
-                <p class="mt-1">Turunkan program ke matriks RKJM (4 tahun), RKT (jadwal 12 bulan), dan Rancangan ARKAS (Volume × Harga Satuan mengacu BOSP).</p>
-              </div>
-            </div>
-
-            <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-950">
-              <strong>Tips Keamanan Data:</strong> Gunakan tombol <strong>Simpan Proyek (.JSON)</strong> di pojok kanan atas secara berkala untuk menyimpan arsip file perencanaan ke komputer Anda sehingga dapat dibuka kembali kapan saja.
-            </div>
+          <div class="border border-slate-200 rounded-xl p-4 bg-white overflow-x-auto max-h-80">
+            ${buildFormalReportHeaderHtml(title)}
+            ${tableHtml}
           </div>
-
-          <div class="mt-5 flex justify-end">
-            <button onclick="closeCustomModal()" class="px-5 py-2.5 rounded-xl emerald-gradient text-white text-xs font-bold">Siap Menggunakan Aplikasi</button>
+          <div class="flex flex-wrap justify-end gap-2 text-xs pt-2">
+            <button onclick="closeCustomModal()" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold">Tutup</button>
+            <button onclick="downloadLastReportAsWord()" class="px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold flex items-center gap-1.5">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+              <span>Unduh File Dokumen (.doc)</span>
+            </button>
+            <button onclick="printLastReportWindow()" class="px-4 py-2 rounded-xl emerald-gradient text-white font-bold flex items-center gap-1.5 shadow">
+              <i data-lucide="printer" class="w-4 h-4 text-amber-300"></i>
+              <span>Cetak / Simpan PDF</span>
+            </button>
           </div>
         </div>
-      `, 'max-w-2xl');
+      `, "max-w-3xl");
+    }
+
+    function downloadLastReportAsWord() {
+      const rep = window._lastPrintableReport;
+      if (!rep) return;
+      const blob = new Blob(["\ufeff", rep.html], { type: "application/msword" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${rep.title.replace(/[^a-zA-Z0-9]+/g, "_")}.doc`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("File laporan (.doc) berhasil diunduh.", "success");
+    }
+
+    function printLastReportWindow() {
+      const rep = window._lastPrintableReport;
+      if (!rep) return;
+      const printWin = window.open("", "_blank");
+      if (printWin) {
+        printWin.document.write(rep.html + `<script>window.onload = function(){ window.print(); };<\/script>`);
+        printWin.document.close();
+      } else {
+        window.print();
+      }
+    }
+
+    function renderAssistantMessages() {
+      const box = document.getElementById("assistantMessages");
+      if (!box) return;
+      box.innerHTML = APP_STATE.chatHistory.map(m => `
+        <div class="flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}">
+          <div class="max-w-[85%] rounded-2xl px-3.5 py-2.5 leading-relaxed ${m.role === 'user' ? 'emerald-gradient text-white' : 'bg-white border border-slate-200 text-slate-800 shadow-2xs'}">
+            ${escapeHtml(m.text).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br/>")}
+          </div>
+        </div>
+      `).join("");
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function askAssistantQuick(promptText) {
+      APP_STATE.chatHistory.push({ role: "user", text: promptText });
+      APP_STATE.chatHistory.push({ role: "assistant", text: generateContextAwareAssistantReply(promptText) });
+      renderAssistantMessages();
+    }
+
+    function handleAssistantSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById("assistantInput");
+      if (!input) return;
+      const q = input.value.trim();
+      if (!q) return;
+      input.value = "";
+      askAssistantQuick(q);
+    }
+
+    function generateContextAwareAssistantReply(query) {
+      const data = getCurrentData();
+      const s = data.school;
+      const low = query.toLowerCase();
+
+      if (data.indicators.length === 0) {
+        return `Saat ini belum ada data indikator Rapor Pendidikan maupun **Nilai Capaian** yang dimasukkan untuk ${s.nama || "sekolah Anda"}.\n\nSilakan unggah file Excel/PDF Rapor Pendidikan atau pilih indikator dari **Katalog PBD** pada menu **1. Input Rapor & Nilai Capaian** terlebih dahulu agar saya dapat menganalisis berdasarkan data nyata.`;
+      }
+
+      if (low.includes("ringkas") || low.includes("nilai") || low.includes("rapor")) {
+        const lines = data.indicators.map(i => `• ${i.kode ? "[" + i.kode + "] " : ""}${i.nama}: **${formatScore(i.nilai)}** (${classifyCategory(i.nilai, i.kategori)})`).join("\n");
+        return `Berikut ringkasan **Nilai Capaian** aktual ${s.nama || "Sekolah"} (Tahun ${s.tahunRapor}):\n\n${lines}\n\nApakah Bapak/Ibu ingin saya bantu menyusun analisis akar masalah atau menurunkannya ke RKJM?`;
+      }
+
+      if (low.includes("prioritas") || low.includes("akar")) {
+        const prioList = data.priorities.length > 0
+          ? data.priorities.map((p, idx) => {
+              const ind = data.indicators.find(i => i.id === p.indicatorId);
+              return `${idx + 1}. **${ind?.nama || "Indikator"}** (Nilai: ${formatScore(ind?.nilai)}) — Skor Prioritas ${p.totalSkor}/25`;
+            }).join("\n")
+          : "Daftar prioritas belum dihitung. Klik tombol **Lanjut Analisis Akar Masalah & Prioritas** pada menu Analisis.";
+        return `Berikut pemetaan prioritas pembenahan berdasarkan data sekolah Anda:\n\n${prioList}\n\nPastikan setiap dugaan penyebab pada modul **3. Akar Masalah** sudah dicentang konfirmasinya bersama dewan guru.`;
+      }
+
+      if (low.includes("anggaran") || low.includes("arkas")) {
+        const total = data.arkas.reduce((sum, a) => sum + ((Number(a.volume) || 0) * (Number(a.hargaSatuan) || 0)), 0);
+        return `Total rancangan anggaran ARKAS saat ini sebesar **${formatRupiah(total)}** yang terbagi ke dalam **${data.arkas.length} uraian belanja**.\n\nIngat: Rancangan ini adalah kertas kerja internal sekolah dan perlu diverifikasi kesesuaian komponen BOSP serta standar harga satuan daerah sebelum diinput ke aplikasi ARKAS resmi.`;
+      }
+
+      if (low.includes("benang merah") || low.includes("keterhubungan")) {
+        return `Status keterhubungan dokumen ${s.nama || "sekolah"}:\n• Indikator Rapor: **${data.indicators.length}**\n• Analisis Akar Masalah: **${data.rootCauses.length}**\n• Program RKJM: **${data.rkjm.length}**\n• Kegiatan RKT: **${data.rkt.length}**\n• Item Belanja ARKAS: **${data.arkas.length}**\n\nGunakan menu **Benang Merah Dokumen** untuk melihat penelusuran setiap indikator dari hulu ke hilir.`;
+      }
+
+      return `Berdasarkan data aktual ${s.nama || "sekolah Anda"}, tercatat **${data.indicators.length} indikator** Rapor Pendidikan, **${data.rkjm.length} program RKJM**, **${data.rkt.length} kegiatan RKT**, dan total rancangan anggaran **${formatRupiah(data.arkas.reduce((sum, a) => sum + ((Number(a.volume) || 0) * (Number(a.hargaSatuan) || 0)), 0))}**. Silakan sebutkan bagian spesifik yang ingin Anda diskusikan (misalnya: *Ringkas Nilai Capaian*, *Cek Prioritas*, atau *Rekap Anggaran ARKAS*).`;
+    }
+
+    function openGuideModal() {
+      openCustomModal(`
+        <div class="p-5 sm:p-6 max-h-[85vh] overflow-y-auto text-xs space-y-3">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h3 class="font-bold text-slate-900 text-base">Panduan Penggunaan RAPOR SMART AI</h3>
+            <button onclick="closeCustomModal()" class="p-1.5 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+          <ol class="list-decimal list-inside space-y-2 text-slate-700 leading-relaxed">
+            <li><strong>Input Rapor &amp; Nilai Capaian:</strong> Unggah langsung file Excel Rapor Pendidikan (.xlsx), PDF, atau pilih indikator dari Katalog PBD lalu ketik <strong>Nilai Capaian (0–100)</strong>.</li>
+            <li><strong>Analisis &amp; Akar Masalah (5-Why):</strong> Tinjau pengelompokan capaian dan centang akar penyebab yang merupakan fakta terkonfirmasi diskusi guru.</li>
+            <li><strong>Prioritas &amp; Rekomendasi:</strong> Sesuaikan bobot prioritas dan setujui rekomendasi program sekolah.</li>
+            <li><strong>RKJM → RKT → ARKAS:</strong> Turunkan program jangka menengah (4 tahun) menjadi kegiatan tahunan dan rincian anggaran belanja.</li>
+            <li><strong>Monitoring &amp; Unduh Laporan:</strong> Pantau realisasi program dan unduh dokumen ke format PDF, Word, atau Excel.</li>
+          </ol>
+          <div class="pt-2 flex justify-end">
+            <button onclick="closeCustomModal()" class="px-5 py-2 rounded-xl emerald-gradient text-white font-bold">Mengerti</button>
+          </div>
+        </div>
+      `);
     }
 
     // =========================================================================
-    // INITIALIZATION ON LOAD
+    // 22. MASTER RENDER LOOP
     // =========================================================================
-    window.addEventListener('DOMContentLoaded', () => {
+    function renderAll() {
+      renderNavigationAndHeader();
+      const container = document.getElementById("mainModuleContainer");
+      if (!container) return;
+
+      switch (APP_STATE.activeTab) {
+        case "dashboard":
+          container.innerHTML = renderDashboard();
+          break;
+        case "input":
+          container.innerHTML = renderInputModule();
+          break;
+        case "analisis":
+          container.innerHTML = renderAnalisisModule();
+          break;
+        case "akar":
+          container.innerHTML = renderAkarMasalahModule();
+          break;
+        case "prioritas":
+          container.innerHTML = renderPrioritasModule();
+          break;
+        case "rekomendasi":
+          container.innerHTML = renderRekomendasiModule();
+          break;
+        case "rkjm":
+          container.innerHTML = renderRkjmModule();
+          break;
+        case "rkt":
+          container.innerHTML = renderRktModule();
+          break;
+        case "arkas":
+          container.innerHTML = renderArkasModule();
+          break;
+        case "koneksi":
+          container.innerHTML = renderKoneksiModule();
+          break;
+        case "monev":
+          container.innerHTML = renderMonevModule();
+          break;
+        case "ekspor":
+          container.innerHTML = renderEksporModule();
+          break;
+        default:
+          container.innerHTML = renderDashboard();
+      }
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
       renderAll();
     });
   </script>
